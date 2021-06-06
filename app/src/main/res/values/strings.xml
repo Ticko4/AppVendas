@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">CM</string>
+
+    <!--Logout-->
+    <string name="logout">Logout</string>
+    <string name="leave">Do you wish to leave your session?</string>
+    <string name="yes">Leave</string>
+    <string name="no">Cancel</string>
+</resources>
