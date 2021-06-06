@@ -1,4 +1,4 @@
-package ipvc.estg.incidentes.activities;
+package ipvc.estg.cm.activities
 
 import android.content.Intent
 import android.os.Bundle
