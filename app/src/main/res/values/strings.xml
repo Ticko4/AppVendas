@@ -23,4 +23,10 @@
     <string name="login_recover">Recover password</string>
     <string name="logo">Logo</string>
 
+    <!--Toast-->
+    <string name="toast_success">Success</string>
+    <string name="toast_info">Information</string>
+    <string name="toast_error">Error</string>
+    <string name="toast_warning">Warning</string>
+
 </resources>

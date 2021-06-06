@@ -62,7 +62,7 @@
                     app:srcCompat="@drawable/ic_logo" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/username_text_input"
+                    android:id="@+id/username_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
@@ -70,7 +70,7 @@
                     android:hint="@string/login_email">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/username_edit_text"
+                        android:id="@+id/username_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
@@ -80,7 +80,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/password_text_input"
+                    android:id="@+id/password_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -89,7 +89,7 @@
                     app:errorEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/password_edit_text"
+                        android:id="@+id/password_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
