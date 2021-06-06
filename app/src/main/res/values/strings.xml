@@ -21,5 +21,6 @@
     <string name="login_divider">Or</string>
     <string name="login_create">Create account</string>
     <string name="login_recover">Recover password</string>
+    <string name="logo">Logo</string>
 
 </resources>
