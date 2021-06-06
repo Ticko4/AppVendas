@@ -6,4 +6,20 @@
     <string name="leave">Do you wish to leave your session?</string>
     <string name="yes">Leave</string>
     <string name="no">Cancel</string>
+
+    <!--Login Fragment-->
+    <string name="invalid_username">Insert a valid username</string>
+    <string name="invalid_password">Insert a valid password</string>
+    <string name="login_success">Welcome</string>
+    <string name="wrong_user_info">Incorrect username or password</string>
+    <string name="login_fail">Oops, there was a error trying your login.</string>
+    <string name="field_required">Field required.</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_remember">Remember me</string>
+    <string name="login_btn">Login</string>
+    <string name="login_divider">Or</string>
+    <string name="login_create">Create account</string>
+    <string name="login_recover">Recover password</string>
+
 </resources>
