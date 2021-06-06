@@ -28,5 +28,6 @@
     <string name="toast_info">Information</string>
     <string name="toast_error">Error</string>
     <string name="toast_warning">Warning</string>
+    <string name="general_error">Oops, it looks like an error occurred. Check your internet connection and try again</string>
 
 </resources>

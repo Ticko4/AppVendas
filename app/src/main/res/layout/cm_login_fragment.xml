@@ -18,31 +18,8 @@
         android:padding="0dp"
         android:paddingTop="0dp">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:elevation="0dp">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/close_login"
-                style="@style/Widget.Shrine.Toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:backgroundTint="@color/cpb_white"
-                android:paddingStart="12dp"
-                android:paddingLeft="12dp"
-                android:paddingEnd="12dp"
-                android:paddingRight="12dp"
-                app:contentInsetStart="0dp"
-                app:navigationIcon="@drawable/ic_close"
-                app:title="Login" />
-
-        </com.google.android.material.appbar.AppBarLayout>
-
         <androidx.core.widget.NestedScrollView
             android:fillViewport="true"
-            android:layout_below="@+id/app_bar"
             android:elevation="-10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -170,7 +147,6 @@
                     android:textAllCaps="false"
                     android:gravity="center"
                     android:layout_gravity="bottom"
-                    app:lb_cornerRadius="5dp"
                     android:textSize="16sp"/>
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -183,7 +159,6 @@
                     android:textAllCaps="false"
                     android:gravity="center"
                     android:layout_gravity="bottom"
-                    app:lb_cornerRadius="5dp"
                     android:textSize="16sp"/>
 
             </LinearLayout>
