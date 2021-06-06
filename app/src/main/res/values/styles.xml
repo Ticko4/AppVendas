@@ -4,7 +4,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/cpb_orange</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/cpb_orange</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:textColorPrimary">@color/cpb_dark_brown</item>
         <!--  <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>-->
