@@ -39,5 +39,6 @@
 
     <!--HomeFragment-->
     <string name="product_added">Product "'%s'" added.\nQuantity:%s.</string>
+    <string name="navigation_favorites">My Favorites</string>
 
 </resources>
