@@ -5,7 +5,7 @@
     android:id="@+id/swipe_layout"
    
     android:layout_width="match_parent"
-    app:dragEdge="left"
+    app:dragEdge="right"
     app:mode="same_level" android:layout_height="wrap_content">
 
     <FrameLayout
@@ -19,24 +19,6 @@
             android:orientation="horizontal" >
 
             <androidx.cardview.widget.CardView
-                android:backgroundTint="@color/cpb_blue_light"
-                android:id="@+id/favorite_card"
-                android:layout_width="110dp"
-                android:layout_height="match_parent"
-                app:cardElevation="10dp"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/favorite_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"/>
-
-            </androidx.cardview.widget.CardView>
-
-
-            <androidx.cardview.widget.CardView
-                android:layout_toEndOf="@+id/favorite_card"
                 android:id="@+id/remove_cart_card"
                 android:backgroundTint="@color/cpb_red_light"
                 android:layout_width="110dp"
@@ -45,12 +27,12 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:tint="@color/cpb_white"
                     android:id="@+id/remove_cart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_cart_remove"
-                    />
+                    android:src="@drawable/ic_cart_remove" />
 
             </androidx.cardview.widget.CardView>
         </RelativeLayout>
@@ -102,50 +84,158 @@
                 </androidx.cardview.widget.CardView>
             </RelativeLayout>
 
+            <RelativeLayout
+                android:visibility="visible"
+                android:id="@+id/product_desc"
+                android:layout_toEndOf="@+id/card_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginTop="25dp"
+
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/cpb_soft_black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/title"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginTop="5dp"
+
+                    android:textColor="@color/cpb_grey"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="15dp"
+                    android:gravity="end"
+                    android:layout_marginTop="35dp"
+                    android:layout_marginBottom="25dp"
+                    android:textColor="@color/cpb_red_dark"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:typeface="normal" />
+
+
+
+                <LinearLayout
+                    android:gravity="end|center_vertical"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toEndOf="@+id/price"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/quantity_card"
+                        android:backgroundTint="@color/cpb_grey_white"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp">
+
+                        <TextView
+                            android:id="@+id/quantity"
+                            android:textSize="20sp"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+
+
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:animateLayoutChanges="true"
+                android:id="@+id/quantity_add_mode_layout"
+                android:visibility="gone"
+                android:elevation="10dp"
+                android:background="@drawable/background_qtd_mode"
+                android:gravity="center"
                 android:layout_alignParentTop="true"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginTop="25dp"
-                android:layout_toEndOf="@+id/card_image"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="@color/cpb_soft_black"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/title"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginTop="5dp"
-                android:layout_toEndOf="@+id/card_image"
-                android:textColor="@color/cpb_grey"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="35dp"
-                android:layout_marginBottom="25dp"
                 android:layout_toEndOf="@+id/card_image"
-                android:textColor="@color/cpb_red_dark"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:typeface="normal" />
 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/decrement"
+                    app:cardElevation="0dp"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:backgroundTint="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:padding="15dp"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:src="@drawable/ic_remove"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+
+                    android:id="@+id/quantity_add_mode_card"
+                    android:gravity="center"
+                    android:backgroundTint="@color/cpb_white"
+                    android:layout_width="70dp"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:id="@+id/quantity_add_mode"
+                        android:textSize="30sp"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/increment"
+                    app:cardElevation="0dp"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:backgroundTint="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:padding="15dp"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:src="@drawable/ic_add"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
         </RelativeLayout>
     </FrameLayout>
 
 </com.chauthai.swipereveallayout.SwipeRevealLayout>
+

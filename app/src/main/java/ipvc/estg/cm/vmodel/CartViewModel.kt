@@ -47,6 +47,11 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         repository.deleteById(id)
     }
 
+    fun getTotal(): LiveData<Float> {
+        return repository.getTotal()
+    }
+
+
     /*fun deleteById(id: Int) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteById(id)
     }
