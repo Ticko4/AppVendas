@@ -15,6 +15,8 @@ import com.chauthai.swipereveallayout.SwipeRevealLayout
 import com.chauthai.swipereveallayout.ViewBinderHelper
 import ipvc.estg.cm.R
 import ipvc.estg.cm.entities.Product
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 
@@ -65,7 +67,7 @@ public class ProductsAdapter(
         binderHelper.bind(holder.swipeRevealLayout, product.id.toString());
 
         holder.title.text = product.name
-        holder.price.text = product.price.toString()
+        holder.price.text = context.resources.getString(R.string.price, BigDecimal(product.price.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
         holder.content.text = product.subcategory
 
         holder.favoriteCard.setOnClickListener { // send selected contact in callback
@@ -208,8 +210,8 @@ public class ProductsAdapter(
     fun setQuantity(position: Int,quantity:Int){
         productList[position].quantity = quantity
         productsListFiltered[position].quantity = quantity
-        productList[position].price = quantity * productList[position].price
-        productsListFiltered[position].price = quantity * productList[position].price
+        productList[position].total = quantity * productList[position].price
+        productsListFiltered[position].total = quantity * productList[position].price
     }
 
     interface ProductsAdapterListener {

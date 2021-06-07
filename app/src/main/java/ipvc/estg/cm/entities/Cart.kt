@@ -15,6 +15,6 @@ class Cart(
     @ColumnInfo(name = "subcategory") val subcategory: String,
     @ColumnInfo(name = "favorite") var favorite: Boolean,
     @ColumnInfo(name = "quantity") var quantity: Int,
-    @ColumnInfo(name = "total") val total: Float,
+    @ColumnInfo(name = "total") var total: Float,
 
     )

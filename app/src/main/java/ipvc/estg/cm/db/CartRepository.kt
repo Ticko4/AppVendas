@@ -31,6 +31,10 @@ class CartRepository(private val cartDao: CartDao) {
         return cartDao.deleteById(id)
     }
 
+    fun getTotal(): LiveData<Float> {
+        return cartDao.getTotal()
+    }
+
     /*  suspend fun updateNote(id: Int,title:String,description:String,color: String,colorId:Int) {
          notesDao.updateNote(id,title,description,color,colorId)
      }

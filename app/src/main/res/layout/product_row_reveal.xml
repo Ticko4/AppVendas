@@ -19,7 +19,7 @@
             android:orientation="horizontal" >
 
             <androidx.cardview.widget.CardView
-                android:backgroundTint="@color/cpb_blue_light"
+                android:backgroundTint="@color/cpb_green_light"
                 android:id="@+id/favorite_card"
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
@@ -38,19 +38,19 @@
             <androidx.cardview.widget.CardView
                 android:layout_toEndOf="@+id/favorite_card"
                 android:id="@+id/add_cart_card"
-                android:backgroundTint="@color/cpb_green_light"
+                android:backgroundTint="@color/cpb_blue_light"
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
                 app:cardElevation="10dp"
                 android:orientation="vertical">
 
                 <ImageView
+                    android:tint="@color/cpb_white"
                     android:id="@+id/add_cart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_cart_add"
-                    />
+                    android:src="@drawable/ic_cart_add" />
 
             </androidx.cardview.widget.CardView>
         </RelativeLayout>
