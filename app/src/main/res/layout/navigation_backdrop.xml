@@ -2,23 +2,38 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--<com.google.android.material.button.MaterialButton
+    <com.google.android.material.button.MaterialButton
         style="@style/Widget.Shrine.Button.TextButton"
-        android:id="@+id/in_main"
+        android:id="@+id/nav_main"
         android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/cpb_white"
-        android:text="@string/navigation_map"
+        android:text="@string/navigation_home"
+        android:textSize="@dimen/dimen_16"
         android:focusable="true" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/in_notes"
         style="@style/Widget.Shrine.Button.TextButton"
+        android:id="@+id/nav_prod"
+        android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/cpb_white"
-        android:text="@string/navigation_notes" />-->
+        android:text="@string/navigation_products"
+        android:textSize="@dimen/dimen_16"
+        android:focusable="true" />
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.Shrine.Button.TextButton"
+        android:id="@+id/nav_cart"
+        android:clickable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/cpb_white"
+        android:text="@string/navigation_cart"
+        android:textSize="@dimen/dimen_16"
+        android:focusable="true" />
 
     <View
         android:layout_width="56dp"
@@ -26,29 +41,29 @@
         android:layout_margin="16dp"
         android:background="?android:attr/textColorPrimary" />
 
-    <!--<com.google.android.material.button.MaterialButton
-        android:id="@+id/in_login"
-        android:visibility="gone"
+
+    <com.google.android.material.button.MaterialButton
         style="@style/Widget.Shrine.Button.TextButton"
+        android:id="@+id/nav_settings"
+        android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/cpb_white"
-        android:text="@string/navigation_login"/>
+        android:text="@string/navigation_settings"
+        android:textSize="@dimen/dimen_16"
+        android:focusable="true" />
+
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/in_logout"
-        android:visibility="gone"
         style="@style/Widget.Shrine.Button.TextButton"
+        android:id="@+id/nav_logout"
+        android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/cpb_white"
-        android:text="@string/navigation_logout" />-->
+        android:text="@string/navigation_logout"
+        android:textSize="@dimen/dimen_16"
+        android:focusable="true" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/in_auth"
-        style="@style/Widget.Shrine.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/cpb_white" />
 
 </merge>

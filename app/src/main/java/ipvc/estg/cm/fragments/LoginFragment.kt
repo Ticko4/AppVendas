@@ -11,16 +11,21 @@ import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton
 import ipvc.estg.cm.R
 import ipvc.estg.cm.entities.User
+import ipvc.estg.cm.listeners.NavigationIconClickListener
 import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.retrofit.EndPoints
 import ipvc.estg.cm.retrofit.ServiceBuilder
+import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -48,6 +53,7 @@ class LoginFragment: Fragment() {
         btnResetPassword = view.findViewById(R.id.btn_reset_password)
         rememberMe = view.findViewById(R.id.remember_me)
     }
+
 
     private fun setClickListeners(view: View) {
         btnLogin!!.setOnClickListener {
