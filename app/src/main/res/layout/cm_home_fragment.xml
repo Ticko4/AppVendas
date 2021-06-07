@@ -17,9 +17,10 @@
         <include layout="@layout/cm_main_activity" />
 
         <RelativeLayout
+            android:clickable="true"
             android:id="@+id/main_frame"
             android:background="@drawable/background_round_top"
-            android:elevation="1dp"
+            android:elevation="2dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_marginTop="56dp"
             android:layout_width="match_parent"
@@ -48,7 +49,7 @@
                     android:textSize="@dimen/dimen_24"
                     android:textStyle="bold"
                     android:textAllCaps="true"
-                    android:text="Recomendações"
+                    android:text="@string/recommendations"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
 

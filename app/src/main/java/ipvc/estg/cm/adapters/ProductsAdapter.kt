@@ -1,6 +1,7 @@
 package ipvc.estg.cm.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,21 +36,13 @@ public class ProductsAdapter(
         var price: TextView = view.findViewById(R.id.price)
         var content: TextView = view.findViewById(R.id.content)
         var swipeRevealLayout:SwipeRevealLayout = view.findViewById(R.id.swipe_layout)
-       /* var viewBackground: RelativeLayout = view.findViewById(R.id.view_background)
-        var viewForeground: RelativeLayout = view.findViewById(R.id.view_foreground)*/
         var image: ImageView = view.findViewById(R.id.image)
         var imagecopy: ImageView = view.findViewById(R.id.imageCopy)
         var favoriteIcon:ImageView = view.findViewById(R.id.favorite_icon)
         var favoriteCard:CardView = view.findViewById(R.id.favorite_card)
         var addCartIcon:ImageView = view.findViewById(R.id.add_cart)
         var addCartCard:CardView = view.findViewById(R.id.add_cart_card)
-        /*var favoriteIcon: ImageView = view.findViewById(R.id.favorite_icon)*/
-
-        init {
-            view.setOnClickListener { // send selected contact in callback
-                listener.onProductSelected(productsListFiltered[adapterPosition])
-            }
-        }
+        var frontLayout: FrameLayout = view.findViewById(R.id.front_layout)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -65,7 +58,9 @@ public class ProductsAdapter(
         // Use ViewBindHelper to restore and save the open/close state of the SwipeRevealView
         // put an unique string id as value, can be any string which uniquely define the data
         binderHelper.bind(holder.swipeRevealLayout, product.id.toString());
-
+        holder.frontLayout.setOnClickListener { // send selected contact in callback
+            listener.onProductSelected(productsListFiltered[position])
+        }
         holder.title.text = product.name
         holder.price.text = context.resources.getString(R.string.price, BigDecimal(product.price.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
         holder.content.text = product.subcategory
@@ -165,35 +160,6 @@ public class ProductsAdapter(
         notifyItemRemoved(position)
     }
 
-    /*    public void updateItem(int position, String department) {
-        Event event =new Event(productsListFiltered.get(position).getTitle(),
-                productsListFiltered.get(position).getContent(),
-                productsListFiltered.get(position).getDate(),
-                productsListFiltered.get(position).getId(),
-                productsListFiltered.get(position).getPriority(),
-                productsListFiltered.get(position).getEmail(),
-                productsListFiltered.get(position).getMessage(),
-                department,
-                productsListFiltered.get(position).getStatus(),
-                productsListFiltered.get(position).getName());
-        productsListFiltered.set(position,event);
-
-        notifyItemChanged(position);
-    }
-    public void updatePriority(int position, String priority) {
-        Event event =new Event(productsListFiltered.get(position).getTitle(),
-                productsListFiltered.get(position).getContent(),
-                productsListFiltered.get(position).getDate(),
-                productsListFiltered.get(position).getId(),
-                priority,
-                productsListFiltered.get(position).getEmail(),
-                productsListFiltered.get(position).getMessage(),
-                productsListFiltered.get(position).getDepartment(),
-                productsListFiltered.get(position).getStatus(),
-                productsListFiltered.get(position).getName());
-        productsListFiltered.set(position,event);
-        notifyItemChanged(position);
-    }*/
     override fun getItemCount(): Int {
         return productsListFiltered.size
     }

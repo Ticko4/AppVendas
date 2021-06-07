@@ -11,6 +11,8 @@ class CartRepository(private val cartDao: CartDao) {
     // Observed LiveData will notify the observer when the data has changed.
     val allProducts: LiveData<List<Cart>> = cartDao.getAllProducts()
 
+    val allProductsWithQuantity: LiveData<List<Cart>> = cartDao.getAllProductsWithQuantity()
+
     suspend fun insert(product: Cart) {
         cartDao.insert(product)
     }
