@@ -121,8 +121,44 @@
                     android:layout_height="match_parent">
 
                     <TextView
+
+                        android:id="@+id/subtotal_text"
+                        android:textSize="17sp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginStart="20dp"
+                        android:paddingTop="15dp"
+                        android:paddingEnd="20dp"
+                        android:paddingStart="20dp"
+                        android:paddingBottom="0dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Subtotal" />
+
+                    <TextView
+                        android:id="@+id/subtotal_val"
+
+                        android:textStyle="bold"
+                        android:gravity="end"
+                        android:layout_alignParentEnd="true"
+                        android:layout_toEndOf="@+id/total_text"
+                        android:textSize="17sp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginStart="20dp"
+                        android:paddingTop="15dp"
+                        android:paddingEnd="20dp"
+                        android:paddingStart="20dp"
+                        android:paddingBottom="0dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0,00 €" />
+
+
+                    <TextView
+                        android:layout_below="@id/subtotal_text"
                         android:id="@+id/total_text"
-                        android:textSize="20sp"
+                        android:textSize="25sp"
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="20dp"
                         android:paddingTop="25dp"
@@ -134,6 +170,7 @@
                         android:text="Total" />
 
                     <TextView
+                        android:layout_below="@id/subtotal_val"
                         android:id="@+id/total_val"
                         android:textColor="@color/cpb_red_dark"
                         android:textStyle="bold"
@@ -151,42 +188,10 @@
                         android:layout_height="wrap_content"
                         android:text="0,00 €" />
 
-                    <TextView
-                        android:layout_below="@+id/total_text"
-                        android:id="@+id/subtotal_text"
-                        android:textSize="17sp"
-                        android:layout_marginTop="0dp"
-                        android:layout_marginStart="20dp"
-                        android:paddingTop="15dp"
-                        android:paddingEnd="20dp"
-                        android:paddingStart="20dp"
-                        android:paddingBottom="0dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Subtotal" />
 
-                    <TextView
-                        android:id="@+id/subtotal_val"
-                        android:layout_below="@+id/total_val"
-                        android:textStyle="bold"
-                        android:gravity="end"
-                        android:layout_alignParentEnd="true"
-                        android:layout_toEndOf="@+id/total_text"
-                        android:textSize="17sp"
-                        android:layout_marginTop="0dp"
-                        android:layout_marginStart="20dp"
-                        android:paddingTop="15dp"
-                        android:paddingEnd="20dp"
-                        android:paddingStart="20dp"
-                        android:paddingBottom="0dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0,00 €" />
 
                     <RelativeLayout
-                        android:layout_below="@+id/subtotal_val"
+                        android:layout_below="@+id/total_val"
                         android:layout_alignParentBottom="true"
                         android:padding="25dp"
                         android:layout_width="wrap_content"
@@ -196,8 +201,8 @@
                         <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
                             android:layout_marginTop="20dp"
                             android:layout_marginBottom="20dp"
-                            android:id="@+id/btn_login"
-                            android:text="@string/login_btn"
+                            android:id="@+id/checkout_btn"
+                            android:text="@string/checkout_btn"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:spinning_bar_width="4dp"

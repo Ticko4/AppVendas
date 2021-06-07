@@ -210,8 +210,8 @@ public class ProductsAdapter(
     fun setQuantity(position: Int,quantity:Int){
         productList[position].quantity = quantity
         productsListFiltered[position].quantity = quantity
-        productList[position].price = quantity * productList[position].price
-        productsListFiltered[position].price = quantity * productList[position].price
+        productList[position].total = quantity * productList[position].price
+        productsListFiltered[position].total = quantity * productList[position].price
     }
 
     interface ProductsAdapterListener {

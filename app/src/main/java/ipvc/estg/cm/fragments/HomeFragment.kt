@@ -211,7 +211,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
                     id = 2,
                     name = "Queijo",
                     image = "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
-                    price = 10.2f,
+                    price = 10000.2f,
                     subcategory = "teste",
                     favorite = false,
                     quantity = cart?.quantity ?: 0,
@@ -281,6 +281,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
                         quantity = quantity,
                         total = (quantity * product.price)
                     )
+                    Log.e("home total",cart.total.toString())
                     mAdapter!!.setQuantity(position,quantity)
 
                     cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)

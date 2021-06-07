@@ -4,10 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -20,7 +22,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 
-public class CartAdapter(
+class CartAdapter(
     productList: MutableList<Cart>,
     listener: CartAdapterListener,
     private var context: Context
@@ -34,16 +36,17 @@ public class CartAdapter(
         var price: TextView = view.findViewById(R.id.price)
         var content: TextView = view.findViewById(R.id.content)
         var swipeRevealLayout:SwipeRevealLayout = view.findViewById(R.id.swipe_layout)
-       /* var viewBackground: RelativeLayout = view.findViewById(R.id.view_background)
-        var viewForeground: RelativeLayout = view.findViewById(R.id.view_foreground)*/
         var image: ImageView = view.findViewById(R.id.image)
         var imagecopy: ImageView = view.findViewById(R.id.imageCopy)
-        var favoriteIcon:ImageView = view.findViewById(R.id.favorite_icon)
-        var favoriteCard:CardView = view.findViewById(R.id.favorite_card)
         var removeCartIcon:ImageView = view.findViewById(R.id.remove_cart)
         var removeCartCard:CardView = view.findViewById(R.id.remove_cart_card)
-        /*var favoriteIcon: ImageView = view.findViewById(R.id.favorite_icon)*/
-
+        var quantity: TextView = view.findViewById(R.id.quantity)
+        var quantityAddMode: TextView = view.findViewById(R.id.quantity_add_mode)
+        var increment:CardView = view.findViewById(R.id.increment)
+        var decrement:CardView = view.findViewById(R.id.decrement)
+        var quantityAddModeLayout: LinearLayout = view.findViewById(R.id.quantity_add_mode_layout)
+        var quantityCard: CardView = view.findViewById(R.id.quantity_card)
+        var quantityAddModeCard: CardView = view.findViewById(R.id.quantity_add_mode_card)
         init {
             view.setOnClickListener { // send selected contact in callback
                 listener.onProductSelected(productList[adapterPosition])
@@ -54,7 +57,7 @@ public class CartAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.cart_row_reveal, parent, false)
-        binderHelper.setOpenOnlyOne(true);
+        binderHelper.setOpenOnlyOne(true)
         return MyViewHolder(itemView)
     }
 
@@ -63,52 +66,70 @@ public class CartAdapter(
 
         // Use ViewBindHelper to restore and save the open/close state of the SwipeRevealView
         // put an unique string id as value, can be any string which uniquely define the data
-        binderHelper.bind(holder.swipeRevealLayout, product.id.toString());
+        binderHelper.bind(holder.swipeRevealLayout, product.id.toString())
 
         holder.title.text = product.name
-        holder.price.text = product.quantity.toString() + " x " + context.resources.getString(R.string.price,BigDecimal(product.price.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
-        holder.content.text = product.subcategory
+        holder.price.text = context.resources.getString(
+            R.string.price, BigDecimal(product.price.toString()).setScale(
+                2,
+                RoundingMode.HALF_EVEN
+            ).toString().replace('.', ',')
+        )
+        holder.content.text = /*product.subcategory*/product.total.toString()
 
-        holder.favoriteCard.setOnClickListener { // send selected contact in callback
-            if(product.favorite){
-                holder.favoriteIcon.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_not_favorite
-                    )
-                )
-                productList[position].favorite = false
-            }else{
-                holder.favoriteIcon.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_favorite
-                    )
-                )
-                productList[position].favorite = true
-            }
-
-            listener.onFavoriteClick(productList[position])
-        }
+        holder.quantity.text = product.quantity.toString()
+        holder.quantityAddMode.text = product.quantity.toString()
 
         holder.removeCartCard.setOnClickListener {
             listener.onRemoveCartClick(productList[position], holder.image, position)
         }
 
-        if(product.favorite){
-            holder.favoriteIcon.setImageDrawable(
-                ContextCompat.getDrawable(
-                    context,
-                    R.drawable.ic_favorite
-                )
+        holder.increment.setOnClickListener {
+            listener.onIncrementClick(productList[position], position)
+        }
+
+        holder.decrement.setOnClickListener {
+            listener.onDecrementClick(productList[position], position)
+        }
+
+        holder.quantityCard.setOnClickListener {
+            val fade_in = ScaleAnimation(
+                0.3f,
+                1f,
+                0.4f,
+                1f,
+                Animation.RELATIVE_TO_SELF,
+                0.9f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
             )
-        }else{
-            holder.favoriteIcon.setImageDrawable(
-                ContextCompat.getDrawable(
-                    context,
-                    R.drawable.ic_not_favorite
-                )
+            fade_in.duration = 500 // animation duration in milliseconds
+
+            fade_in.fillAfter =
+                true // If fillAfter is true, the transformation that this animation performed will persist when it is finished.
+
+            holder.quantityAddModeLayout.startAnimation(fade_in)
+            holder.quantityAddModeLayout.visibility = View.VISIBLE
+        }
+
+        holder.quantityAddModeCard.setOnClickListener {
+            val fade_out = ScaleAnimation(
+                1f,
+                0.3f,
+                1f,
+                0.4f,
+                Animation.RELATIVE_TO_SELF,
+                0.9f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
             )
+            fade_out.duration = 500 // animation duration in milliseconds
+
+            fade_out.fillAfter =
+                false // If fillAfter is true, the transformation that this animation performed will persist when it is finished.
+
+            holder.quantityAddModeLayout.startAnimation(fade_out)
+            holder.quantityAddModeLayout.visibility = View.GONE
         }
 
         val circularProgressDrawable = CircularProgressDrawable(context)
@@ -128,8 +149,9 @@ public class CartAdapter(
     fun removeItem(position: Int) {
         productList.removeAt(position)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, productList.size);
+        notifyItemRangeChanged(position, productList.size)
     }
+
 
     override fun getItemCount(): Int {
         return productList.size
@@ -144,15 +166,17 @@ public class CartAdapter(
         return productList[position]
     }
 
-    fun setQuantity(position: Int, quantity: Int){
+    fun setQuantity(position: Int, quantity: Int,product: Cart){
         productList[position].quantity = quantity
-        productList[position].price = quantity * productList[position].price
+        productList[position].total = quantity * productList[position].price
+        notifyItemChanged(position,product)
     }
 
     interface CartAdapterListener {
         fun onProductSelected(product: Cart?)
-        fun onFavoriteClick(product: Cart?)
         fun onRemoveCartClick(product: Cart, image: ImageView, position: Int)
+        fun onIncrementClick(product: Cart, position: Int)
+        fun onDecrementClick(product: Cart, position: Int)
     }
 
     init {
