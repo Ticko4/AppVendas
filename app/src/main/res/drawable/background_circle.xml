@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape android:dither="true" android:visible="true" android:shape="oval" android:useLevel="false"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient android:startColor="@color/cpb_white"
+        android:endColor="@color/cpb_white"
+        android:angle="270.0" />
+    <stroke android:width="2dp" android:color="@color/cpb_orange" />
+    <corners
+        android:radius="20dip" />
+    <size android:height="20dip"
+        android:width="20dip" />
+</shape>
