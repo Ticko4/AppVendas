@@ -3,10 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe_layout"
-    android:layout_height="wrap_content"
+   
     android:layout_width="match_parent"
     app:dragEdge="left"
-    app:mode="same_level">
+    app:mode="same_level" android:layout_height="wrap_content">
 
     <FrameLayout
         android:id="@+id/delete_layout"
@@ -37,19 +37,19 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_toEndOf="@+id/favorite_card"
-                android:id="@+id/add_cart_card"
-                android:backgroundTint="@color/cpb_green_light"
+                android:id="@+id/remove_cart_card"
+                android:backgroundTint="@color/cpb_red_light"
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
                 app:cardElevation="10dp"
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/add_cart"
+                    android:id="@+id/remove_cart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_cart_add"
+                    android:src="@drawable/ic_cart_remove"
                     />
 
             </androidx.cardview.widget.CardView>

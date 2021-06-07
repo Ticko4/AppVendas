@@ -11,10 +11,10 @@ class Cart(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "image") val image: String,
-    @ColumnInfo(name = "price") val price: Float,
+    @ColumnInfo(name = "price") var price: Float,
     @ColumnInfo(name = "subcategory") val subcategory: String,
-    @ColumnInfo(name = "favorite") val favorite: Boolean,
-    @ColumnInfo(name = "quantity") val quantity: Int,
+    @ColumnInfo(name = "favorite") var favorite: Boolean,
+    @ColumnInfo(name = "quantity") var quantity: Int,
     @ColumnInfo(name = "total") val total: Float,
 
-)
+    )
