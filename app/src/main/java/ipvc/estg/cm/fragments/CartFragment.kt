@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -17,6 +18,7 @@ import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.CartAdapter
 import ipvc.estg.cm.entities.Cart
 import ipvc.estg.cm.vmodel.CartViewModel
+import kotlinx.android.synthetic.main.cm_cart_fragment.*
 import kotlinx.android.synthetic.main.cm_cart_fragment.view.*
 import org.w3c.dom.Text
 import java.math.BigDecimal
@@ -69,22 +71,28 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
     private fun fillRecyclerView(){
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
-        cartViewModel.allProducts.observe(viewLifecycleOwner, { it ->
+        cartViewModel.allProductsWithQuantity().observe(viewLifecycleOwner, { it ->
             if(recyclerView!!.adapter == null){
                 productsList = it as MutableList<Cart>
-                mAdapter = context?.let { CartAdapter(productsList, this, it) }
-                mAdapter!!.setHasStableIds(true)
-                mAdapter!!.notifyItemRangeInserted(0, productsList.size - 1)
-                recyclerView!!.adapter = mAdapter
+                if(productsList.size <= 0){
+                    requireView().findViewById<TextView>(R.id.no_products).visibility = View.VISIBLE
+                    requireView().findViewById<NestedScrollView>(R.id.cart_scroll).visibility = View.GONE
+                }else{
+                    mAdapter = context?.let { CartAdapter(productsList, this, it) }
+                    mAdapter!!.setHasStableIds(true)
+                    mAdapter!!.notifyItemRangeInserted(0, productsList.size - 1)
+                    recyclerView!!.adapter = mAdapter
+
+                    requireView().findViewById<TextView>(R.id.no_products).visibility = View.GONE
+                    requireView().findViewById<NestedScrollView>(R.id.cart_scroll).visibility = View.VISIBLE
+                }
+
             }
 
         })
 
-
         cartViewModel.getTotal().observe(viewLifecycleOwner, { it ->
-
             if(it != null){
-                Log.e("total",it.toString())
                 subtotal!!.text = requireContext().resources.getString(
                     R.string.price, BigDecimal(it.toString()).setScale(
                         2,
@@ -109,7 +117,7 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
     }
 
     override fun onProductSelected(product: Cart?) {
-        TODO("Not yet implemented")
+        Log.e("onProductSelected",product!!.id.toString())
     }
 
     override fun onRemoveCartClick(product: Cart, image: ImageView, position: Int) {
@@ -119,9 +127,7 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
     }
 
     override fun onIncrementClick(product: Cart, position: Int) {
-
         val quantity = (product.quantity + 1 )
-        Log.e("onIncrementClick",quantity.toString())
         val cart = Cart(
             id = product.id,
             name = product.name,
@@ -133,16 +139,12 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
             total = (quantity * product.price)
         )
         mAdapter!!.setQuantity(position,quantity,cart)
-        Log.e("prod incr total",cart.total.toString())
-        //mAdapter!!.notifyItemChanged(position)
-
         cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
         cartViewModel.insert(cart)
     }
 
     override fun onDecrementClick(product: Cart, position: Int) {
         val quantity = (product.quantity - 1 )
-        Log.e("onDecrementClick",quantity.toString())
         val cart = Cart(
             id = product.id,
             name = product.name,
@@ -154,12 +156,17 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
             total = (quantity * product.price)
         )
         mAdapter!!.setQuantity(position,quantity,cart)
-        Log.e("prod decr total",cart.total.toString())
         cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
-
         if(quantity <= 0){
-            cartViewModel.deleteById(cart.id!!)
+            //cartViewModel.deleteById(cart.id!!)
+            cart.quantity = 0
+            cartViewModel.insert(cart)
             mAdapter!!.removeItem(position)
+
+            if(mAdapter!!.itemCount <= 0){
+                requireView().findViewById<TextView>(R.id.no_products).visibility = View.VISIBLE
+                requireView().findViewById<NestedScrollView>(R.id.cart_scroll).visibility = View.GONE
+            }
         }else{
             cartViewModel.insert(cart)
         }

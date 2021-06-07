@@ -57,16 +57,18 @@
     </FrameLayout>
 
     <FrameLayout
+        android:background="@color/cpb_white"
+        android:clickable="true"
         android:id="@+id/front_layout"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="@android:color/holo_blue_light">
+        android:layout_height="150dp">
 
         <RelativeLayout
+
+            android:background="?attr/selectableItemBackground"
             android:id="@+id/view_foreground"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/cpb_white">
+            android:layout_height="match_parent">
 
             <RelativeLayout
                 android:padding="10dp"

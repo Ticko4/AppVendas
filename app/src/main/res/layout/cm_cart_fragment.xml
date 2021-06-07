@@ -60,6 +60,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <TextView
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:visibility="visible"
+                    android:id="@+id/no_products"
+                    android:textSize="@dimen/dimen_24"
+                    android:background="@color/cpb_white"
+                    android:gravity="center"
+                    android:text="@string/no_products"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
                 <androidx.core.widget.NestedScrollView
                     android:padding="10dp"
                     android:id="@+id/cart_scroll"
@@ -70,7 +82,6 @@
                     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                     <RelativeLayout
-
                         app:elevation="1dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
@@ -82,15 +93,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:scrollbars="vertical" />
-
-                        <TextView
-                            android:paddingTop="20dp"
-                            android:textSize="17sp"
-                            android:gravity="center"
-                            android:id="@+id/no_products"
-                            android:visibility="gone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
 
                     </RelativeLayout>
 
@@ -133,7 +135,7 @@
                         android:layout_marginEnd="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Subtotal" />
+                        android:text="@string/cart_subtotal" />
 
                     <TextView
                         android:id="@+id/subtotal_val"
@@ -152,7 +154,7 @@
                         android:layout_marginEnd="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0,00 €" />
+                        android:text="@string/price_default" />
 
 
                     <TextView
@@ -167,14 +169,14 @@
                         android:paddingBottom="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Total" />
+                        android:text="@string/cart_total" />
 
                     <TextView
                         android:layout_below="@id/subtotal_val"
                         android:id="@+id/total_val"
                         android:textColor="@color/cpb_red_dark"
                         android:textStyle="bold"
-                        android:gravity="right"
+                        android:gravity="end"
                         android:layout_alignParentEnd="true"
                         android:layout_toEndOf="@+id/total_text"
                         android:textSize="25sp"
@@ -186,7 +188,7 @@
                         android:paddingBottom="0dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0,00 €" />
+                        android:text="@string/price_default" />
 
 
 
