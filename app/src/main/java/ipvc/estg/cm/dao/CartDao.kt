@@ -8,6 +8,9 @@ import androidx.lifecycle.Observer
 @Dao
 interface CartDao  {
 
+    @Query("SELECT * from cart where quantity > 0 order by id desc")
+    fun getAllProductsWithQuantity(): LiveData<List<Cart>>
+
     @Query("SELECT * from cart order by id desc")
     fun getAllProducts(): LiveData<List<Cart>>
 

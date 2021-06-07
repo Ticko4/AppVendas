@@ -1,7 +1,10 @@
 package ipvc.estg.cm.fragments
 
+import android.Manifest
 import android.animation.Animator
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +14,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -22,6 +26,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.ProductsAdapter
 import ipvc.estg.cm.entities.Cart
@@ -29,10 +35,16 @@ import ipvc.estg.cm.entities.Product
 import ipvc.estg.cm.listeners.CircleAnimationUtil
 import ipvc.estg.cm.listeners.NavigationIconClickListener
 import ipvc.estg.cm.navigation.NavigationHost
+import ipvc.estg.cm.retrofit.EndPoints
+import ipvc.estg.cm.retrofit.ServiceBuilder
 import ipvc.estg.cm.vmodel.CartViewModel
 import kotlinx.android.synthetic.main.cm_home_fragment.view.*
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 
@@ -44,6 +56,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
     private var productsList: MutableList<Product> = ArrayList<Product>()
     private var itemCounter:TextView? = null
     private lateinit var cartViewModel: CartViewModel
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,6 +75,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
         getData()
         return view
 
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
     }
 
     private fun declareItems(view: View){
@@ -165,7 +183,22 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
             message = "Adicionado aos favoritos"
         }
 
+        val cart = Cart(
+            id = product.id,
+            name = product.name,
+            image = product.image,
+            price = product.price,
+            subcategory = product.subcategory,
+            favorite = product.favorite,
+            quantity = product.quantity,
+            total = product.total
+        )
+
+        cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
+        cartViewModel.insert(cart)
+
         (activity as NavigationHost).customToaster(title = getString(R.string.toast_success), message = message, type = "success")
+
     }
 
     private fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
@@ -182,83 +215,141 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
     }
 
     private fun getData(){
-        productsList.clear();
+        productsList.clear()
         recyclerView!!.adapter = mAdapter
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
-        cartViewModel.getProductById(1).observeOnce(this, { cart ->
-            productsList.add(
-                Product(
-                    id = 1,
-                    name = "Livro",
-                    image = "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
-                    price = 10.2f,
-                    subcategory = "teste",
-                    favorite = false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
-                )
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+
+            val obj = JSONObject()
+            obj.put("latitude", location.latitude)
+            obj.put("longitude", location.longitude)
+
+            val payload = Base64.encodeToString(
+                obj.toString().toByteArray(charset("UTF-8")),
+                Base64.DEFAULT
             )
-            Log.e("p1.livro.qtd", 1.toString())
-            Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
-        })
 
+            val request = ServiceBuilder.buildService(EndPoints::class.java)
+            val call = request.getRecommendedProducts(payload)
+            call.enqueue(object : Callback<List<Product>> {
+                override fun onResponse(call: Call<List<Product>>?, response: Response<List<Product>>) {
+                    if (response.isSuccessful) {
+                        try {
+                            response.body().forEach {
+                                cartViewModel.getProductById(it.id).observeOnce(viewLifecycleOwner, { cart ->
 
-        cartViewModel.getProductById(2).observeOnce(this, { cart ->
-            productsList.add(
-                Product(
-                    id = 2,
-                    name = "Queijo",
-                    image = "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
-                    price = 10000.2f,
-                    subcategory = "teste",
-                    favorite = false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                                    productsList.add(
+                                        Product(
+                                            id = it.id,
+                                            name = it.name,
+                                            image = it.image,
+                                            price = it.price,
+                                            subcategory = it.subcategory,
+                                            favorite = cart.favorite,
+                                            quantity = cart.quantity ?: 0,
+                                            total = (cart.quantity ?: 0) * it.price
+                                        )
+                                    )
+                                })
+
+                            }
+                        } catch (e: Exception) {
+                            Log.e("catch", e.toString())
+                        }
+                    } else {
+                        (activity as NavigationHost).customToaster(
+                            title = getString(R.string.toast_error),
+                            message = getString(R.string.general_error),
+                            type = "error"
+                        )
+                    }
+                }
+
+                override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
+                    (activity as NavigationHost).customToaster(
+                        title = getString(R.string.toast_error),
+                        message = getString(R.string.general_error),
+                           type = "connection"
+                    )
+                }
+
+            })
+
+            cartViewModel.getProductById(1).observeOnce(this, { cart ->
+                productsList.add(
+                    Product(
+                        id = 1,
+                        name = "Livro",
+                        image = "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
+                        price = 10.2f,
+                        subcategory = "teste",
+                        favorite = cart.favorite,
+                        quantity = cart?.quantity ?: 0,
+                        total = (cart?.quantity ?: 0) * 10.2f
+                    )
                 )
-            )
-            Log.e("p2.queijo.qtd", 2.toString())
-            Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
-        })
-
-
-        cartViewModel.getProductById(3).observeOnce(this, { cart ->
-            productsList.add(
-                Product(
-                    id = 3,
-                    name = "Telemovel",
-                    image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
-                    price = 10.2f,
-                    subcategory = "teste",
-                    favorite = false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                Log.e("p1.livro.qtd", 1.toString())
+                Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
+                mAdapter!!.notifyItemInserted((productsList.size - 1))
+            })
+            cartViewModel.getProductById(2).observeOnce(this, { cart ->
+                productsList.add(
+                    Product(
+                        id = 2,
+                        name = "Queijo é o que não falta",
+                        image = "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
+                        price = 10000.2f,
+                        subcategory = "teste",
+                        favorite = cart.favorite,
+                        quantity = cart?.quantity ?: 0,
+                        total = (cart?.quantity ?: 0) * 10.2f
+                    )
                 )
-            )
-            Log.e("p3.telemovel.qtd", 3.toString())
-            Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
-        })
-
-        cartViewModel.getProductById(4).observeOnce(this, { cart ->
-            productsList.add(
-                Product(
-                    id = 4,
-                    name = "Coca-Cola",
-                    image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                    price = 10.2f,
-                    subcategory = "teste",
-                    favorite = false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                Log.e("p2.queijo.qtd", 2.toString())
+                Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
+                mAdapter!!.notifyItemInserted((productsList.size - 1))
+            })
+            cartViewModel.getProductById(3).observeOnce(this, { cart ->
+                productsList.add(
+                    Product(
+                        id = 3,
+                        name = "Telemovel",
+                        image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
+                        price = 10.2f,
+                        subcategory = "teste",
+                        favorite = cart.favorite,
+                        quantity = cart?.quantity ?: 0,
+                        total = (cart?.quantity ?: 0) * 10.2f
+                    )
                 )
-            )
-            Log.e("p4.coca-cola.qtd", 4.toString())
-            Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
-        })
+                Log.e("p3.telemovel.qtd", 3.toString())
+                Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
+                mAdapter!!.notifyItemInserted((productsList.size - 1))
+            })
+            cartViewModel.getProductById(4).observeOnce(this, { cart ->
+                productsList.add(
+                    Product(
+                        id = 4,
+                        name = "Coca-Cola",
+                        image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
+                        price = 10.2f,
+                        subcategory = "teste",
+                        favorite = cart.favorite,
+                        quantity = cart?.quantity ?: 0,
+                        total = (cart?.quantity ?: 0) * 10.2f
+                    )
+                )
+                Log.e("p4.coca-cola.qtd", 4.toString())
+                Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
+                mAdapter!!.notifyItemInserted((productsList.size - 1))
+            })
+
+        }
 
 
 

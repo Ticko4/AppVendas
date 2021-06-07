@@ -1,11 +1,13 @@
 package ipvc.estg.cm.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -38,7 +40,6 @@ class CartAdapter(
         var swipeRevealLayout:SwipeRevealLayout = view.findViewById(R.id.swipe_layout)
         var image: ImageView = view.findViewById(R.id.image)
         var imagecopy: ImageView = view.findViewById(R.id.imageCopy)
-        var removeCartIcon:ImageView = view.findViewById(R.id.remove_cart)
         var removeCartCard:CardView = view.findViewById(R.id.remove_cart_card)
         var quantity: TextView = view.findViewById(R.id.quantity)
         var quantityAddMode: TextView = view.findViewById(R.id.quantity_add_mode)
@@ -47,11 +48,7 @@ class CartAdapter(
         var quantityAddModeLayout: LinearLayout = view.findViewById(R.id.quantity_add_mode_layout)
         var quantityCard: CardView = view.findViewById(R.id.quantity_card)
         var quantityAddModeCard: CardView = view.findViewById(R.id.quantity_add_mode_card)
-        init {
-            view.setOnClickListener { // send selected contact in callback
-                listener.onProductSelected(productList[adapterPosition])
-            }
-        }
+        var frontLayout: FrameLayout = view.findViewById(R.id.front_layout)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -67,7 +64,9 @@ class CartAdapter(
         // Use ViewBindHelper to restore and save the open/close state of the SwipeRevealView
         // put an unique string id as value, can be any string which uniquely define the data
         binderHelper.bind(holder.swipeRevealLayout, product.id.toString())
-
+        holder.frontLayout.setOnClickListener { // send selected contact in callback
+            listener.onProductSelected(productList[position])
+        }
         holder.title.text = product.name
         holder.price.text = context.resources.getString(
             R.string.price, BigDecimal(product.price.toString()).setScale(
@@ -75,7 +74,7 @@ class CartAdapter(
                 RoundingMode.HALF_EVEN
             ).toString().replace('.', ',')
         )
-        holder.content.text = /*product.subcategory*/product.total.toString()
+        holder.content.text = product.subcategory
 
         holder.quantity.text = product.quantity.toString()
         holder.quantityAddMode.text = product.quantity.toString()
