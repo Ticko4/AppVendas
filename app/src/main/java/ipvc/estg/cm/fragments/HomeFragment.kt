@@ -33,13 +33,11 @@ import ipvc.estg.cm.vmodel.CartViewModel
 import kotlinx.android.synthetic.main.cm_home_fragment.view.*
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
-import kotlinx.android.synthetic.main.product_row_reveal.*
-import java.text.FieldPosition
 import java.util.*
 
 
 class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
-    var mSwipeRefreshLayout: SwipeRefreshLayout? = null
+    private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
     private var mAdapter: ProductsAdapter? = null
@@ -54,24 +52,27 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
     ): View {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.cm_home_fragment, container, false)
+        setToolbar(view)
+        setClickListeners(view)
+        declareItems(view)
+        setAdapter()
+        setRecycleView(view)
+        setRefreshLayout(view)
+        Log.e("create", true.toString())
+        getData()
+        return view
+
+    }
+
+    private fun declareItems(view: View){
         itemCounter = view.findViewById<View>(R.id.cartTotal) as TextView
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
-        cartViewModel.getCount().observeOnce(this, Observer {
+        cartViewModel.getCount().observeOnce(this, {
             if (it != null) {
                 itemCounter!!.text = it.toString()
             }
         })
-
-        setToolbar(view)
-        setClickListeners(view)
-        setAdapter()
-        setRecycleView(view)
-        setRefreshLayout(view)
-
-        getData()
-        return view
-
     }
 
     private fun setClickListeners(view: View){
@@ -83,7 +84,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
         }
 
         view.nav_cart.setOnClickListener {
-
+            (activity as NavigationHost).navigateTo(CartFragment(),addToBackStack = true,animate = true,"cart")
         }
 
         view.nav_settings.setOnClickListener {
@@ -91,7 +92,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
         }
 
         view.cartRelativeLayout.setOnClickListener {
-            Log.e("clickcart", "clickcart")
+            (activity as NavigationHost).navigateTo(CartFragment(),addToBackStack = true,animate = true,"cart")
         }
     }
 
@@ -117,7 +118,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
     }
 
     private fun setRecycleView(view: View) {
-        recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view_products)
+        recyclerView = view.findViewById(R.id.recycler_view_products)
       /*  recyclerView?.setHasFixedSize(true)*/
         mLayoutManager = LinearLayoutManager(context)
         recyclerView?.layoutManager = mLayoutManager
@@ -128,6 +129,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
             )
         )
         recyclerView?.itemAnimator = DefaultItemAnimator()
+
     }
 
     private fun setRefreshLayout(view: View) {
@@ -148,6 +150,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
     private fun refresh() {
         productsList.clear()
         mAdapter?.notifyDataSetChanged()
+        Log.e("refresh", true.toString())
         getData()
     }
 
@@ -165,7 +168,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
         (activity as NavigationHost).customToaster(title = getString(R.string.toast_success), message = message, type = "success")
     }
 
-    fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
+    private fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
         observe(lifecycleOwner, object : Observer<T> {
             override fun onChanged(t: T?) {
                 observer.onChanged(t)
@@ -179,10 +182,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
     }
 
     private fun getData(){
+        productsList.clear();
         recyclerView!!.adapter = mAdapter
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
-        cartViewModel.getProductById(1).observeOnce(this, Observer { cart ->
+        cartViewModel.getProductById(1).observeOnce(this, { cart ->
             productsList.add(
                 Product(
                     id = 1,
@@ -201,7 +205,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
         })
 
 
-        cartViewModel.getProductById(2).observeOnce(this, Observer { cart ->
+        cartViewModel.getProductById(2).observeOnce(this, { cart ->
             productsList.add(
                 Product(
                     id = 2,
@@ -220,7 +224,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
         })
 
 
-        cartViewModel.getProductById(3).observeOnce(this, Observer { cart ->
+        cartViewModel.getProductById(3).observeOnce(this, { cart ->
             productsList.add(
                 Product(
                     id = 3,
@@ -238,7 +242,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
             mAdapter!!.notifyItemInserted((productsList.size - 1))
         })
 
-        cartViewModel.getProductById(4).observeOnce(this, Observer { cart ->
+        cartViewModel.getProductById(4).observeOnce(this, { cart ->
             productsList.add(
                 Product(
                     id = 4,
@@ -267,7 +271,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
             .setDestView(destView).setAnimationListener(object : Animator.AnimatorListener {
                 override fun onAnimationStart(animation: Animator?) {
                     val quantity = (product.quantity + 1 )
-                    val product = Cart(
+                    val cart = Cart(
                         id = product.id,
                         name = product.name,
                         image = product.image,
@@ -275,13 +279,13 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
                         subcategory = product.subcategory,
                         favorite = product.favorite,
                         quantity = quantity,
-                        total = (quantity * product.price.toFloat())
+                        total = (quantity * product.price)
                     )
                     mAdapter!!.setQuantity(position,quantity)
 
                     cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
-                    cartViewModel.insert(product);
-                    (activity as NavigationHost).customToaster(title = getString(R.string.toast_success), message = resources.getString(R.string.product_added,product.name,product.quantity.toString()), type = "success")
+                    cartViewModel.insert(cart)
+                    (activity as NavigationHost).customToaster(title = getString(R.string.toast_success), message = resources.getString(R.string.product_added,cart.name,cart.quantity.toString()), type = "success")
 
                 }
                 override fun onAnimationEnd(animation: Animator?) {

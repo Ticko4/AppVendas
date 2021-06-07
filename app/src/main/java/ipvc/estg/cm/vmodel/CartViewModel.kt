@@ -43,6 +43,10 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         return repository.getProductById(id)
     }
 
+    fun deleteById(id: Int) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deleteById(id)
+    }
+
     /*fun deleteById(id: Int) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteById(id)
     }
