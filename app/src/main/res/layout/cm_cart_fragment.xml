@@ -61,6 +61,7 @@
                 android:layout_height="match_parent">
 
                 <androidx.core.widget.NestedScrollView
+                    android:padding="10dp"
                     android:id="@+id/cart_scroll"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -69,6 +70,7 @@
                     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                     <RelativeLayout
+
                         app:elevation="1dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">

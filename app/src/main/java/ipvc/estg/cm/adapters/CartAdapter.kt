@@ -1,7 +1,6 @@
 package ipvc.estg.cm.adapters
 
 import android.content.Context
-import android.icu.math.BigDecimal
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,7 @@ import com.chauthai.swipereveallayout.SwipeRevealLayout
 import com.chauthai.swipereveallayout.ViewBinderHelper
 import ipvc.estg.cm.R
 import ipvc.estg.cm.entities.Cart
+import java.math.BigDecimal
 import java.math.RoundingMode
 
 
@@ -66,7 +66,7 @@ public class CartAdapter(
         binderHelper.bind(holder.swipeRevealLayout, product.id.toString());
 
         holder.title.text = product.name
-        holder.price.text = BigDecimal(product.total.toString()).setScale(2,2).toString()
+        holder.price.text = product.quantity.toString() + " x " + context.resources.getString(R.string.price,BigDecimal(product.price.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
         holder.content.text = product.subcategory
 
         holder.favoriteCard.setOnClickListener { // send selected contact in callback
