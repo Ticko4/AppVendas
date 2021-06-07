@@ -6,8 +6,8 @@
 
     <item
         android:gravity="center"
-        android:width="200dp"
-        android:height="200dp"
+        android:width="100dp"
+        android:height="100dp"
         android:drawable="@drawable/ic_logo_round"/>
 
 </layer-list>

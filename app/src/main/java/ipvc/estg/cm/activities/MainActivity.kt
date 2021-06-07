@@ -8,6 +8,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ipvc.estg.cm.R
+import ipvc.estg.cm.fragments.HomeFragment
 import ipvc.estg.cm.fragments.LoginFragment
 import ipvc.estg.cm.navigation.NavigationHost
 import www.sanju.motiontoast.MotionToast
@@ -18,17 +19,23 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.cm_main_activity)
-        if (getRememberMe() != null) {
-            /*supportFragmentManager
+
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.container, HomeFragment())
+            .commit()
+
+       /* if (getRememberMe() != null) {
+            supportFragmentManager
                 .beginTransaction()
                 .add(R.id.container, HomeFragment())
-                .commit()*/
+                .commit()
         }else{
             supportFragmentManager
                 .beginTransaction()
                 .add(R.id.container, LoginFragment())
                 .commit()
-        }
+        }*/
 
     }
 

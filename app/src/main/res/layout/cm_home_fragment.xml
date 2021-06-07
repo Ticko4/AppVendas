@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        tools:context=".Fragment.HomeFragment">
+
+        <include layout="@layout/cm_main_activity" />
+
+        <RelativeLayout
+            android:id="@+id/main_frame"
+            android:background="@drawable/background_round_top"
+            android:elevation="1dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_marginTop="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@id/search_layout"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <SearchView
+                    app:queryHint="Search"
+                    app:defaultQueryHint="Search"
+                    android:id="@+id/search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/background_round"
+                    android:clickable="true"/>
+
+                <TextView
+                    android:id="@+id/home_grid_title"
+                    android:layout_marginTop="20dp"
+                    android:textSize="@dimen/dimen_24"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:text="Recomendações"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:padding="10dp"
+                android:layout_below="@+id/search_layout"
+                android:id="@+id/product_grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_products"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+
+            </androidx.core.widget.NestedScrollView>
+
+
+        </RelativeLayout>
+
+
+    </FrameLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
