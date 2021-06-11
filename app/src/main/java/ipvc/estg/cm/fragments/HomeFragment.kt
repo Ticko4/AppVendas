@@ -2,6 +2,7 @@ package ipvc.estg.cm.fragments
 
 import android.Manifest
 import android.animation.Animator
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Base64
@@ -13,6 +14,8 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -48,7 +51,7 @@ import retrofit2.Response
 import java.util.*
 
 
-class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
+class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,ActivityCompat.OnRequestPermissionsResultCallback {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
@@ -219,140 +222,174 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener {
         recyclerView!!.adapter = mAdapter
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    requireContext() as Activity,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(
+                    requireContext() as Activity,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    1)
+
+                // REQUEST_CODE is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            /*PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                Manifest.permission.ACCESS_FINE_LOCATION, true);*/
+
             return
         }
 
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
 
-            val obj = JSONObject()
-            obj.put("latitude", location.latitude)
-            obj.put("longitude", location.longitude)
+            if (location != null) {
+                Toast.makeText(context, location.toString(), Toast.LENGTH_SHORT).show()
+                val obj = JSONObject()
+                obj.put("latitude", location.latitude)
+                obj.put("longitude", location.longitude)
 
-            val payload = Base64.encodeToString(
-                obj.toString().toByteArray(charset("UTF-8")),
-                Base64.DEFAULT
-            )
+                val payload = Base64.encodeToString(
+                    obj.toString().toByteArray(charset("UTF-8")),
+                    Base64.DEFAULT
+                )
 
-            val request = ServiceBuilder.buildService(EndPoints::class.java)
-            val call = request.getRecommendedProducts(payload)
-            call.enqueue(object : Callback<List<Product>> {
-                override fun onResponse(call: Call<List<Product>>?, response: Response<List<Product>>) {
-                    if (response.isSuccessful) {
-                        try {
-                            response.body().forEach {
-                                cartViewModel.getProductById(it.id).observeOnce(viewLifecycleOwner, { cart ->
+                val request = ServiceBuilder.buildService(EndPoints::class.java)
+                val call = request.getRecommendedProducts(payload)
+                call.enqueue(object : Callback<List<Product>> {
+                    override fun onResponse(
+                        call: Call<List<Product>>?,
+                        response: Response<List<Product>>
+                    ) {
+                        if (response.isSuccessful) {
+                            try {
+                                response.body().forEach {
+                                    cartViewModel.getProductById(it.id)
+                                        .observeOnce(viewLifecycleOwner, { cart ->
 
-                                    productsList.add(
-                                        Product(
-                                            id = it.id,
-                                            name = it.name,
-                                            image = it.image,
-                                            price = it.price,
-                                            subcategory = it.subcategory,
-                                            favorite = cart.favorite,
-                                            quantity = cart.quantity ?: 0,
-                                            total = (cart.quantity ?: 0) * it.price
-                                        )
-                                    )
-                                })
+                                            productsList.add(
+                                                Product(
+                                                    id = it.id,
+                                                    name = it.name,
+                                                    image = it.image,
+                                                    price = it.price,
+                                                    subcategory = it.subcategory,
+                                                    favorite = cart.favorite,
+                                                    quantity = cart.quantity ?: 0,
+                                                    total = (cart.quantity ?: 0) * it.price
+                                                )
+                                            )
+                                        })
 
+                                }
+                            } catch (e: Exception) {
+                                Log.e("catch", e.toString())
                             }
-                        } catch (e: Exception) {
-                            Log.e("catch", e.toString())
+                        } else {
+                            (activity as NavigationHost).customToaster(
+                                title = getString(R.string.toast_error),
+                                message = getString(R.string.general_error),
+                                type = "error"
+                            )
                         }
-                    } else {
+                    }
+
+                    override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
                         (activity as NavigationHost).customToaster(
                             title = getString(R.string.toast_error),
                             message = getString(R.string.general_error),
-                            type = "error"
+                            type = "connection"
                         )
                     }
-                }
 
-                override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
-                    (activity as NavigationHost).customToaster(
-                        title = getString(R.string.toast_error),
-                        message = getString(R.string.general_error),
-                           type = "connection"
-                    )
-                }
+                })
 
-            })
-
-            cartViewModel.getProductById(1).observeOnce(this, { cart ->
-                productsList.add(
-                    Product(
-                        id = 1,
-                        name = "Livro",
-                        image = "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
-                        price = 10.2f,
-                        subcategory = "teste",
-                        favorite = cart.favorite,
-                        quantity = cart?.quantity ?: 0,
-                        total = (cart?.quantity ?: 0) * 10.2f
-                    )
-                )
-                Log.e("p1.livro.qtd", 1.toString())
-                Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
-                mAdapter!!.notifyItemInserted((productsList.size - 1))
-            })
-            cartViewModel.getProductById(2).observeOnce(this, { cart ->
-                productsList.add(
-                    Product(
-                        id = 2,
-                        name = "Queijo é o que não falta",
-                        image = "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
-                        price = 10000.2f,
-                        subcategory = "teste",
-                        favorite = cart.favorite,
-                        quantity = cart?.quantity ?: 0,
-                        total = (cart?.quantity ?: 0) * 10.2f
-                    )
-                )
-                Log.e("p2.queijo.qtd", 2.toString())
-                Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
-                mAdapter!!.notifyItemInserted((productsList.size - 1))
-            })
-            cartViewModel.getProductById(3).observeOnce(this, { cart ->
-                productsList.add(
-                    Product(
-                        id = 3,
-                        name = "Telemovel",
-                        image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
-                        price = 10.2f,
-                        subcategory = "teste",
-                        favorite = cart.favorite,
-                        quantity = cart?.quantity ?: 0,
-                        total = (cart?.quantity ?: 0) * 10.2f
-                    )
-                )
-                Log.e("p3.telemovel.qtd", 3.toString())
-                Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
-                mAdapter!!.notifyItemInserted((productsList.size - 1))
-            })
-            cartViewModel.getProductById(4).observeOnce(this, { cart ->
-                productsList.add(
-                    Product(
-                        id = 4,
-                        name = "Coca-Cola",
-                        image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                        price = 10.2f,
-                        subcategory = "teste",
-                        favorite = cart.favorite,
-                        quantity = cart?.quantity ?: 0,
-                        total = (cart?.quantity ?: 0) * 10.2f
-                    )
-                )
-                Log.e("p4.coca-cola.qtd", 4.toString())
-                Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
-                mAdapter!!.notifyItemInserted((productsList.size - 1))
-            })
+            }
 
         }
 
-
-
+        cartViewModel.getProductById(1).observeOnce(this, { cart ->
+            productsList.add(
+                Product(
+                    id = 1,
+                    name = "Livro",
+                    image = "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
+                    price = 10.2f,
+                    subcategory = "teste",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p1.livro.qtd", 1.toString())
+            Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(2).observeOnce(this, { cart ->
+            productsList.add(
+                Product(
+                    id = 2,
+                    name = "Queijo é o que não falta",
+                    image = "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
+                    price = 10000.2f,
+                    subcategory = "teste",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p2.queijo.qtd", 2.toString())
+            Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(3).observeOnce(this, { cart ->
+            productsList.add(
+                Product(
+                    id = 3,
+                    name = "Telemovel",
+                    image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
+                    price = 10.2f,
+                    subcategory = "teste",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p3.telemovel.qtd", 3.toString())
+            Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(4).observeOnce(this, { cart ->
+            productsList.add(
+                Product(
+                    id = 4,
+                    name = "Coca-Cola",
+                    image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
+                    price = 10.2f,
+                    subcategory = "teste",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p4.coca-cola.qtd", 4.toString())
+            Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
         mSwipeRefreshLayout!!.isRefreshing = false
     }
 
