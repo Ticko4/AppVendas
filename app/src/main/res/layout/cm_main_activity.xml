@@ -53,7 +53,6 @@
                 android:clickable="true">
 
                 <ImageButton
-                    android:tint="@color/cpb_white"
                     android:radius="20dip"
                     android:id="@+id/cartButtonIV"
                     android:layout_width="wrap_content"
@@ -63,7 +62,7 @@
                     android:padding="5dip"
                     android:rotationY="0"
                     android:autoMirrored="true"
-                    android:src="@drawable/ic_cart" />
+                    android:src="@drawable/shoppingbag" />
 
                 <TextView
                     android:id="@+id/cartTotal"
@@ -71,8 +70,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@id/cartButtonIV"
                     android:layout_alignTop="@id/cartButtonIV"
-                    android:layout_marginEnd="5dip"
-                    android:layout_marginTop="5dip"
+                    android:layout_marginEnd="3dip"
+                    android:layout_marginTop="35dip"
                     android:background="@drawable/background_circle"
                     android:gravity="center"
                     android:minHeight="20dip"

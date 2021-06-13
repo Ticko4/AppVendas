@@ -2,16 +2,20 @@ package ipvc.estg.cm.fragments
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
+import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import android.widget.RadioGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -29,14 +33,16 @@ import com.smarteist.autoimageslider.SliderAnimations
 import com.smarteist.autoimageslider.SliderView
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.SliderAdapter
+import ipvc.estg.cm.entities.Attribute
 import ipvc.estg.cm.entities.Cart
 import ipvc.estg.cm.entities.Product
 import ipvc.estg.cm.entities.SliderItem
 import ipvc.estg.cm.listeners.CircleAnimationUtil
 import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.vmodel.CartViewModel
+import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.cm_product_detail_fragment.view.*
-import kotlinx.android.synthetic.main.navigation_backdrop.view.*
+import kotlinx.android.synthetic.main.cm_product_detail_fragment.view.cartRelativeLayout
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -81,11 +87,8 @@ class ProductDetailFragment: Fragment() {
 
         val gson = Gson()
 
-        val images = gson.fromJson(
-            gson.fromJson(product!!.images, JsonElement::class.java),
-            object : TypeToken<ArrayList<String?>?>() {}.type
-        ) as ArrayList<String>
-
+        val images = gson.fromJson(gson.fromJson(product!!.images, JsonElement::class.java), object : TypeToken<ArrayList<String?>?>() {}.type) as ArrayList<String>
+        sliderItems.clear()
         images.forEach{
             sliderItems.add(SliderItem(it))
         }
@@ -101,6 +104,15 @@ class ProductDetailFragment: Fragment() {
                 addToBackStack = false,
                 animate = true,
                 "home"
+            )
+        }
+
+        view.cartRelativeLayout.setOnClickListener {
+            (activity as NavigationHost).navigateTo(
+                CartFragment(),
+                addToBackStack = true,
+                animate = true,
+                "cart"
             )
         }
 
@@ -148,27 +160,58 @@ class ProductDetailFragment: Fragment() {
             product!!.description = getString(R.string.product_no_description)
         }
         expTv?.text = product!!.description
-        expTv!!.setOnExpandStateChangeListener { textView, isExpanded ->
+        expTv!!.setOnExpandStateChangeListener { _, isExpanded ->
             val sv = view.cart_scroll
             val anim: ObjectAnimator
             anim = if(isExpanded){
-                ObjectAnimator.ofInt(
-                    sv, "scrollY",
-                    0, sv.bottom
-                )
+                ObjectAnimator.ofInt(sv, "scrollY", 0, sv.bottom)
             }else{
-                ObjectAnimator.ofInt(
-                    sv, "scrollY",
-                    sv.top, 0
-                )
+                ObjectAnimator.ofInt(sv, "scrollY", sv.top, 0)
             }
             anim.duration = 400
-
             anim.start()
-            Toast.makeText(context, "expanded", Toast.LENGTH_SHORT).show()
-
-
         }
+
+        var buttonNames: MutableList<Attribute> = ArrayList<Attribute>()
+
+        buttonNames.add(Attribute(id = 1, name = "S", price = 1f))
+        buttonNames.add(Attribute(id = 2, name = "L", price = 1f))
+        buttonNames.add(Attribute(id = 3, name = "M", price = 1f))
+        buttonNames.add(Attribute(id = 4, name = "XL", price = 1f))
+        buttonNames.add(Attribute(id = 5, name = "XS", price = 1f))
+
+
+
+        val radioGroup: RadioGroup = view.findViewById(R.id.fancy_radio_group) as RadioGroup
+        buttonNames.forEach {
+            val radioButton = RadioButton(context)
+            radioButton.id = it.id
+            val childParam1 = RadioGroup.LayoutParams(0, GridLayout.LayoutParams.MATCH_PARENT, 1f)
+            childParam1.marginEnd = 5
+            childParam1.marginStart = 5
+            radioButton.gravity = Gravity.CENTER
+            radioButton.layoutParams = childParam1
+            radioButton.text = it.name
+
+            radioButton.background = ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.radio_states_orange
+            )
+            val colorStateList = ColorStateList(
+                arrayOf(
+                    intArrayOf(-android.R.attr.state_checked),
+                    intArrayOf(android.R.attr.state_checked)
+                ), intArrayOf(
+                    Color.BLACK,  //disabled
+                    Color.WHITE //enabled
+                )
+            )
+            radioButton.setTextColor(colorStateList)
+            radioButton.buttonDrawable = null
+            radioGroup.addView(radioButton, childParam1)
+        }
+
+        radioGroup.getChildAt(0).performClick()
     }
 
     private fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {

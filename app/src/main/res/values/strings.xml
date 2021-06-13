@@ -72,4 +72,6 @@
     <string name="registry_user_address">Endereço</string>
     <string name="registry_user_email">Email</string>
     <string name="registry_user_input">Nome completo</string>
+    <string name="product_detail_quantity">Quantity</string>
+    <string name="product_detail_total">Total</string>
 </resources>

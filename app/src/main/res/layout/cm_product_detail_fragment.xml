@@ -179,6 +179,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
+                <RadioGroup
+                    android:layout_toStartOf="@+id/qtd_text"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/fancy_radio_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:padding="10dp"
+
+                    android:orientation="horizontal"
+                    android:layout_below="@+id/size"/>
+
 
                 <TextView
                     android:id="@+id/qtd_text"
@@ -188,7 +200,7 @@
                     android:layout_marginTop="40dp"
                     android:layout_marginEnd="0dp"
                     android:layout_toStartOf="@+id/np"
-                    android:text="quantidade" />
+                    android:text="@string/product_detail_quantity" />
 
                 <NumberPicker
                     android:layout_marginEnd="20dp"
@@ -209,7 +221,7 @@
                     android:layout_marginTop="40dp"
                     android:layout_marginEnd="0dp"
                     android:layout_toStartOf="@+id/np"
-                    android:text="total" />
+                    android:text="@string/product_detail_total" />
 
                 <TextView
                     android:id="@+id/total_val"
@@ -226,7 +238,6 @@
 
                 <LinearLayout
                     android:layout_below="@+id/total_val"
-                    android:layout_marginEnd="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center">
@@ -304,7 +315,7 @@
                 android:clickable="true">
 
                 <ImageButton
-                    android:tint="@color/cpb_black"
+
                     android:radius="20dip"
                     android:id="@+id/cartButtonIV"
                     android:layout_width="wrap_content"
@@ -314,20 +325,20 @@
                     android:padding="5dip"
                     android:rotationY="0"
                     android:autoMirrored="true"
-                    android:src="@drawable/ic_cart" />
+                    android:src="@drawable/shoppingbag" />
 
                 <TextView
                     android:id="@+id/cartTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@id/cartButtonIV"
                     android:layout_alignTop="@id/cartButtonIV"
-                    android:layout_marginEnd="5dip"
-                    android:layout_marginTop="5dip"
+                    android:layout_alignEnd="@id/cartButtonIV"
+                    android:layout_marginTop="34dp"
+                    android:layout_marginEnd="3dip"
                     android:background="@drawable/background_circle"
                     android:gravity="center"
-                    android:minHeight="20dip"
                     android:minWidth="20dip"
+                    android:minHeight="20dip"
                     android:padding="3dip"
                     android:text="0"
                     android:textColor="#424242"
