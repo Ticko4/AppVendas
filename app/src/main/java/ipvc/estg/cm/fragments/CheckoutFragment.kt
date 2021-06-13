@@ -53,6 +53,7 @@ class CheckoutFragment : Fragment(), CartAdapter.CartAdapterListener {
         setClickListeners(view)
         setRecyclerView(view)
         fillRecyclerView()
+
         return view
     }
 
