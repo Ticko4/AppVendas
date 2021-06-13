@@ -54,5 +54,22 @@
     <string name="add_btn">Add to basket</string>
     <string name="product_no_description">No description available</string>
 
-
+    <!-- Checkout -->
+    <string name="vg_checkout_label">Checkout</string>
+    <string name="vg_checkout_payment_label">Pagamento</string>
+    <string name="vg_checkout_product_incart_label">Produtos no carrinho</string>
+    <string name="vg_checkout_dados_label">Dados</string>
+    <string name="payment_button">Pagar</string>
+    <string name="payment_title">Compra concluida</string>
+    <string name="payment_body">A sua compra foi concluida com sucesso</string>
+    <string name="payment_confirm">Continuar</string>
+    <string name="product_added_checkout">Produto adicionado ao carrinho</string>
+    <string name="product_removed">Produto removido do carrinho</string>
+    <string name="checkout_payment_balcony">Pagamento no balcão</string>
+    <string name="checkout_payment_MBWAY">MBWAY</string>
+    <string name="checkout_payment_ATM">Multibanco</string>
+    <string name="checkout_add_myData">Utilizar os meus Dados</string>
+    <string name="registry_user_address">Endereço</string>
+    <string name="registry_user_email">Email</string>
+    <string name="registry_user_input">Nome completo</string>
 </resources>
