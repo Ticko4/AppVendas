@@ -132,9 +132,9 @@ public class ProductsAdapter(
                     val filteredList: MutableList<Product> =
                         ArrayList()
                     for (row in productList) {
-                        if (row.subcategory.toLowerCase(Locale.getDefault()).contains(charSequence)||row.name.toLowerCase().contains(
+                        if (row.subcategory.lowercase(Locale.getDefault()).contains(charSequence)||row.name.lowercase().contains(
                                 charSequence
-                            ) || row.price.toString().toLowerCase().contains(charSequence)) {
+                            ) || row.price.toString().lowercase().contains(charSequence)) {
                             filteredList.add(row)
                         }
                     }
