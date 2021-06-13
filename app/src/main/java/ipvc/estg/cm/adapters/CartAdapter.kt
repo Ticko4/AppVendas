@@ -24,11 +24,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 
-class CartAdapter(
-    productList: MutableList<Cart>,
-    listener: CartAdapterListener,
-    private var context: Context
-) : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
+class CartAdapter(productList: MutableList<Cart>, listener: CartAdapterListener, private var context: Context) : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     private var productList: MutableList<Cart>
     private val listener: CartAdapterListener
     private val binderHelper = ViewBinderHelper()
@@ -92,7 +88,7 @@ class CartAdapter(
         }
 
         holder.quantityCard.setOnClickListener {
-            val fade_in = ScaleAnimation(
+            val fadeIn = ScaleAnimation(
                 0.3f,
                 1f,
                 0.4f,
@@ -102,17 +98,17 @@ class CartAdapter(
                 Animation.RELATIVE_TO_SELF,
                 0.5f,
             )
-            fade_in.duration = 500 // animation duration in milliseconds
+            fadeIn.duration = 500 // animation duration in milliseconds
 
-            fade_in.fillAfter =
+            fadeIn.fillAfter =
                 true // If fillAfter is true, the transformation that this animation performed will persist when it is finished.
 
-            holder.quantityAddModeLayout.startAnimation(fade_in)
+            holder.quantityAddModeLayout.startAnimation(fadeIn)
             holder.quantityAddModeLayout.visibility = View.VISIBLE
         }
 
         holder.quantityAddModeCard.setOnClickListener {
-            val fade_out = ScaleAnimation(
+            val fadeOut = ScaleAnimation(
                 1f,
                 0.3f,
                 1f,
@@ -122,12 +118,12 @@ class CartAdapter(
                 Animation.RELATIVE_TO_SELF,
                 0.5f,
             )
-            fade_out.duration = 500 // animation duration in milliseconds
+            fadeOut.duration = 500 // animation duration in milliseconds
 
-            fade_out.fillAfter =
+            fadeOut.fillAfter =
                 false // If fillAfter is true, the transformation that this animation performed will persist when it is finished.
 
-            holder.quantityAddModeLayout.startAnimation(fade_out)
+            holder.quantityAddModeLayout.startAnimation(fadeOut)
             holder.quantityAddModeLayout.visibility = View.GONE
         }
 

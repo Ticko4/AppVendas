@@ -51,6 +51,8 @@
     <string name="product_image">Product Image</string>
     <string name="price_default">0,00 €</string>
     <string name="no_products">No products on my basket</string>
+    <string name="add_btn">Add to basket</string>
+    <string name="product_no_description">No description available</string>
 
 
 </resources>

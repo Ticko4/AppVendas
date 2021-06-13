@@ -48,6 +48,8 @@ public class CircleAnimationUtil {
     private CircleImageView mImageView;
     private Animator.AnimatorListener mAnimationListener;
 
+    private int mMargin = 0;
+
     public CircleAnimationUtil() {
     }
 
@@ -56,8 +58,9 @@ public class CircleAnimationUtil {
         return this;
     }
 
-    public CircleAnimationUtil setTargetView(View view) {
+    public CircleAnimationUtil setTargetView(View view,int margin) {
         mTarget = view;
+        mMargin = margin;
         setOriginRect(mTarget.getWidth(), mTarget.getHeight());
         return this;
     }
@@ -113,7 +116,7 @@ public class CircleAnimationUtil {
 
             int[] src = new int[2];
             mTarget.getLocationOnScreen(src);
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mTarget.getWidth(), mTarget.getHeight());
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mTarget.getWidth(), mTarget.getHeight() - mMargin);
             params.setMargins(src[0], src[1], 0, 0);
             if (mImageView.getParent() == null)
                 decoreView.addView(mImageView, params);
