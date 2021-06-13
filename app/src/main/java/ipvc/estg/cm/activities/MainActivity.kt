@@ -154,4 +154,8 @@ class MainActivity : AppCompatActivity(), NavigationHost {
         return false
     }
 
+    override fun popBackStack(){
+        supportFragmentManager.popBackStack();
+    }
+
 }

@@ -30,4 +30,5 @@ interface NavigationHost {
 
     fun getConsentStatus(): Boolean?
 
+    fun popBackStack()
 }
