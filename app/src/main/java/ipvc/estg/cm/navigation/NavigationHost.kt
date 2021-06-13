@@ -1,5 +1,6 @@
 package ipvc.estg.cm.navigation
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 
 /**
@@ -11,7 +12,7 @@ interface NavigationHost {
      * Trigger a navigation to the specified fragment, optionally adding a transaction to the back
      * stack to make this navigation reversible.
      */
-    fun navigateTo(fragment: Fragment, addToBackStack: Boolean, animate: Boolean,tag:String = "")
+    fun navigateTo(fragment: Fragment, addToBackStack: Boolean, animate: Boolean, tag:String = "", data: Bundle? = null)
 
     fun logout(fragment: Fragment,tag: String)
 

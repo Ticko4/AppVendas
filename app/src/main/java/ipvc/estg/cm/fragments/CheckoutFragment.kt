@@ -50,7 +50,6 @@ class CheckoutFragment : Fragment(), CartAdapter.CartAdapterListener {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.cm_checkout_fragment, container, false)
-
         setClickListeners(view)
         setRecyclerView(view)
         fillRecyclerView()
