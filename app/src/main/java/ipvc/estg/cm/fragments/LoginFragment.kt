@@ -62,7 +62,7 @@ class LoginFragment: Fragment() {
 
             val usernameInput = view.findViewById<TextView>(R.id.username_text)
             val passwordInput = view.findViewById<TextView>(R.id.password_text)
-            val username = usernameInput.text.toString().toLowerCase(Locale.getDefault())
+            val username = usernameInput.text.toString().lowercase(Locale.getDefault())
             val password = passwordInput.text.toString()
             usernameInput.error = null
             passwordInput.error = null
