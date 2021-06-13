@@ -59,8 +59,9 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
         }
 
         view.checkout_btn!!.setOnClickListener {
-            //TODO checkout
-           (activity as NavigationHost).navigateTo(HomeFragment(),addToBackStack = true,animate = true,"checkout")
+            if(productsList.size > 0){
+                (activity as NavigationHost).navigateTo(CheckoutFragment(),addToBackStack = true,animate = true,"checkout")
+            }
         }
     }
 

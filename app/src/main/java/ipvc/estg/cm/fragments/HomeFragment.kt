@@ -281,7 +281,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
 
             if (location != null) {
-                Toast.makeText(context, location.toString(), Toast.LENGTH_SHORT).show()
                 val obj = JSONObject()
                 obj.put("latitude", location.latitude)
                 obj.put("longitude", location.longitude)
@@ -334,11 +333,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     }
 
                     override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
-                        (activity as NavigationHost).customToaster(
+                        /*(activity as NavigationHost).customToaster(
                             title = getString(R.string.toast_error),
                             message = getString(R.string.general_error),
                             type = "connection"
-                        )
+                        )*/
                     }
 
                 })
@@ -346,9 +345,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 cartViewModel.getProductById(1).observeOnce(this, { cart ->
 
                     val images = arrayListOf(
-                        "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
-                        "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
-                        "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale"
+                       "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
                     )
                     val gson = Gson()
                     val myJson: String = gson.toJson(images)
@@ -357,11 +354,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
                         Product(
                             id = 1,
-                            name = "Livro",
-                            image = "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
+                            name = "Watch",
+                            image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
                             images = myJson,
-                            price = 10.2f,
-                            subcategory = "Literatura",
+                            price = 100.0f,
+                            subcategory = "Wearables",
                             description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                                     "\n" +
                                     "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
@@ -377,8 +374,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 cartViewModel.getProductById(2).observeOnce(this, { cart ->
 
                     val images = arrayListOf(
-                        "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
-                        "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale"
+                        "https://www.oficinadeinverno.com.br/blog/wp-content/uploads/2015/03/gluten-free-new-york-cheesecake-1450985-hero-01-dc54f9daf38044238b495c7cefc191fa.jpg",
+                        "https://www.teleculinaria.pt/wp-content/uploads/2019/09/Cheesecake-de-gelatina-CHLM-19.jpg"
                     )
                     val gson = Gson()
                     val myJson: String = gson.toJson(images)
@@ -386,11 +383,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     productsList.add(
                         Product(
                             id = 2,
-                            name = "Queijo é o que não falta",
-                            image = "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
+                            name = "Cheesecake",
+                            image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
                             images = myJson,
-                            price = 10000.2f,
-                            subcategory = "Laticineos",
+                            price = 14.99f,
+                            subcategory = "Dairy",
                             description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                                     "\n" +
                                     "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
@@ -406,8 +403,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 cartViewModel.getProductById(3).observeOnce(this, { cart ->
 
                     val images = arrayListOf(
-                        "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
-                        "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale"
+                        "https://www.techadvisor.com/cmsdata/slideshow/3677861/best_smartphone_jan_2021_hero_thumb1200_4-3.jpg",
+                        "https://cdn.vox-cdn.com/thumbor/v97OD-MBgNjw8p5crApucVs9RB8=/0x0:2050x1367/1800x1800/filters:focal(1025x684:1026x685)/cdn.vox-cdn.com/uploads/chorus_asset/file/22022572/bfarsace_201106_4269_012.0.jpg"
                     )
                     val gson = Gson()
                     val myJson: String = gson.toJson(images)
@@ -415,11 +412,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     productsList.add(
                         Product(
                             id = 3,
-                            name = "Telemovel",
+                            name = "Phone",
                             image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
                             images = myJson,
-                            price = 10.2f,
-                            subcategory = "Tecnologia",
+                            price = 399.99f,
+                            subcategory = "Tecnology",
                             description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                                     "\n" +
                                     "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
@@ -447,8 +444,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                             name = "Coca-Cola",
                             image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
                             images = myJson,
-                            price = 10.2f,
-                            subcategory = "Bebidas",
+                            price = 1.20f,
+                            subcategory = "Drinks",
                             description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                                     "\n" +
                                     "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",

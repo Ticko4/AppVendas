@@ -55,20 +55,7 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         return repository.allProductsWithQuantity
     }
 
-
-    /*fun deleteById(id: Int) = viewModelScope.launch(Dispatchers.IO) {
-        repository.deleteById(id)
+    fun clearQuantities() = viewModelScope.launch(Dispatchers.IO){
+        repository.clearQuantities()
     }
-
-    fun getNoteById(id: Int): LiveData<Note> {
-        return repository.getNoteById(id)
-    }
-
-    fun updateNote(id: Int,title:String,description:String,color: String,colorId:Int) = viewModelScope.launch(Dispatchers.IO) {
-        repository.updateNote(id,title,description,color,colorId)
-    }
-
-    fun setNotification(id: Int,status:Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        repository.setNotification(id,status)
-    }*/
 }
