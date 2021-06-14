@@ -52,16 +52,20 @@
     <string name="product_image">Product Image</string>
     <string name="price_default">0,00 €</string>
     <string name="no_products">No products on my basket</string>
+    <string name="add_btn">Add to basket</string>
+    <string name="product_no_description">No description available</string>
 
     <!-- Checkout -->
-    <string name="vg_checkout_label">Checkout</string>
-    <string name="vg_checkout_payment_label">Pagamento</string>
-    <string name="vg_checkout_product_incart_label">Produtos no carrinho</string>
-    <string name="vg_checkout_dados_label">Dados</string>
-    <string name="payment_button">Pagar</string>
-    <string name="payment_title">Compra concluida</string>
-    <string name="payment_body">A sua compra foi concluida com sucesso</string>
-    <string name="payment_confirm">Continuar</string>
+    <string name="checkout_item_count">%s x %s</string>
+    <string name="checkout_label">Checkout</string>
+    <string name="checkout_payment_label">Payment method</string>
+    <string name="checkout_product_incart_label">Products on my basket</string>
+    <string name="checkout_data_label">Data</string>
+    <string name="payment_button">Pay %1$s€ and continue</string>
+    <string name="payment_title">Transaction concluded</string>
+    <string name="payment_body">Your purchase was successfully concluded</string>
+    <string name="payment_confirm">Continue</string>
+
     <string name="product_added_checkout">Produto adicionado ao carrinho</string>
     <string name="product_removed">Produto removido do carrinho</string>
     <string name="checkout_payment_balcony">Pagamento no balcão</string>
@@ -71,6 +75,17 @@
     <string name="registry_user_address">Endereço</string>
     <string name="registry_user_email">Email</string>
     <string name="registry_user_input">Nome completo</string>
+  
+    <string name="product_detail_quantity">Quantity</string>
+    <string name="product_detail_total">Total</string>
     <!-- Entities -->
     <string name="entities">Entidades</string>
+    <!--Order End-->
+    <string name="order_end_title">Your order is on the way</string>
+    <string name="order_end_body">Thank you for your order. You can track the delivery in the \'Orders\' section.</string>
+    <string name="order_end_delivery_time">Ext. Delivery time: 30min</string>
+    <string name="order_end_track_btn">Track my order</string>
+    <string name="order_end_to_home">Take me to the home screen</string>
+    <string name="add_payment_method">Add payment method</string>
+    <string name="edit_payment_method">Edit payment method</string>
 </resources>

@@ -29,7 +29,9 @@
             android:layout_height="?attr/actionBarSize"
             android:paddingStart="12dp"
             android:paddingLeft="12dp"
-            app:contentInsetStart="0dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            app:elevation="8dp"
             app:navigationIcon="@drawable/ic_menu"
             app:titleTextColor="@color/cpb_white"
             android:iconTint="@color/cpb_white">
@@ -51,7 +53,6 @@
                 android:clickable="true">
 
                 <ImageButton
-                    android:tint="@color/cpb_white"
                     android:radius="20dip"
                     android:id="@+id/cartButtonIV"
                     android:layout_width="wrap_content"
@@ -61,7 +62,7 @@
                     android:padding="5dip"
                     android:rotationY="0"
                     android:autoMirrored="true"
-                    android:src="@drawable/ic_cart" />
+                    android:src="@drawable/shoppingbag" />
 
                 <TextView
                     android:id="@+id/cartTotal"
@@ -69,8 +70,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@id/cartButtonIV"
                     android:layout_alignTop="@id/cartButtonIV"
-                    android:layout_marginEnd="5dip"
-                    android:layout_marginTop="5dip"
+                    android:layout_marginEnd="3dip"
+                    android:layout_marginTop="35dip"
                     android:background="@drawable/background_circle"
                     android:gravity="center"
                     android:minHeight="20dip"
