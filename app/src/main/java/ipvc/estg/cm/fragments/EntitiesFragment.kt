@@ -39,8 +39,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import ipvc.estg.cm.vmodel.SimpleDividerItemDecoration
-
 
 class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
@@ -107,18 +105,13 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
                         if (response.isSuccessful) {
                             try {
                                 response.body().forEach {
-                                    cartViewModel.getProductById(it.id)
-                                        .observeOnce(viewLifecycleOwner, { cart ->
-
-                                            entitiesList.add(
-                                                Entity(
-                                                    id = it.id,
-                                                    name = it.name,
-                                                    image = it.image,
-                                                )
-                                            )
-                                        })
-
+                                    entitiesList.add(
+                                        Entity(
+                                            id = it.id,
+                                            name = it.name,
+                                            image = it.image,
+                                        )
+                                    )
                                 }
                             } catch (e: Exception) {
                                 Log.e("catch", e.toString())
@@ -227,9 +220,16 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
                 ContextCompat.getColor(requireContext(), R.color.cpb_red)
             )
         }
-      /*  mSwipeRefreshLayout!!.setOnRefreshListener { // Refresh items
+        mSwipeRefreshLayout!!.setOnRefreshListener { // Refresh items
             refresh()
-        }*/
+        }
+    }
+
+    private fun refresh() {
+        entitiesList.clear()
+        mAdapter?.notifyDataSetChanged()
+        Log.e("refresh", true.toString())
+        getData()
     }
 
     /*NAVIGATION MENU*/
@@ -261,8 +261,8 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
         view.nav_logout.setOnClickListener {
             (activity as NavigationHost).logout(LoginFragment(), "login")
         }
-        view.nav_prod.setOnClickListener {
-
+        view.nav_main.setOnClickListener {
+            (activity as NavigationHost).navigateTo(HomeFragment(),addToBackStack = false,animate = true,"home")
         }
 
         view.nav_cart.setOnClickListener {

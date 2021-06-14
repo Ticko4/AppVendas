@@ -2,29 +2,23 @@ package ipvc.estg.cm.fragments
 
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.braintreepayments.api.dropin.DropInActivity
 import com.braintreepayments.api.dropin.DropInRequest
 import com.braintreepayments.api.dropin.DropInResult
 import ipvc.estg.cm.R
-import ipvc.estg.cm.adapters.CartAdapter
 import ipvc.estg.cm.entities.Cart
 import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.vmodel.CartViewModel
@@ -126,7 +120,7 @@ class CheckoutFragment : Fragment() {
             }
         })
 
-        cartViewModel.getTotal().observe(viewLifecycleOwner, { it ->
+    cartViewModel.getTotal().observe(viewLifecycleOwner, { it ->
             if(it != null){
                 total = it
                 requireView().pay_checkout_btn!!.text = requireContext().resources.getString(R.string.payment_button, BigDecimal(it.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
