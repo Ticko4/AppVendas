@@ -3,8 +3,11 @@ package ipvc.estg.cm.fragments
 import android.Manifest
 import android.animation.Animator
 import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -43,6 +46,7 @@ import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.retrofit.EndPoints
 import ipvc.estg.cm.retrofit.ServiceBuilder
 import ipvc.estg.cm.vmodel.CartViewModel
+import kotlinx.android.synthetic.main.cm_home_fragment.*
 import kotlinx.android.synthetic.main.cm_home_fragment.view.*
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
@@ -86,6 +90,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
     }
 
     private fun declareItems(view: View){
@@ -112,7 +117,10 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 "cart"
             )
         }
-
+        view.activate_microphone.setOnClickListener {
+            Log.e("Btn","Entrou")
+            getSpeechInput()
+        }
         view.nav_prod.setOnClickListener {
             (activity as NavigationHost).navigateTo(EntitiesFragment(),addToBackStack = false,animate = true,"cart")
         }
@@ -274,6 +282,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
             return
         }
+
+
 
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
 
@@ -507,5 +517,60 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 override fun onAnimationRepeat(animation: Animator?) {}
             }).startAnimation()
     }
+    private fun getSpeechInput()
+    {
+        Log.e("12","Abre");
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            /**/
 
+            return
+        }
+        val intent = Intent(RecognizerIntent
+            .ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,
+            Locale.getDefault())
+
+        if (intent.resolveActivity(requireActivity().packageManager) != null)
+        {
+            startActivityForResult(intent, 10)
+            Log.e("Teste","Abre");
+        } else
+        {
+            (activity as NavigationHost).customToaster(
+                title = getString(R.string.toast_error),
+                message = getString(R.string.Speech_Input_Error),
+                type = "error"
+            )
+        }
+    }
+    override fun onActivityResult(requestCode: Int,
+                                  resultCode: Int, data: Intent?)
+    {
+        super.onActivityResult(requestCode,
+            resultCode, data)
+        when (requestCode) {
+            10 -> if (resultCode == RESULT_OK &&
+                data != null)
+            {
+
+                val result =
+                    data.
+                    getStringArrayListExtra(
+                        RecognizerIntent.EXTRA_RESULTS)
+                result?.get(0)?.let { Log.e("speetch", it) }
+                search.setQuery(result?.get(0),true)
+            }
+        }
+    }
 }

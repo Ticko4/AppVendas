@@ -96,5 +96,6 @@
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_mic"
         android:contentDescription="Micro"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        />
 </FrameLayout>
