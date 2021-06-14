@@ -38,6 +38,7 @@
     <string name="navigation_cart">My Basket</string>
     <string name="navigation_products">All Products</string>
     <string name="navigation_favorites">My Favorites</string>
+    <string name="navigation_entities">Entities</string>
 
     <!--HomeFragment-->
     <string name="product_added">Product "'%s'" added.\nQuantity:%s.</string>
@@ -70,4 +71,6 @@
     <string name="registry_user_address">Endereço</string>
     <string name="registry_user_email">Email</string>
     <string name="registry_user_input">Nome completo</string>
+    <!-- Entities -->
+    <string name="entities">Entidades</string>
 </resources>
