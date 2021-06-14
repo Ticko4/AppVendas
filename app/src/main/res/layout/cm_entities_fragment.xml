@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-       <!--         <SearchView
+                <SearchView
                     app:queryHint="Search"
                     app:defaultQueryHint="Search"
                     android:id="@+id/search"
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/background_round"
-                    android:clickable="true"/>-->
+                    android:clickable="true"/>
 
                 <TextView
                     android:id="@+id/entities_grid_title"
@@ -56,6 +56,7 @@
             </LinearLayout>
 
             <androidx.core.widget.NestedScrollView
+                android:background="@color/cpb_white"
                 android:padding="10dp"
                 android:layout_below="@+id/search_layout_entity"
                 android:id="@+id/product_grid"
@@ -63,7 +64,10 @@
                 android:layout_height="match_parent">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view_products_entity"
+                    android:divider="@null"
+                    android:dividerHeight="0dp"
+                    android:background="@color/cpb_white"
+                    android:id="@+id/recycler_view_entities"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 

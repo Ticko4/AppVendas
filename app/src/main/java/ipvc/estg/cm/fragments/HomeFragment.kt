@@ -108,8 +108,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             (activity as NavigationHost).navigateTo(CartFragment(),addToBackStack = true,animate = true,"cart")
         }
 
-        view.nav_settings.setOnClickListener {
-
+        view.nav_prod.setOnClickListener {
+            (activity as NavigationHost).navigateTo(EntitiesFragment(),addToBackStack = true,animate = true,"cart")
         }
 
         view.cartRelativeLayout.setOnClickListener {
@@ -309,11 +309,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     }
 
                     override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
-                        (activity as NavigationHost).customToaster(
+/*                        (activity as NavigationHost).customToaster(
                             title = getString(R.string.toast_error),
                             message = getString(R.string.general_error),
                             type = "connection"
-                        )
+                        )*/
                     }
 
                 })
