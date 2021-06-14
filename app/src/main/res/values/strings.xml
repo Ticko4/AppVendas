@@ -30,6 +30,7 @@
     <string name="toast_error">Error</string>
     <string name="toast_warning">Warning</string>
     <string name="general_error">Oops, it looks like an error occurred. Check your internet connection and try again</string>
+    <string name="Speech_Input_Error">Oops, it looks like you dont have support speech input </string>
 
     <!--Navigation-->
     <string name="navigation_home">Home</string>
