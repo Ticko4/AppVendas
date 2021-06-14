@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import ipvc.estg.cm.R
@@ -117,12 +118,21 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 "cart"
             )
         }
-        view.activate_microphone.setOnClickListener {
+        /*view.activate_microphone.setOnClickListener {
             Log.e("Btn","Entrou")
             getSpeechInput()
+        }*/
+
+        view.findViewById<FloatingActionButton>(R.id.activate_microphone).setOnClickListener {
+            Log.e("Btn","Entrou")
         }
+
+        view.nav_settings.setOnClickListener {
+
+        }
+
         view.nav_prod.setOnClickListener {
-            (activity as NavigationHost).navigateTo(EntitiesFragment(),addToBackStack = false,animate = true,"cart")
+            (activity as NavigationHost).navigateTo(EntitiesFragment(),addToBackStack = false,animate = true,"entities")
         }
 
         view.cartRelativeLayout.setOnClickListener {
@@ -520,16 +530,14 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     private fun getSpeechInput()
     {
         Log.e("12","Abre");
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+        if (ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             /**/
-
+            Log.e("permissions","sem");
             return
         }
         val intent = Intent(RecognizerIntent
@@ -568,7 +576,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     data.
                     getStringArrayListExtra(
                         RecognizerIntent.EXTRA_RESULTS)
-                result?.get(0)?.let { Log.e("speetch", it) }
+
                 search.setQuery(result?.get(0),true)
             }
         }

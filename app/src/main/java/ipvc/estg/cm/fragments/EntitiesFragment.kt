@@ -15,20 +15,21 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ipvc.estg.cm.R
-import ipvc.estg.cm.adapters.EntitiesAdapter
-import ipvc.estg.cm.entities.Entity
+import ipvc.estg.cm.adapters.CompaniesAdapter
+import ipvc.estg.cm.entities.Company
 import ipvc.estg.cm.entities.Product
 import ipvc.estg.cm.listeners.NavigationIconClickListener
 import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.retrofit.EndPoints
 import ipvc.estg.cm.retrofit.ServiceBuilder
 import ipvc.estg.cm.vmodel.CartViewModel
-import kotlinx.android.synthetic.main.cm_cart_fragment.*
-import kotlinx.android.synthetic.main.cm_cart_fragment.view.*
 import kotlinx.android.synthetic.main.cm_entities_fragment.*
 import kotlinx.android.synthetic.main.cm_entities_fragment.view.*
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
@@ -38,14 +39,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
-class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
+class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
-    private var mAdapter: EntitiesAdapter? = null
-    private var entitiesList: MutableList<Entity> = ArrayList<Entity>()
+    private var mAdapter: CompaniesAdapter? = null
+    private var entitiesList: MutableList<Company> = ArrayList<Company>()
     private var itemCounter:TextView? = null
     private lateinit var cartViewModel: CartViewModel
 
@@ -106,7 +106,7 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
                             try {
                                 response.body().forEach {
                                     entitiesList.add(
-                                        Entity(
+                                        Company(
                                             id = it.id,
                                             name = it.name,
                                             image = it.image,
@@ -138,7 +138,7 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
 
 
             entitiesList.add(
-                Entity(
+                Company(
                     id = 1,
                     name = "ProLar",
                     image = "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
@@ -149,7 +149,7 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
             //mAdapter!!.notifyItemInserted((productsList.size - 1))
 
             entitiesList.add(
-                Entity(
+                Company(
                     id = 2,
                     name = "O Pote com nome do tamanho do caralho que te foda",
                     image = "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
@@ -159,7 +159,7 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
             Log.e("p2.queijo", entitiesList[entitiesList.size - 1].id.toString())
 
             entitiesList.add(
-                Entity(
+                Company(
                     id = 3,
                     name = "Nosso café",
                     image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
@@ -169,14 +169,14 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
             Log.e("p3.telemovel", entitiesList[entitiesList.size - 1].id.toString())
 
             entitiesList.add(
-                Entity(
+                Company(
                     id = 4,
                     name = "Sonho do capitão",
                     image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
                 )
             )
         entitiesList.add(
-            Entity(
+            Company(
                 id = 5,
                 name = "Maceira",
                 image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
@@ -184,21 +184,21 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
         )
 
         entitiesList.add(
-            Entity(
+            Company(
                 id = 6,
                 name = "Marcado do mira",
                 image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
             )
         )
         entitiesList.add(
-            Entity(
+            Company(
                 id = 7,
                 name = "Oceano",
                 image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
             )
         )
         entitiesList.add(
-            Entity(
+            Company(
                 id = 8,
                 name = "Pastelaria estrelinha de mel",
                 image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
@@ -305,11 +305,11 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
     }
 
     private fun setAdapter() {
-        mAdapter = context?.let { EntitiesAdapter(entitiesList, this, it) }
+        mAdapter = context?.let { CompaniesAdapter(entitiesList, this, it) }
         mAdapter!!.setHasStableIds(true)
     }
 
-    override fun onEntitySelected(entity: Entity?) {
+    override fun onEntitySelected(entity: Company?) {
         Log.e("entity", entity.toString())
     }
 
