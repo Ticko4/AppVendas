@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center"
+    android:background="@color/cpb_white"
+    android:layout_height="wrap_content"
+    android:id="@+id/view_foreground_entity">
+
+    <RelativeLayout
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+       <RelativeLayout
+           android:id="@+id/card_image_entity"
+           android:layout_gravity="center"
+           android:gravity="center"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <RelativeLayout
+               android:gravity="center"
+               android:layout_width="155dp"
+               android:layout_height="155dp"
+               android:padding="10dp">
+
+               <androidx.cardview.widget.CardView
+                   android:id="@+id/image_cardview"
+                   android:layout_width="155dp"
+                   android:layout_height="155dp"
+                   app:cardBackgroundColor="@color/cpb_white"
+                   app:cardCornerRadius="250dp">
+
+                   <androidx.cardview.widget.CardView
+                       android:layout_width="150dp"
+                       android:layout_height="150dp"
+                       android:layout_gravity="center"
+                       app:cardCornerRadius="250dp">
+
+                       <ImageView
+                           android:id="@+id/image_entity"
+                           android:layout_width="150dp"
+                           android:layout_height="150dp"
+                           android:scaleType="centerCrop" />
+
+                   </androidx.cardview.widget.CardView>
+
+               </androidx.cardview.widget.CardView>
+
+
+           </RelativeLayout>
+       </RelativeLayout>
+
+        <TextView
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:id="@+id/title_entity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/card_image_entity"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/cpb_soft_black"
+            android:textSize="20sp"
+            />
+
+    </RelativeLayout>
+</FrameLayout>
