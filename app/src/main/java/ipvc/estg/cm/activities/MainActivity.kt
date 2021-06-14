@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ipvc.estg.cm.R
 import ipvc.estg.cm.fragments.HomeFragment
-import ipvc.estg.cm.fragments.LoginFragment
 import ipvc.estg.cm.navigation.NavigationHost
 import www.sanju.motiontoast.MotionToast
 
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity(), NavigationHost {
      * @param fragment       Fragment to navigate to.
      * @param addToBackStack Whether or not the current fragment should be added to the backStack.
      */
-    override fun navigateTo(fragment: Fragment, addToBackStack: Boolean, animate: Boolean, tag: String) {
+    override fun navigateTo(fragment: Fragment, addToBackStack: Boolean, animate: Boolean, tag: String, data: Bundle?) {
 
         val transaction = supportFragmentManager
             .beginTransaction()/*.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)*/
@@ -63,7 +62,7 @@ class MainActivity : AppCompatActivity(), NavigationHost {
                 R.animator.slide_out_up
             )//popExit
         }
-
+        fragment.arguments = data
         transaction.replace(R.id.container, fragment, tag).commit()
     }
 
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity(), NavigationHost {
 
                 val auth = getSharedPreferences("AUTHENTICATION", Context.MODE_PRIVATE)
                 auth.edit().clear().apply()
-                navigateTo(fragment, addToBackStack = false, animate = true,tag = tag)
+                navigateTo(fragment, addToBackStack = false, animate = true, tag = tag)
             }
             .setNegativeButton(getString(R.string.no)) { _, _ -> }
             .show()
@@ -153,6 +152,10 @@ class MainActivity : AppCompatActivity(), NavigationHost {
             return true
         }
         return false
+    }
+
+    override fun popBackStack(){
+        supportFragmentManager.popBackStack();
     }
 
 }

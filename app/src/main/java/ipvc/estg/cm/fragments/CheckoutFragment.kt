@@ -1,43 +1,44 @@
 package ipvc.estg.cm.fragments
 
+import android.app.Activity.RESULT_CANCELED
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.widget.NestedScrollView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.braintreepayments.api.dropin.DropInActivity
+import com.braintreepayments.api.dropin.DropInRequest
+import com.braintreepayments.api.dropin.DropInResult
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.CartAdapter
 import ipvc.estg.cm.entities.Cart
-import ipvc.estg.cm.listeners.NavigationIconClickListener
 import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.vmodel.CartViewModel
-import kotlinx.android.synthetic.main.cm_cart_fragment.view.*
-import kotlinx.android.synthetic.main.cm_cart_fragment.view.close_cart
 import kotlinx.android.synthetic.main.cm_checkout_fragment.view.*
-import kotlinx.android.synthetic.main.cm_home_fragment.view.*
-import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.ArrayList
+import java.util.*
 
-class CheckoutFragment : Fragment(), CartAdapter.CartAdapterListener {
-    private var total: TextView? = null
-    private var recyclerView: RecyclerView? = null
+
+class CheckoutFragment : Fragment() {
+    private var total:Float? = 0f
     private lateinit var cartViewModel: CartViewModel
     private var productsList: MutableList<Cart> = ArrayList<Cart>()
-    private var mAdapter: CartAdapter? = null
-    private var mLayoutManager: RecyclerView.LayoutManager? = null
+    private var result: DropInResult? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,73 +51,113 @@ class CheckoutFragment : Fragment(), CartAdapter.CartAdapterListener {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.cm_checkout_fragment, container, false)
-
         setClickListeners(view)
-        setRecyclerView(view)
-        fillRecyclerView()
+        fillProducts()
 
         return view
     }
 
     private fun setClickListeners(view: View){
+
         view.close_checkout!!.setNavigationOnClickListener {
             activity?.onBackPressed()
         }
+
+        view.pay_checkout_btn!!.setOnClickListener {
+            view.pay_checkout_btn!!.isEnabled = false
+            view.pay_checkout_btn!!.startAnimation()
+            view.payment_error.visibility = View.GONE
+            if(view.input_name.text!!.isEmpty()){
+                view.input_name.error = getString(R.string.field_required)
+            }
+            if(view.input_email.text!!.isEmpty()){
+                view.input_email.error = getString(R.string.field_required)
+            }
+
+            if(view.input_address.text!!.isEmpty()){
+                view.input_address.error = getString(R.string.field_required)
+            }
+            if(result == null){
+                view.payment_error.visibility = View.VISIBLE
+            }
+            if(view.input_name.text!!.isNotEmpty() && view.input_email.text!!.isNotEmpty() && view.input_address.text!!.isNotEmpty() && result != null){
+                cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
+                cartViewModel.clearQuantities()
+                success()
+            }else{
+                failed()
+            }
+        }
+
+        view.add_card.setOnClickListener {
+            onBraintreeSubmit()
+        }
     }
 
-    private fun setRecyclerView(view: View) {
-        recyclerView = view.findViewById(R.id.recycler_view_checkout)
-        mLayoutManager = LinearLayoutManager(context)
-        recyclerView?.layoutManager = mLayoutManager
-        recyclerView?.addItemDecoration(
-            DividerItemDecoration(
-                activity,
-                LinearLayoutManager.VERTICAL
-            )
-        )
-        recyclerView?.itemAnimator = DefaultItemAnimator()
+    fun onBraintreeSubmit() {
+        val dropInRequest = DropInRequest().tokenizationKey("sandbox_f252zhq7_hh4cpc39zq4rgjcg")
+        previewRequest.launch(dropInRequest.getIntent(context))
     }
 
-    private fun fillRecyclerView(){
+    private val previewRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            result = it.data!!.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)!!
+            requireView().add_card.text = getString(R.string.edit_payment_method)
+            requireView().payment_error.visibility = View.GONE
+        } else if (it.resultCode == RESULT_CANCELED) {
+            //Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
+        } else {
+            // handle errors here, an exception may be available in
+            //Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+            val error = it.data!!.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception?
+        }
+    }
+
+    private fun fillProducts(){
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
         cartViewModel.allProductsWithQuantity().observe(viewLifecycleOwner, { it ->
-            if(recyclerView!!.adapter == null){
-                productsList = it as MutableList<Cart>
-                    mAdapter = context?.let { CartAdapter(productsList, this, it) }
-                    mAdapter!!.setHasStableIds(true)
-                    mAdapter!!.notifyItemRangeInserted(0, productsList.size - 1)
-                    recyclerView!!.adapter = mAdapter
+            productsList = it as MutableList<Cart>
+            for (item in this.productsList!!){
+                val value = TextView(context)
+                value.text = getString(R.string.checkout_item_count,item.quantity.toString() ,item.name)
+                value.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                requireView().listview?.addView(value)
             }
         })
 
         cartViewModel.getTotal().observe(viewLifecycleOwner, { it ->
             if(it != null){
-                total!!.text = requireContext().resources.getString(
-                    R.string.price, BigDecimal(it.toString()).setScale(
-                        2,
-                        RoundingMode.HALF_EVEN
-                    ).toString().replace('.', ',')
-                )
+                total = it
+                requireView().pay_checkout_btn!!.text = requireContext().resources.getString(R.string.payment_button, BigDecimal(it.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
             }
-
         })
-
     }
 
-    override fun onProductSelected(product: Cart?) {
-        TODO("Not yet implemented")
+    private fun failed(){
+        requireView().pay_checkout_btn!!.isEnabled = true
+        requireView().pay_checkout_btn!!.doneLoadingAnimation(Color.TRANSPARENT, BitmapFactory.decodeResource(resources, R.drawable.error))
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            requireView().pay_checkout_btn!!.revertAnimation()
+            requireView().pay_checkout_btn!!.setBackgroundResource(R.drawable.shape)
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                requireView().pay_checkout_btn!!.text = requireContext().resources.getString(R.string.payment_button, BigDecimal(total.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
+            }, 500)
+
+
+        }, 10 * 100)
     }
 
-    override fun onRemoveCartClick(product: Cart, image: ImageView, position: Int) {
-        TODO("Not yet implemented")
-    }
+    private fun success(){
+        requireView().pay_checkout_btn!!.isEnabled = true
+        requireView().pay_checkout_btn!!.doneLoadingAnimation(Color.TRANSPARENT, BitmapFactory.decodeResource(resources, R.drawable.done))
 
-    override fun onIncrementClick(product: Cart, position: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onDecrementClick(product: Cart, position: Int) {
-        TODO("Not yet implemented")
+        Handler(Looper.getMainLooper()).postDelayed({
+            requireView().pay_checkout_btn!!.revertAnimation()
+            requireView().pay_checkout_btn!!.setBackgroundResource(R.drawable.shape)
+            (activity as NavigationHost).navigateTo(OrderEndFragment(), addToBackStack = false, animate = true, "order_end")
+        }, 10 * 100)
     }
 }

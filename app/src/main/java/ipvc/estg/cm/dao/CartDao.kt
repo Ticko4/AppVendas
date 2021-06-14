@@ -26,16 +26,17 @@ interface CartDao  {
     @Query("UPDATE cart SET quantity = :quantity WHERE id = :id")
     suspend fun updateQuantity(id:Int,quantity: Int)
 
-
     @Query("DELETE FROM cart where id == :id")
     suspend fun deleteById(id: Int)
-
 
     @Query("SELECT * FROM cart WHERE id == :id")
     fun getProductById(id: Int): LiveData<Cart>
 
     @Query("SELECT SUM(total) from cart")
     fun getTotal(): LiveData<Float>
+
+    @Query("UPDATE cart SET quantity=0,total=0 WHERE quantity > 0 OR total > 0")
+    suspend fun clearQuantities()
 
 /*@Query("UPDATE notes SET colorId = :colorId,color = :color,description=:description,title=:title WHERE id == :id")
 suspend fun updateNote(id: Int,title:String,description:String,color: String,colorId:Int)

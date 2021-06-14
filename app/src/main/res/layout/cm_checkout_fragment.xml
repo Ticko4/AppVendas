@@ -9,50 +9,46 @@
     android:backgroundTint="@color/cpb_white"
     android:orientation="vertical">
 
-    <FrameLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clipChildren="false"
-        android:clipToPadding="false">
+        app:elevation="0dp">
 
-        <LinearLayout
-            style="@style/Widget.Shrine.Backdrop"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/close_checkout"
+            style="@style/Widget.Shrine.Toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingTop="88dp">
+            android:layout_height="?attr/actionBarSize"
+            android:backgroundTint="@color/cpb_white"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            app:contentInsetStart="0dp"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="@string/navigation_cart" />
 
-            <include layout="@layout/navigation_backdrop" />
-        </LinearLayout>
 
-        <com.google.android.material.appbar.AppBarLayout
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:layout_marginTop="56dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="true"
+        android:clipToPadding="true">
+
+
+        <androidx.core.widget.NestedScrollView
+            android:elevation="1dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:elevation="8dp">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/close_checkout"
-                style="@style/Widget.Shrine.Toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:backgroundTint="@color/cpb_white"
-                android:paddingStart="12dp"
-                android:paddingLeft="12dp"
-                android:paddingEnd="12dp"
-                android:paddingRight="12dp"
-                app:contentInsetStart="0dp"
-                app:navigationIcon="@drawable/ic_back"
-                app:title="@string/vg_checkout_label" />
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="56dp">
+            android:layout_height="match_parent">
 
             <RelativeLayout
+                android:paddingBottom="25dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:paddingTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/cpb_white"
@@ -65,14 +61,13 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textAllCaps="true"
                         android:id="@+id/cart_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="5dp"
                         android:layout_marginBottom="0dp"
-                        android:text="@string/vg_checkout_product_incart_label"
+                        android:text="@string/checkout_product_incart_label"
                         android:textColor="@color/background"
                         android:textSize="17sp"
                         android:textStyle="bold" />
@@ -84,60 +79,38 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/cart_items"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:orientation="vertical"
                     android:visibility="visible"
                     app:elevation="1dp">
 
-                    <androidx.core.widget.NestedScrollView
-                        android:padding="10dp"
-                        android:id="@+id/cart_scroll"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/cpb_white"
-                        android:backgroundTint="@color/cpb_white"
-                        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-                        <RelativeLayout
-                            app:elevation="1dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                app:elevation="1dp"
-                                android:visibility="visible"
-                                android:id="@+id/recycler_view_checkout"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:scrollbars="vertical" />
-
-                        </RelativeLayout>
-
-                    </androidx.core.widget.NestedScrollView>
-
                 </LinearLayout>
+
+                <View
+
+                    android:id="@+id/divider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/listview"
+                    android:background="#777777" />
 
                 <View
                     android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/cart_items"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
                     android:background="#777777" />
 
                 <TextView
+                    android:textAllCaps="true"
                     android:id="@+id/user_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/listview"
-                    android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_marginBottom="0dp"
-                    android:text="@string/vg_checkout_dados_label"
+                    android:text="@string/checkout_data_label"
                     android:textColor="@color/background"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -147,15 +120,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/user_info"
-                    android:orientation="vertical"
-                    android:paddingLeft="24dp"
-                    android:paddingRight="24dp">
+                    android:orientation="vertical">
 
-                    <CheckBox
+                   <!-- <CheckBox
                         android:id="@+id/checkBox_add_data"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/checkout_add_myData" />
+                        android:text="@string/checkout_add_myData" />-->
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/text_input_name"
@@ -186,7 +157,7 @@
                             android:layout_height="wrap_content"
                             android:background="@color/transparent"
                             android:hint="@string/registry_user_email"
-                            android:inputType="text" />
+                            android:inputType="textEmailAddress" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -202,21 +173,20 @@
                             android:layout_height="wrap_content"
                             android:background="@color/transparent"
                             android:hint="@string/registry_user_address"
-                            android:inputType="text"
+                            android:inputType="textPostalAddress"
                             android:lines="5" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
                 <TextView
+                    android:textAllCaps="true"
                     android:id="@+id/payment_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/dados_form"
-                    android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_marginBottom="0dp"
-                    android:text="@string/vg_checkout_payment_label"
+                    android:text="@string/checkout_payment_label"
                     android:textColor="@color/background"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -226,11 +196,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/payment_text"
-                    android:orientation="vertical"
-                    android:paddingLeft="24dp"
-                    android:paddingRight="24dp">
+                    android:orientation="vertical">
 
-                    <RadioGroup
+                  <!--  <RadioGroup
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -249,32 +217,56 @@
                             android:layout_height="wrap_content"
                             android:text="@string/checkout_payment_ATM" />
 
-                    </RadioGroup>
+                    </RadioGroup>-->
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/add_card"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_marginBottom="4dp"
+                        android:text="@string/add_payment_method"
+                        android:textAllCaps="true"
+                        android:gravity="center"
+                        android:layout_gravity="bottom"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:id="@+id/payment_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="0dp"
+                        android:text="@string/field_required"
+                        android:textColor="@color/cpb_red"
+                        android:textSize="15sp" />
 
                 </LinearLayout>
 
+
+
                 <RelativeLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/payment_form"
                     android:layout_alignParentBottom="true"
-                    android:layout_gravity="center_horizontal"
-                    android:padding="25dp">
+                    android:gravity="center"
+                    android:layout_gravity="center_horizontal">
 
                     <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
                         android:id="@+id/pay_checkout_btn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="20dp"
                         android:background="@drawable/shape"
-                        android:text="@string/payment_button"
                         android:textColor="@color/cpb_white"
                         app:spinning_bar_color="#FFF"
                         app:spinning_bar_padding="6dp"
                         app:spinning_bar_width="4dp" />
                 </RelativeLayout>
             </RelativeLayout>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
     </FrameLayout>
 </RelativeLayout>

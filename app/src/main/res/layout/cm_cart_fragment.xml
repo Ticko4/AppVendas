@@ -15,18 +15,6 @@
         android:clipToPadding="false"
         tools:context=".ProductGridFragment">
 
-
-        <LinearLayout
-            style="@style/Widget.Shrine.Backdrop"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingTop="88dp">
-
-            <include layout="@layout/navigation_backdrop" />
-        </LinearLayout>
-
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,6 +34,7 @@
                 app:navigationIcon="@drawable/ic_back"
                 app:title="@string/navigation_cart" />
 
+
         </com.google.android.material.appbar.AppBarLayout>
 
         <LinearLayout
@@ -55,6 +44,7 @@
             android:layout_height="match_parent">
 
             <LinearLayout
+                android:background="@color/cpb_white"
                 android:layout_weight="0.4"
                 android:orientation="vertical"
                 android:layout_width="match_parent"

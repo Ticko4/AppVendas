@@ -5,8 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.CartAdapter
 import ipvc.estg.cm.entities.Cart
+import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.vmodel.CartViewModel
 import kotlinx.android.synthetic.main.cm_cart_fragment.*
 import kotlinx.android.synthetic.main.cm_cart_fragment.view.*
@@ -52,6 +56,12 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
     private fun setClickListeners(view: View){
         view.close_cart!!.setNavigationOnClickListener {
             activity?.onBackPressed()
+        }
+
+        view.checkout_btn!!.setOnClickListener {
+            if(productsList.size > 0){
+                (activity as NavigationHost).navigateTo(CheckoutFragment(),addToBackStack = true,animate = true,"checkout")
+            }
         }
     }
 
@@ -92,7 +102,7 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
         })
 
         cartViewModel.getTotal().observe(viewLifecycleOwner, { it ->
-            if(it != null){
+            if (it != null) {
                 subtotal!!.text = requireContext().resources.getString(
                     R.string.price, BigDecimal(it.toString()).setScale(
                         2,
@@ -101,6 +111,37 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
                 )
                 total!!.text = requireContext().resources.getString(
                     R.string.price, BigDecimal(it.toString()).setScale(
+                        2,
+                        RoundingMode.HALF_EVEN
+                    ).toString().replace('.', ',')
+                )
+            } else if (it.toString() == "0" || it == null) {
+
+                val fadeIn = ScaleAnimation(
+                    0.0f,
+                    1f,
+                    0.0f,
+                    1f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                )
+                fadeIn.duration = 500
+                fadeIn.fillAfter = true
+
+                requireView().findViewById<TextView>(R.id.no_products).startAnimation(fadeIn)
+                requireView().findViewById<TextView>(R.id.no_products).visibility = View.VISIBLE
+                requireView().findViewById<NestedScrollView>(R.id.cart_scroll).visibility = View.GONE
+
+                subtotal!!.text = requireContext().resources.getString(
+                    R.string.price, BigDecimal(0).setScale(
+                        2,
+                        RoundingMode.HALF_EVEN
+                    ).toString().replace('.', ',')
+                )
+                total!!.text = requireContext().resources.getString(
+                    R.string.price, BigDecimal(0).setScale(
                         2,
                         RoundingMode.HALF_EVEN
                     ).toString().replace('.', ',')
@@ -132,8 +173,10 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
             id = product.id,
             name = product.name,
             image = product.image,
+            images = product.images,
             price = product.price,
             subcategory = product.subcategory,
+            description = product.description,
             favorite = product.favorite,
             quantity = quantity,
             total = (quantity * product.price)
@@ -149,8 +192,10 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
             id = product.id,
             name = product.name,
             image = product.image,
+            images = product.images,
             price = product.price,
             subcategory = product.subcategory,
+            description = product.description,
             favorite = product.favorite,
             quantity = quantity,
             total = (quantity * product.price)
@@ -162,11 +207,6 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
             cart.quantity = 0
             cartViewModel.insert(cart)
             mAdapter!!.removeItem(position)
-
-            if(mAdapter!!.itemCount <= 0){
-                requireView().findViewById<TextView>(R.id.no_products).visibility = View.VISIBLE
-                requireView().findViewById<NestedScrollView>(R.id.cart_scroll).visibility = View.GONE
-            }
         }else{
             cartViewModel.insert(cart)
         }
