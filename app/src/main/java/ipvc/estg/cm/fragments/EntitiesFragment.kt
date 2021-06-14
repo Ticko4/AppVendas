@@ -27,8 +27,6 @@ import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.retrofit.EndPoints
 import ipvc.estg.cm.retrofit.ServiceBuilder
 import ipvc.estg.cm.vmodel.CartViewModel
-import kotlinx.android.synthetic.main.cm_cart_fragment.*
-import kotlinx.android.synthetic.main.cm_cart_fragment.view.*
 import kotlinx.android.synthetic.main.cm_entities_fragment.*
 import kotlinx.android.synthetic.main.cm_entities_fragment.view.*
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
@@ -39,8 +37,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import ipvc.estg.cm.vmodel.SimpleDividerItemDecoration
-
 
 class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
@@ -310,7 +306,11 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
     }
 
     override fun onEntitySelected(entity: Entity?) {
-        Log.e("entity", entity.toString())
+        val bundle = Bundle()
+        if (entity != null) {
+            bundle.putString("title", entity.name)
+        }
+        (activity as NavigationHost).navigateTo(ProductsByEntityFragment(),addToBackStack = true,animate = true,tag = "productsbyentity", data = bundle)
     }
 
 }

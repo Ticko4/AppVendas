@@ -1,14 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.ProductsByEntityFragment">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <FrameLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        tools:context=".Fragment.ProductsByEntityFragment">
 
-</FrameLayout>
+        <LinearLayout
+            android:background="@color/cpb_white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:layout_weight="0.5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:elevation="0dp">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/close_products_by_entity"
+                    style="@style/Widget.Shrine.Toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:backgroundTint="@color/cpb_white"
+                    android:paddingStart="12dp"
+                    android:paddingLeft="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingRight="12dp"
+                    app:contentInsetStart="0dp"
+                    app:navigationIcon="@drawable/ic_back" />
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <RelativeLayout
+                android:layout_marginEnd="20dp"
+                android:layout_weight="2"
+                android:background="@color/cpb_white"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_marginStart="-5dip">
+
+                <RelativeLayout
+                    android:radius="20dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:id="@+id/cartRelativeLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:clickable="true">
+
+                    <ImageButton
+
+                        android:radius="20dip"
+                        android:id="@+id/cartButtonIV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:clickable="false"
+                        android:padding="5dip"
+                        android:rotationY="0"
+                        android:autoMirrored="true"
+                        android:src="@drawable/shoppingbag" />
+
+                    <TextView
+                        android:id="@+id/cartTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@id/cartButtonIV"
+                        android:layout_alignEnd="@id/cartButtonIV"
+                        android:layout_marginTop="34dp"
+                        android:layout_marginEnd="3dip"
+                        android:background="@drawable/background_circle"
+                        android:gravity="center"
+                        android:minWidth="20dip"
+                        android:minHeight="20dip"
+                        android:padding="3dip"
+                        android:text="0"
+                        android:textColor="#424242"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:clickable="true"
+            android:id="@+id/main_frame"
+            android:background="@color/cpb_white"
+            android:elevation="2dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_marginTop="56dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@id/search_layout"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <SearchView
+                    app:queryHint="Search"
+                    app:defaultQueryHint="Search"
+                    android:id="@+id/search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/background_round"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:padding="10dp"
+                android:layout_below="@+id/search_layout"
+                android:id="@+id/product_grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_products"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+
+            </androidx.core.widget.NestedScrollView>
+
+
+        </RelativeLayout>
+
+
+    </FrameLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -81,7 +81,8 @@
     <!-- Entities -->
     <string name="entities">Entidades</string>
     <!-- ProductByEntity -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_grid_title_entity">Entity Name</string>
+
     <!--Order End-->
     <string name="order_end_title">Your order is on the way</string>
     <string name="order_end_body">Thank you for your order. You can track the delivery in the \'Orders\' section.</string>

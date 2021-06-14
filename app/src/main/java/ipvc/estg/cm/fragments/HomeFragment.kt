@@ -117,7 +117,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         }
 
         view.nav_prod.setOnClickListener {
-            (activity as NavigationHost).navigateTo(EntitiesFragment(),addToBackStack = true,animate = true,"cart")
+            (activity as NavigationHost).navigateTo(EntitiesFragment(),addToBackStack = false,animate = true,"cart")
         }
 
         view.cartRelativeLayout.setOnClickListener {
