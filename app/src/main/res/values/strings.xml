@@ -73,4 +73,6 @@
     <string name="registry_user_input">Nome completo</string>
     <!-- Entities -->
     <string name="entities">Entidades</string>
+    <!-- ProductByEntity -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
