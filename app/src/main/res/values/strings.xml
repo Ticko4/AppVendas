@@ -98,6 +98,28 @@
         <item>Ler</item>
         <item>Produtos</item>
     </string-array>
+    <string-array name="go_to_cart">
+        <item>Ir</item>
+        <item>Para</item>
+        <item>Carrinho</item>
+    </string-array>
+    <string-array name="go_to_see_all_products">
+        <item>Ver</item>
+        <item>Todos</item>
+        <item>Produtos</item>
+    </string-array>
+    <string-array name="go_to_checkout">
+        <item>Finalizar</item>
+        <item>Encomenda</item>
+    </string-array>
+    <string-array name="logout">
+        <item>Sair</item>
+        <item>App</item>
+    </string-array>
+    <string-array name="fav">
+        <item>Ir</item>
+        <item>Favoritos</item>
+    </string-array>
     <string-array name="stop_read">
         <item>Parar</item>
         <item>Leitura</item>

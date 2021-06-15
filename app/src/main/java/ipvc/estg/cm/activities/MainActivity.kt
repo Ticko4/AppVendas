@@ -115,14 +115,26 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                         }
                         "home" -> {
                             val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
-                                if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
+
+                            if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
                                     setReading()
                                     fragment.readProducts()
-                                }else{
-                                    commandNotFound()
-                                }
-                            if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.stop_read).get(0).lowercase())){
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.stop_read).get(0).lowercase())){
                                 fragment.stopRead()
+                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(2).lowercase())){
+                                navigateTo(CartFragment(),animate = true,addToBackStack = true,tag = "cart")
+                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(2).lowercase())){
+                                navigateTo(CartFragment(),animate = true,addToBackStack = true,tag = "entities")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
+                                navigateTo(CartFragment(),animate = true,addToBackStack = true,tag = "checkout")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.logout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
+                                logout(LoginFragment(),"login")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
+                                logout(LoginFragment(),"login")
+                            }
+
+                            else{
+                                commandNotFound()
                             }
                         }
                         "login" -> {
