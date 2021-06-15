@@ -3,8 +3,13 @@ package ipvc.estg.cm.fragments
 import android.Manifest
 import android.animation.Animator
 import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import ipvc.estg.cm.R
@@ -52,7 +58,7 @@ import retrofit2.Response
 import java.util.*
 
 
-class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,ActivityCompat.OnRequestPermissionsResultCallback {
+class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,ActivityCompat.OnRequestPermissionsResultCallback,TextToSpeech.OnInitListener {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
@@ -61,6 +67,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     private var itemCounter:TextView? = null
     private lateinit var cartViewModel: CartViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var tts: TextToSpeech? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -108,12 +116,13 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
     }
 
     private fun declareItems(view: View){
         itemCounter = view.findViewById<View>(R.id.cartTotal) as TextView
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
-
+        tts = TextToSpeech(context, this)
         cartViewModel.getCount().observeOnce(this, {
             if (it != null) {
                 itemCounter!!.text = it.toString()
@@ -125,9 +134,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         view.nav_logout.setOnClickListener {
             (activity as NavigationHost).logout(LoginFragment(), "login")
         }
-        view.nav_prod.setOnClickListener {
-
-        }
 
         view.nav_cart.setOnClickListener {
             (activity as NavigationHost).navigateTo(
@@ -137,9 +143,21 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 "cart"
             )
         }
+        /*view.activate_microphone.setOnClickListener {
+            Log.e("Btn","Entrou")
+            getSpeechInput()
+        }*/
+
+        view.findViewById<FloatingActionButton>(R.id.activate_microphone).setOnClickListener {
+            Log.e("Btn","Entrou")
+        }
+
+        view.nav_settings.setOnClickListener {
+
+        }
 
         view.nav_prod.setOnClickListener {
-            (activity as NavigationHost).navigateTo(EntitiesFragment(),addToBackStack = false,animate = true,"cart")
+            (activity as NavigationHost).navigateTo(EntitiesFragment(),addToBackStack = false,animate = true,"entities")
         }
 
         view.cartRelativeLayout.setOnClickListener {
@@ -300,6 +318,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             return
         }
 
+
+
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
 
             if (location != null) {
@@ -364,122 +384,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
                 })
 
-                cartViewModel.getProductById(1).observeOnce(this, { cart ->
 
-                    val images = arrayListOf(
-                       "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
-                    )
-                    val gson = Gson()
-                    val myJson: String = gson.toJson(images)
-
-                    productsList.add(
-
-                        Product(
-                            id = 1,
-                            name = "Watch",
-                            image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
-                            images = myJson,
-                            price = 100.0f,
-                            subcategory = "Wearables",
-                            description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                                    "\n" +
-                                    "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                            favorite = cart?.favorite ?: false,
-                            quantity = cart?.quantity ?: 0,
-                            total = (cart?.quantity ?: 0) * 10.2f
-                        )
-                    )
-                    Log.e("p1.livro.qtd", 1.toString())
-                    Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
-                    mAdapter!!.notifyItemInserted((productsList.size - 1))
-                })
-                cartViewModel.getProductById(2).observeOnce(this, { cart ->
-
-                    val images = arrayListOf(
-                        "https://www.oficinadeinverno.com.br/blog/wp-content/uploads/2015/03/gluten-free-new-york-cheesecake-1450985-hero-01-dc54f9daf38044238b495c7cefc191fa.jpg",
-                        "https://www.teleculinaria.pt/wp-content/uploads/2019/09/Cheesecake-de-gelatina-CHLM-19.jpg"
-                    )
-                    val gson = Gson()
-                    val myJson: String = gson.toJson(images)
-
-                    productsList.add(
-                        Product(
-                            id = 2,
-                            name = "Cheesecake",
-                            image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
-                            images = myJson,
-                            price = 14.99f,
-                            subcategory = "Dairy",
-                            description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                                    "\n" +
-                                    "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                            favorite = cart?.favorite ?: false,
-                            quantity = cart?.quantity ?: 0,
-                            total = (cart?.quantity ?: 0) * 10.2f
-                        )
-                    )
-                    Log.e("p2.queijo.qtd", 2.toString())
-                    Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
-                    mAdapter!!.notifyItemInserted((productsList.size - 1))
-                })
-                cartViewModel.getProductById(3).observeOnce(this, { cart ->
-
-                    val images = arrayListOf(
-                        "https://www.techadvisor.com/cmsdata/slideshow/3677861/best_smartphone_jan_2021_hero_thumb1200_4-3.jpg",
-                        "https://cdn.vox-cdn.com/thumbor/v97OD-MBgNjw8p5crApucVs9RB8=/0x0:2050x1367/1800x1800/filters:focal(1025x684:1026x685)/cdn.vox-cdn.com/uploads/chorus_asset/file/22022572/bfarsace_201106_4269_012.0.jpg"
-                    )
-                    val gson = Gson()
-                    val myJson: String = gson.toJson(images)
-
-                    productsList.add(
-                        Product(
-                            id = 3,
-                            name = "Phone",
-                            image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
-                            images = myJson,
-                            price = 399.99f,
-                            subcategory = "Tecnology",
-                            description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                                    "\n" +
-                                    "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                            favorite = cart?.favorite ?: false,
-                            quantity = cart?.quantity ?: 0,
-                            total = (cart?.quantity ?: 0) * 10.2f
-                        )
-                    )
-                    Log.e("p3.telemovel.qtd", 3.toString())
-                    Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
-                    mAdapter!!.notifyItemInserted((productsList.size - 1))
-                })
-                cartViewModel.getProductById(4).observeOnce(this, { cart ->
-
-                    val images = arrayListOf(
-                        "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                        "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg"
-                    )
-                    val gson = Gson()
-                    val myJson: String = gson.toJson(images)
-
-                    productsList.add(
-                        Product(
-                            id = 4,
-                            name = "Coca-Cola",
-                            image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                            images = myJson,
-                            price = 1.20f,
-                            subcategory = "Drinks",
-                            description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                                    "\n" +
-                                    "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                            favorite = cart?.favorite ?: false,
-                            quantity = cart?.quantity ?: 0,
-                            total = (cart?.quantity ?: 0) * 10.2f
-                        )
-                    )
-                    Log.e("p4.coca-cola.qtd", 4.toString())
-                    Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
-                    mAdapter!!.notifyItemInserted((productsList.size - 1))
-                })
 
             }
 
@@ -487,6 +392,239 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
             mSwipeRefreshLayout!!.isRefreshing = false
         }
+        cartViewModel.getProductById(1).observeOnce(this, { cart ->
+
+            val images = arrayListOf(
+                "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
+            )
+            val gson = Gson()
+            val myJson: String = gson.toJson(images)
+
+            productsList.add(
+
+                Product(
+                    id = 1,
+                    name = "Watch",
+                    image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
+                    images = myJson,
+                    price = 100.0f,
+                    subcategory = "Wearables",
+                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
+                            "\n" +
+                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p1.livro.qtd", 1.toString())
+            Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(2).observeOnce(this, { cart ->
+
+            val images = arrayListOf(
+                "https://www.oficinadeinverno.com.br/blog/wp-content/uploads/2015/03/gluten-free-new-york-cheesecake-1450985-hero-01-dc54f9daf38044238b495c7cefc191fa.jpg",
+                "https://www.teleculinaria.pt/wp-content/uploads/2019/09/Cheesecake-de-gelatina-CHLM-19.jpg"
+            )
+            val gson = Gson()
+            val myJson: String = gson.toJson(images)
+
+            productsList.add(
+                Product(
+                    id = 2,
+                    name = "Cheesecake",
+                    image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
+                    images = myJson,
+                    price = 14.99f,
+                    subcategory = "Dairy",
+                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
+                            "\n" +
+                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p2.queijo.qtd", 2.toString())
+            Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(3).observeOnce(this, { cart ->
+
+            val images = arrayListOf(
+                "https://www.techadvisor.com/cmsdata/slideshow/3677861/best_smartphone_jan_2021_hero_thumb1200_4-3.jpg",
+                "https://cdn.vox-cdn.com/thumbor/v97OD-MBgNjw8p5crApucVs9RB8=/0x0:2050x1367/1800x1800/filters:focal(1025x684:1026x685)/cdn.vox-cdn.com/uploads/chorus_asset/file/22022572/bfarsace_201106_4269_012.0.jpg"
+            )
+            val gson = Gson()
+            val myJson: String = gson.toJson(images)
+
+            productsList.add(
+                Product(
+                    id = 3,
+                    name = "Phone",
+                    image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
+                    images = myJson,
+                    price = 399.99f,
+                    subcategory = "Tecnology",
+                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
+                            "\n" +
+                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p3.telemovel.qtd", 3.toString())
+            Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(4).observeOnce(this, { cart ->
+
+            val images = arrayListOf(
+                "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
+                "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg"
+            )
+            val gson = Gson()
+            val myJson: String = gson.toJson(images)
+
+            productsList.add(
+                Product(
+                    id = 4,
+                    name = "Coca-Cola",
+                    image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
+                    images = myJson,
+                    price = 1.20f,
+                    subcategory = "Drinks",
+                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
+                            "\n" +
+                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p4.coca-cola.qtd", 4.toString())
+            Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(5).observeOnce(this, { cart ->
+
+            val images = arrayListOf(
+                "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
+            )
+            val gson = Gson()
+            val myJson: String = gson.toJson(images)
+
+            productsList.add(
+
+                Product(
+                    id = 5,
+                    name = "Watch",
+                    image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
+                    images = myJson,
+                    price = 100.0f,
+                    subcategory = "Wearables",
+                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
+                            "\n" +
+                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p1.livro.qtd", 1.toString())
+            Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(6).observeOnce(this, { cart ->
+
+            val images = arrayListOf(
+                "https://www.oficinadeinverno.com.br/blog/wp-content/uploads/2015/03/gluten-free-new-york-cheesecake-1450985-hero-01-dc54f9daf38044238b495c7cefc191fa.jpg",
+                "https://www.teleculinaria.pt/wp-content/uploads/2019/09/Cheesecake-de-gelatina-CHLM-19.jpg"
+            )
+            val gson = Gson()
+            val myJson: String = gson.toJson(images)
+
+            productsList.add(
+                Product(
+                    id = 6,
+                    name = "Cheesecake",
+                    image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
+                    images = myJson,
+                    price = 14.99f,
+                    subcategory = "Dairy",
+                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
+                            "\n" +
+                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p2.queijo.qtd", 2.toString())
+            Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(7).observeOnce(this, { cart ->
+
+            val images = arrayListOf(
+                "https://www.techadvisor.com/cmsdata/slideshow/3677861/best_smartphone_jan_2021_hero_thumb1200_4-3.jpg",
+                "https://cdn.vox-cdn.com/thumbor/v97OD-MBgNjw8p5crApucVs9RB8=/0x0:2050x1367/1800x1800/filters:focal(1025x684:1026x685)/cdn.vox-cdn.com/uploads/chorus_asset/file/22022572/bfarsace_201106_4269_012.0.jpg"
+            )
+            val gson = Gson()
+            val myJson: String = gson.toJson(images)
+
+            productsList.add(
+                Product(
+                    id = 7,
+                    name = "Phone",
+                    image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
+                    images = myJson,
+                    price = 399.99f,
+                    subcategory = "Tecnology",
+                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
+                            "\n" +
+                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p3.telemovel.qtd", 3.toString())
+            Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        cartViewModel.getProductById(8).observeOnce(this, { cart ->
+
+            val images = arrayListOf(
+                "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
+                "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg"
+            )
+            val gson = Gson()
+            val myJson: String = gson.toJson(images)
+
+            productsList.add(
+                Product(
+                    id = 8,
+                    name = "Coca-Cola",
+                    image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
+                    images = myJson,
+                    price = 1.20f,
+                    subcategory = "Drinks",
+                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
+                            "\n" +
+                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
+                    favorite = cart?.favorite ?: false,
+                    quantity = cart?.quantity ?: 0,
+                    total = (cart?.quantity ?: 0) * 10.2f
+                )
+            )
+            Log.e("p4.coca-cola.qtd", 4.toString())
+            Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
+            mAdapter!!.notifyItemInserted((productsList.size - 1))
+        })
+        mSwipeRefreshLayout!!.isRefreshing = false
     }
 
     private fun makeFlyAnimation(targetView: ImageView, product: Product, position: Int) {
@@ -529,6 +667,54 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 override fun onAnimationCancel(animation: Animator?) {}
                 override fun onAnimationRepeat(animation: Animator?) {}
             }).startAnimation()
+    }
+
+    fun readProducts(){
+        speakOut(0,productsList.size)
+    }
+    private fun speakOut(pos1:Int, pos2:Int) {
+        /*val sharedPref = getSharedPreferences(ler, Context.MODE_PRIVATE) ?: return
+        val le = sharedPref.getBoolean("le",false)
+        if(!le)
+            return;*/
+        val formatArray  = productsList.subList(pos1, pos2);
+        if(formatArray== null){
+            return;
+        }
+
+        for(item in formatArray){
+            tts!!.speak("Item "+(formatArray.indexOf(item)+1)+item.name, TextToSpeech.QUEUE_ADD, null, "")
+            }
+        }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            val result = tts!!.setLanguage(Locale.getDefault())
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "The Language specified is not supported!")
+            } else {
+//                buttonSpeak!!.isEnabled = true
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!")
+        }
+    }
+    fun stopRead(){
+        Log.e("canRead","canRead")
+        tts!!.speak("", TextToSpeech.QUEUE_FLUSH, null,"")
+
+    }
+
+    public override fun onDestroy() {
+        // Shutdown TTS
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+        super.onDestroy()
     }
 
 }

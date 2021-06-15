@@ -1,27 +1,41 @@
 package ipvc.estg.cm.activities
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ipvc.estg.cm.R
-import ipvc.estg.cm.fragments.HomeFragment
+import ipvc.estg.cm.fragments.*
 import ipvc.estg.cm.navigation.NavigationHost
+import kotlinx.android.synthetic.main.cm_home_fragment.*
 import www.sanju.motiontoast.MotionToast
+import java.util.*
 
 
-class MainActivity : AppCompatActivity(), NavigationHost {
+class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitListener {
+
+    private  var isReading: Boolean = false;
+    private var tts: TextToSpeech? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.cm_main_activity)
-
+        tts = TextToSpeech(this, this)
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.container, HomeFragment())
+            .add(R.id.container, HomeFragment(),"home")
             .commit()
 
        /* if (getRememberMe() != null) {
@@ -36,6 +50,128 @@ class MainActivity : AppCompatActivity(), NavigationHost {
                 .commit()
         }*/
 
+        findViewById<FloatingActionButton>(R.id.activate_microphone).setOnClickListener {
+            Log.e("isReading", isReading.toString())
+            if(isReading){
+                cancelReading()
+            }else{
+                getSpeechInput()
+            }
+        }
+
+    }
+
+    private fun getSpeechInput()
+    {
+
+        if (ActivityCompat.checkSelfPermission(applicationContext,
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            /**/
+            Log.e("permissions","sem");
+            return
+        }
+        val intent = Intent(
+            RecognizerIntent
+            .ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE,
+            Locale.getDefault())
+
+        if (intent.resolveActivity(applicationContext.packageManager) != null)
+        {
+            startActivityForResult(intent, 10)
+        } else
+        {
+            customToaster(
+                title = getString(R.string.toast_error),
+                message = getString(R.string.Speech_Input_Error),
+                type = "error"
+            )
+        }
+    }
+    override fun onActivityResult(requestCode: Int,
+                                  resultCode: Int, data: Intent?)
+    {
+        super.onActivityResult(requestCode,
+            resultCode, data)
+        when (requestCode) {
+            10 -> if (resultCode == RESULT_OK && data != null) {
+
+                val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+
+                if(getVisibleFragment()!!.tag != null){
+                    when (getVisibleFragment()!!.tag) {
+                        "details" -> {
+                            val fragment: ProductDetailFragment = supportFragmentManager.findFragmentByTag("details") as ProductDetailFragment
+
+                        }
+                        "home" -> {
+                            val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
+                                if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
+                                    setReading()
+                                    fragment.readProducts()
+                                }else{
+                                    commandNotFound()
+                                }
+                            if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.stop_read).get(0).lowercase())){
+                                fragment.stopRead()
+                            }
+                        }
+                        "login" -> {
+                            val fragment: LoginFragment = supportFragmentManager.findFragmentByTag("login") as LoginFragment
+
+                        }
+                        "cart" -> {
+                            val fragment: CartFragment = supportFragmentManager.findFragmentByTag("cart") as CartFragment
+
+                        }
+                        "checkout" -> {
+                            val fragment: CheckoutFragment = supportFragmentManager.findFragmentByTag("checkout") as CheckoutFragment
+
+                        }
+                        "order_end" -> {
+                            val fragment: OrderEndFragment = supportFragmentManager.findFragmentByTag("order_end") as OrderEndFragment
+
+                        }
+                        "entities" -> {
+                            val fragment: EntitiesFragment = supportFragmentManager.findFragmentByTag("entities") as EntitiesFragment
+
+                        }
+                        "products" -> {
+                            val fragment: ProductsByEntityFragment = supportFragmentManager.findFragmentByTag("products") as ProductsByEntityFragment
+
+                        }
+                        else ->{
+                            val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
+                        }
+                    }
+                }else{
+                    val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
+                    if(result?.get(0)!!.contains(resources.getStringArray(R.array.read_products).get(0)) && result?.get(0)!!.contains(resources.getStringArray(R.array.read_products).get(1))){
+                        fragment.readProducts()
+                    }
+                }
+            }
+        }
+    }
+
+    fun getVisibleFragment(): Fragment? {
+        val fragmentManager: FragmentManager = this@MainActivity.supportFragmentManager
+        val fragments: List<Fragment> = fragmentManager.fragments
+        if (fragments != null) {
+            for (fragment in fragments) {
+                if (fragment != null && fragment.isVisible) return fragment
+            }
+        }
+        return null
     }
 
     /**
@@ -156,6 +292,83 @@ class MainActivity : AppCompatActivity(), NavigationHost {
 
     override fun popBackStack(){
         supportFragmentManager.popBackStack();
+    }
+
+    private fun cancelReading(){
+        isReading = false
+        findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_mic)
+        if(getVisibleFragment()!!.tag != null){
+            when (getVisibleFragment()!!.tag) {
+                "details" -> {
+                    val fragment: ProductDetailFragment = supportFragmentManager.findFragmentByTag("details") as ProductDetailFragment
+
+                }
+                "home" -> {
+                    val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
+                    fragment.stopRead()
+                }
+                "login" -> {
+                    val fragment: LoginFragment = supportFragmentManager.findFragmentByTag("login") as LoginFragment
+
+                }
+                "cart" -> {
+                    val fragment: CartFragment = supportFragmentManager.findFragmentByTag("cart") as CartFragment
+
+                }
+                "checkout" -> {
+                    val fragment: CheckoutFragment = supportFragmentManager.findFragmentByTag("checkout") as CheckoutFragment
+
+                }
+                "order_end" -> {
+                    val fragment: OrderEndFragment = supportFragmentManager.findFragmentByTag("order_end") as OrderEndFragment
+
+                }
+                "entities" -> {
+                    val fragment: EntitiesFragment = supportFragmentManager.findFragmentByTag("entities") as EntitiesFragment
+
+                }
+                "products" -> {
+                    val fragment: ProductsByEntityFragment = supportFragmentManager.findFragmentByTag("products") as ProductsByEntityFragment
+
+                }
+                else ->{
+                    val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
+                }
+            }
+        }
+    }
+
+    private fun setReading(){
+        isReading = true;
+        findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_cancel_voice)
+    }
+
+    public override fun onDestroy() {
+        // Shutdown TTS
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+        super.onDestroy()
+    }
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            val result = tts!!.setLanguage(Locale.getDefault())
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "The Language specified is not supported!")
+            } else {
+//                buttonSpeak!!.isEnabled = true
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!")
+        }
+    }
+
+    fun commandNotFound(){
+        tts!!.speak(getString(R.string.command_not_found), TextToSpeech.QUEUE_FLUSH, null, "")
     }
 
 }

@@ -5,26 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.chauthai.swipereveallayout.ViewBinderHelper
 import ipvc.estg.cm.R
-import ipvc.estg.cm.entities.Entity
-import ipvc.estg.cm.entities.Product
-import java.math.BigDecimal
-import java.math.RoundingMode
+import ipvc.estg.cm.entities.Company
 import java.util.*
 
-class EntitiesAdapter(
-    entityList: MutableList<Entity>,
+class CompaniesAdapter(
+    entityList: MutableList<Company>,
     listener: EntitiesAdapterListener,
     private var context: Context
-) : RecyclerView.Adapter<EntitiesAdapter.MyViewHolder>(), Filterable {
-    private val entityList: MutableList<Entity>
-    private var entitiesListFiltered: MutableList<Entity>
+) : RecyclerView.Adapter<CompaniesAdapter.MyViewHolder>(), Filterable {
+    private val entityList: MutableList<Company>
+    private var entitiesListFiltered: MutableList<Company>
     private val listener: EntitiesAdapterListener
     private val binderHelper = ViewBinderHelper()
 
@@ -40,7 +36,7 @@ class EntitiesAdapter(
         return MyViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: EntitiesAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: CompaniesAdapter.MyViewHolder, position: Int) {
         val entity = entitiesListFiltered[position]
 
         // Use ViewBindHelper to restore and save the open/close state of the SwipeRevealView
@@ -75,7 +71,7 @@ class EntitiesAdapter(
                 entitiesListFiltered = if (charString.isEmpty()) {
                     entityList
                 } else {
-                    val filteredList: MutableList<Entity> =
+                    val filteredList: MutableList<Company> =
                         ArrayList()
                     filteredList
                 }
@@ -88,7 +84,7 @@ class EntitiesAdapter(
                 charSequence: CharSequence,
                 filterResults: FilterResults
             ) {
-                entitiesListFiltered = filterResults.values as MutableList<Entity>
+                entitiesListFiltered = filterResults.values as MutableList<Company>
                 notifyDataSetChanged()
             }
         }
@@ -102,12 +98,12 @@ class EntitiesAdapter(
         return entitiesListFiltered[position].id.toLong()
     }
 
-    fun getItem(position: Int): Entity {
+    fun getItem(position: Int): Company {
         return entitiesListFiltered[position]
     }
 
     interface EntitiesAdapterListener {
-        fun onEntitySelected(entity: Entity?)
+        fun onEntitySelected(entity: Company?)
     }
 
     init {

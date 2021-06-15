@@ -97,6 +97,7 @@ class ProductDetailFragment: Fragment() {
         return view
     }
 
+
     private fun setClickListeners(view: View) {
         view.close_details.setOnClickListener {
             activity?.onBackPressed()
