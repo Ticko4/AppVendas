@@ -26,7 +26,7 @@ public class ProductsAdapter(
     listener: ProductsAdapterListener,
     private var context: Context
 ) : RecyclerView.Adapter<ProductsAdapter.MyViewHolder>(), Filterable {
-    private val productList: MutableList<Product>
+    private var productList: MutableList<Product>
     private var productsListFiltered: MutableList<Product>
     private val listener: ProductsAdapterListener
     private val binderHelper = ViewBinderHelper()
@@ -191,5 +191,11 @@ public class ProductsAdapter(
         this.listener = listener
         this.productList = productList
         productsListFiltered = productList
+    }
+
+    fun setNotes(productList: MutableList<Product>) {
+        this.productList = productList
+        productsListFiltered = productList as MutableList<Product> //search
+        notifyDataSetChanged()
     }
 }

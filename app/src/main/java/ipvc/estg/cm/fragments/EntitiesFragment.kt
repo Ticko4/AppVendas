@@ -310,7 +310,7 @@ class EntitiesFragment : Fragment(), EntitiesAdapter.EntitiesAdapterListener {
         if (entity != null) {
             bundle.putString("title", entity.name)
         }
-        (activity as NavigationHost).navigateTo(ProductsByEntityFragment(),addToBackStack = true,animate = true,tag = "productsbyentity", data = bundle)
+        (activity as NavigationHost).navigateTo(ProductsByEntityFragment(),addToBackStack = true,animate = true,tag = "products", data = bundle)
     }
 
 }

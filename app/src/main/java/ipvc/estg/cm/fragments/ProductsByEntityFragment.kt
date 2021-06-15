@@ -96,13 +96,6 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
         return view
     }
 
-/*    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        view.close_products_by_entity.title = titleEntity
-    }*/
-
-
-
     private fun declareItems(view: View){
         itemCounter = view.findViewById<View>(R.id.cartTotal) as TextView
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)

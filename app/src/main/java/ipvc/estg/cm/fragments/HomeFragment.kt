@@ -11,10 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -43,6 +40,7 @@ import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.retrofit.EndPoints
 import ipvc.estg.cm.retrofit.ServiceBuilder
 import ipvc.estg.cm.vmodel.CartViewModel
+import kotlinx.android.synthetic.main.cm_home_fragment.*
 import kotlinx.android.synthetic.main.cm_home_fragment.view.*
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
@@ -82,6 +80,30 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         return view
 
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(query: String?): Boolean {
+
+                val tempArr = ArrayList<Product>()
+
+                for (arr in productsList) {
+                    if (arr.name.lowercase(Locale.getDefault()).contains(query.toString().lowercase())) {
+                        tempArr.add(arr)
+                    }
+                }
+                mAdapter?.setNotes(tempArr)
+                mAdapter?.notifyDataSetChanged()
+                return true
+            }
+        })
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
