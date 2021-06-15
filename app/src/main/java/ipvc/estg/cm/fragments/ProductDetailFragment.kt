@@ -100,12 +100,7 @@ class ProductDetailFragment: Fragment() {
 
     private fun setClickListeners(view: View) {
         view.close_details.setOnClickListener {
-            (activity as NavigationHost).navigateTo(
-                HomeFragment(),
-                addToBackStack = false,
-                animate = true,
-                "home"
-            )
+            activity?.onBackPressed()
         }
 
         view.cartRelativeLayout.setOnClickListener {
