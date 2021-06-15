@@ -429,8 +429,6 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
 
             }
 
-
-
             mSwipeRefreshLayout!!.isRefreshing = false
         }
     }
