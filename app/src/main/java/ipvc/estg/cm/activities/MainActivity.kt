@@ -117,8 +117,8 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                             val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
 
                             if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
-                                    setReading()
-                                    fragment.readProducts()
+                                setReading()
+                                fragment.readProducts()
                             }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.stop_read).get(0).lowercase())){
                                 fragment.stopRead()
                             } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(2).lowercase())){
@@ -132,7 +132,6 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                             }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
                                 logout(LoginFragment(),"login")
                             }
-
                             else{
                                 commandNotFound()
                             }
