@@ -82,7 +82,8 @@
     <!-- Entities -->
     <string name="entities">Entidades</string>
     <!-- ProductByEntity -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_grid_title_entity">Entity Name</string>
+
     <!--Order End-->
     <string name="order_end_title">Your order is on the way</string>
     <string name="order_end_body">Thank you for your order. You can track the delivery in the \'Orders\' section.</string>
@@ -91,4 +92,18 @@
     <string name="order_end_to_home">Take me to the home screen</string>
     <string name="add_payment_method">Add payment method</string>
     <string name="edit_payment_method">Edit payment method</string>
+
+    <!-- Speetch rules-->
+    <string-array name="read_products">
+        <item>Ler</item>
+        <item>Produtos</item>
+    </string-array>
+    <string-array name="stop_read">
+        <item>Parar</item>
+        <item>Leitura</item>
+    </string-array>
+
+    <!-- Speetch Erros-->
+    <string name="command_not_found">Unknown action, please try again !</string>
+
 </resources>
