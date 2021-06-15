@@ -91,4 +91,18 @@
     <string name="order_end_to_home">Take me to the home screen</string>
     <string name="add_payment_method">Add payment method</string>
     <string name="edit_payment_method">Edit payment method</string>
+
+    <!-- Speetch rules-->
+    <string-array name="read_products">
+        <item>Ler</item>
+        <item>Produtos</item>
+    </string-array>
+    <string-array name="stop_read">
+        <item>Parar</item>
+        <item>Leitura</item>
+    </string-array>
+
+    <!-- Speetch Erros-->
+    <string name="command_not_found">Unknown action, please try again !</string>
+
 </resources>
