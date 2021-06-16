@@ -46,6 +46,8 @@
     <string name="product_added">Producto "'%s'" adicionado.\nQuantidade:%s.</string>
     <string name="recommendations">Recomendados</string>
     <string name="price">%1$s €</string>
+    <string name="search_find">Diga o artigo que pretende encontrar</string>
+    <string name="not_found_product">Artigo não encontrado</string>
 
     <!--CartFragment-->
     <string name="checkout_btn">Pagamento</string>

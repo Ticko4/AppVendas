@@ -47,8 +47,8 @@
     <string name="product_added">Product "'%s'" added.\nQuantity:%s.</string>
     <string name="recommendations">Recommendations</string>
     <string name="price">%1$s €</string>
-    <string name="search_find">Diga o artigo que pretende encontrar</string>
-    <string name="not_found_product">Artigo não encontrado</string>
+    <string name="search_find">Say the article you want to find</string>
+    <string name="not_found_product">Article not found</string>
 
 
     <!--CartFragment-->
@@ -72,8 +72,8 @@
     <string name="payment_body">Your purchase was successfully concluded</string>
     <string name="payment_confirm">Continue</string>
 
-    <string name="product_added_checkout">Produto adicionado ao carrinho</string>
-    <string name="product_removed">Produto removido do carrinho</string>
+    <string name="product_added_checkout">Product added to cart</string>
+    <string name="product_removed">Product removed from cart</string>
     <string name="registry_user_address">Address</string>
     <string name="registry_user_email">Email</string>
     <string name="registry_user_input">Full name</string>
@@ -99,7 +99,7 @@
 
     <!-- Speetch rules-->
     <string-array name="search">
-        <item>Pesquisar</item>
+        <item>search</item>
     </string-array>
     <string-array name="read_products">
         <item>Read</item>
@@ -150,7 +150,7 @@
         <item>Product</item>
     </string-array>
     <string-array name="add_product_to_list">
-        <item>Adicionar</item>
+        <item>Add</item>
     </string-array>
     <string-array name="stop_read">
         <item>Stop</item>
