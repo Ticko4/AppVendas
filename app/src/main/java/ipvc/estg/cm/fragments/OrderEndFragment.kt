@@ -23,16 +23,27 @@ class OrderEndFragment: Fragment() {
 
     private fun setClickListeners(view: View){
         view.take_me_home!!.setOnClickListener {
-            (activity as NavigationHost).popBackStack()
-            (activity as NavigationHost).navigateTo(
-                HomeFragment(),
-                addToBackStack = false,
-                animate = true,
-                "order_end"
-            )
+            takeMeToHome()
         }
 
         view.track_order!!.setOnClickListener {
+            trackOrder()
+        }
+    }
+
+    fun trackOrder()
+     {
+        (activity as NavigationHost).popBackStack()
+        (activity as NavigationHost).navigateTo(
+            HomeFragment(),
+            addToBackStack = false,
+            animate = true,
+            "order_end"
+        )
+    }
+
+    fun takeMeToHome(){
+        requireView().take_me_home!!.setOnClickListener {
             (activity as NavigationHost).popBackStack()
             (activity as NavigationHost).navigateTo(
                 HomeFragment(),
@@ -42,4 +53,5 @@ class OrderEndFragment: Fragment() {
             )
         }
     }
+
 }

@@ -22,10 +22,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -66,7 +64,8 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
     private var mAdapter: ProductsAdapter? = null
-    private var productsList: MutableList<Product> = ArrayList<Product>()
+   /* private var productsList: MutableList<Product> = ArrayList<Product>()*/
+   private var liveProductsList: MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
     private var itemCounter: TextView? = null
     private lateinit var cartViewModel: CartViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -115,7 +114,7 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
     }
 
     private fun setAdapter() {
-        mAdapter = context?.let { ProductsAdapter(productsList, this, it) }
+        mAdapter = context?.let { ProductsAdapter(liveProductsList, this, it) }
         mAdapter!!.setHasStableIds(true)
     }
 
@@ -150,9 +149,6 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
     }
 
     private fun refresh() {
-        productsList.clear()
-        mAdapter?.notifyDataSetChanged()
-        Log.e("refresh", true.toString())
         getData()
     }
 
@@ -209,7 +205,8 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
     }
 
     private fun getData() {
-        productsList.clear()
+        val productsList: MutableList<Product> = ArrayList()
+        liveProductsList.value = null
         recyclerView!!.adapter = mAdapter
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
@@ -286,7 +283,7 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                                                 )
                                             )
                                         })
-
+                                    liveProductsList.value = productsList
                                 }
                             } catch (e: Exception) {
                                 Log.e("catch", e.toString())
@@ -335,9 +332,8 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                             total = (cart?.quantity ?: 0) * 10.2f
                         )
                     )
-                    Log.e("p1.livro.qtd", 1.toString())
-                    Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
-                    mAdapter!!.notifyItemInserted((productsList.size - 1))
+                    liveProductsList.value = productsList
+                    mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
                 })
                 cartViewModel.getProductById(2).observeOnce(this, { cart ->
 
@@ -364,9 +360,8 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                             total = (cart?.quantity ?: 0) * 10.2f
                         )
                     )
-                    Log.e("p2.queijo.qtd", 2.toString())
-                    Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
-                    mAdapter!!.notifyItemInserted((productsList.size - 1))
+                    liveProductsList.value = productsList
+                    mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
                 })
                 cartViewModel.getProductById(3).observeOnce(this, { cart ->
 
@@ -393,9 +388,8 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                             total = (cart?.quantity ?: 0) * 10.2f
                         )
                     )
-                    Log.e("p3.telemovel.qtd", 3.toString())
-                    Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
-                    mAdapter!!.notifyItemInserted((productsList.size - 1))
+                    liveProductsList.value = productsList
+                    mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
                 })
                 cartViewModel.getProductById(4).observeOnce(this, { cart ->
 
@@ -422,9 +416,8 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                             total = (cart?.quantity ?: 0) * 10.2f
                         )
                     )
-                    Log.e("p4.coca-cola.qtd", 4.toString())
-                    Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
-                    mAdapter!!.notifyItemInserted((productsList.size - 1))
+                    liveProductsList.value = productsList
+                    mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
                 })
 
             }

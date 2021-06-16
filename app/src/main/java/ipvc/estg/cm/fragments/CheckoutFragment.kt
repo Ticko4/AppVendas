@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.braintreepayments.api.dropin.DropInActivity
 import com.braintreepayments.api.dropin.DropInRequest
 import com.braintreepayments.api.dropin.DropInResult
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ipvc.estg.cm.R
 import ipvc.estg.cm.entities.Cart
 import ipvc.estg.cm.navigation.NavigationHost
@@ -28,15 +31,18 @@ import java.math.RoundingMode
 import java.util.*
 
 
-class CheckoutFragment : Fragment() {
-    private var total:Float? = 0f
+class CheckoutFragment : Fragment(),TextToSpeech.OnInitListener {
+    private var total: Float? = 0f
     private lateinit var cartViewModel: CartViewModel
     private var productsList: MutableList<Cart> = ArrayList<Cart>()
     private var result: DropInResult? = null
+    private var tts: TextToSpeech? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        tts = TextToSpeech(context, this)
+
     }
 
     override fun onCreateView(
@@ -51,36 +57,14 @@ class CheckoutFragment : Fragment() {
         return view
     }
 
-    private fun setClickListeners(view: View){
+    private fun setClickListeners(view: View) {
 
         view.close_checkout!!.setNavigationOnClickListener {
             activity?.onBackPressed()
         }
 
         view.pay_checkout_btn!!.setOnClickListener {
-            view.pay_checkout_btn!!.isEnabled = false
-            view.pay_checkout_btn!!.startAnimation()
-            view.payment_error.visibility = View.GONE
-            if(view.input_name.text!!.isEmpty()){
-                view.input_name.error = getString(R.string.field_required)
-            }
-            if(view.input_email.text!!.isEmpty()){
-                view.input_email.error = getString(R.string.field_required)
-            }
-
-            if(view.input_address.text!!.isEmpty()){
-                view.input_address.error = getString(R.string.field_required)
-            }
-            if(result == null){
-                view.payment_error.visibility = View.VISIBLE
-            }
-            if(view.input_name.text!!.isNotEmpty() && view.input_email.text!!.isNotEmpty() && view.input_address.text!!.isNotEmpty() && result != null){
-                cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
-                cartViewModel.clearQuantities()
-                success()
-            }else{
-                failed()
-            }
+            payCheckout()
         }
 
         view.add_card.setOnClickListener {
@@ -93,65 +77,142 @@ class CheckoutFragment : Fragment() {
         previewRequest.launch(dropInRequest.getIntent(context))
     }
 
-    private val previewRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == RESULT_OK) {
-            result = it.data!!.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)!!
-            requireView().add_card.text = getString(R.string.edit_payment_method)
-            requireView().payment_error.visibility = View.GONE
-        } else if (it.resultCode == RESULT_CANCELED) {
-            //Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
+    private val previewRequest =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                result = it.data!!.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)!!
+                requireView().add_card.text = getString(R.string.edit_payment_method)
+                requireView().payment_error.visibility = View.GONE
+            } else if (it.resultCode == RESULT_CANCELED) {
+                //Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
+            } else {
+                // handle errors here, an exception may be available in
+                //Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+                val error = it.data!!.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception?
+            }
+        }
+
+     fun payCheckout() {
+        requireView().pay_checkout_btn!!.isEnabled = false
+        requireView().pay_checkout_btn!!.startAnimation()
+        requireView().payment_error.visibility = View.GONE
+        if (requireView().input_name.text!!.isEmpty()) {
+            requireView().input_name.error = getString(R.string.field_required)
+        }
+        if (requireView().input_email.text!!.isEmpty()) {
+            requireView().input_email.error = getString(R.string.field_required)
+        }
+
+        if (requireView().input_address.text!!.isEmpty()) {
+            requireView().input_address.error = getString(R.string.field_required)
+        }
+        if (result == null) {
+            requireView().payment_error.visibility = View.VISIBLE
+        }
+        if (requireView().input_name.text!!.isNotEmpty() && requireView().input_email.text!!.isNotEmpty() && requireView().input_address.text!!.isNotEmpty() && result != null) {
+            cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
+            cartViewModel.clearQuantities()
+            success()
         } else {
-            // handle errors here, an exception may be available in
-            //Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
-            val error = it.data!!.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception?
+            failed()
         }
     }
 
-    private fun fillProducts(){
+    private fun fillProducts() {
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
         cartViewModel.allProductsWithQuantity().observe(viewLifecycleOwner, { it ->
             productsList = it as MutableList<Cart>
-            for (item in this.productsList!!){
+            for (item in this.productsList!!) {
                 val value = TextView(context)
-                value.text = getString(R.string.checkout_item_count,item.quantity.toString() ,item.name)
-                value.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                value.text =
+                    getString(R.string.checkout_item_count, item.quantity.toString(), item.name)
+                value.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
                 requireView().listview?.addView(value)
             }
         })
 
-    cartViewModel.getTotal().observe(viewLifecycleOwner, { it ->
-            if(it != null){
+        cartViewModel.getTotal().observe(viewLifecycleOwner, { it ->
+            if (it != null) {
                 total = it
-                requireView().pay_checkout_btn!!.text = requireContext().resources.getString(R.string.payment_button, BigDecimal(it.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
+                requireView().pay_checkout_btn!!.text = requireContext().resources.getString(
+                    R.string.payment_button,
+                    BigDecimal(it.toString()).setScale(2, RoundingMode.HALF_EVEN).toString()
+                        .replace('.', ',')
+                )
             }
         })
     }
 
-    private fun failed(){
+    private fun failed() {
+        tts!!.speak(getString(R.string.fields_error), TextToSpeech.QUEUE_FLUSH, null, "")
+
         requireView().pay_checkout_btn!!.isEnabled = true
-        requireView().pay_checkout_btn!!.doneLoadingAnimation(Color.TRANSPARENT, BitmapFactory.decodeResource(resources, R.drawable.error))
+        requireView().pay_checkout_btn!!.doneLoadingAnimation(
+            Color.TRANSPARENT,
+            BitmapFactory.decodeResource(resources, R.drawable.error)
+        )
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireView().pay_checkout_btn!!.revertAnimation()
             requireView().pay_checkout_btn!!.setBackgroundResource(R.drawable.shape)
 
             Handler(Looper.getMainLooper()).postDelayed({
-                requireView().pay_checkout_btn!!.text = requireContext().resources.getString(R.string.payment_button, BigDecimal(total.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
+                requireView().pay_checkout_btn!!.text = requireContext().resources.getString(
+                    R.string.payment_button,
+                    BigDecimal(total.toString()).setScale(2, RoundingMode.HALF_EVEN).toString()
+                        .replace('.', ',')
+                )
             }, 500)
 
 
         }, 10 * 100)
     }
 
-    private fun success(){
+    private fun success() {
         requireView().pay_checkout_btn!!.isEnabled = true
-        requireView().pay_checkout_btn!!.doneLoadingAnimation(Color.TRANSPARENT, BitmapFactory.decodeResource(resources, R.drawable.done))
+        requireView().pay_checkout_btn!!.doneLoadingAnimation(
+            Color.TRANSPARENT,
+            BitmapFactory.decodeResource(resources, R.drawable.done)
+        )
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireView().pay_checkout_btn!!.revertAnimation()
             requireView().pay_checkout_btn!!.setBackgroundResource(R.drawable.shape)
-            (activity as NavigationHost).navigateTo(OrderEndFragment(), addToBackStack = false, animate = true, "order_end")
+            (activity as NavigationHost).navigateTo(
+                OrderEndFragment(),
+                addToBackStack = false,
+                animate = true,
+                "order_end"
+            )
         }, 10 * 100)
+    }
+
+
+    public override fun onDestroy() {
+        // Shutdown TTS
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+        super.onDestroy()
+    }
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            val result = tts!!.setLanguage(Locale.getDefault())
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "The Language specified is not supported!")
+            } else {
+//                buttonSpeak!!.isEnabled = true
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!")
+        }
     }
 }

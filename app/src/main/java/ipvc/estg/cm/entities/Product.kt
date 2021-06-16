@@ -12,6 +12,4 @@ class Product(
     var favorite: Boolean,
     var quantity: Int,
     var total: Float
-) {
-
-}
+)
