@@ -60,6 +60,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
     private var query:String? = null
+    var tempArr:MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,17 +81,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         return view
 
     }
-    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if(savedInstanceState != null){
-            Log.e("savedInstanceState",savedInstanceState.toString())
-        }
-
-        super.onViewCreated(view, savedInstanceState)
-
-    }*/
-
-
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.e("onSaveInstanceState", "onSaveInstanceState")
@@ -134,9 +125,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     fun filterProducts(){
-        var tempArr:MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
         val filteredProducts: MutableList<Product> = ArrayList()
-
         if(liveProductsList.value != null){
             liveProductsList.value!!.forEach {
                 if (it.name.lowercase(Locale.getDefault()).contains(query.toString().lowercase())) {
@@ -640,6 +629,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 )
             )
             liveProductsList.value = productsList
+            tempArr.value = productsList;
             mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         mSwipeRefreshLayout!!.isRefreshing = false
@@ -690,14 +680,10 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     fun readProducts(){
-        speakOut(0,liveProductsList.value!!.size)
+        speakOut(0,tempArr.value!!.size)
     }
     private fun speakOut(pos1:Int, pos2:Int) {
-        /*val sharedPref = getSharedPreferences(ler, Context.MODE_PRIVATE) ?: return
-        val le = sharedPref.getBoolean("le",false)
-        if(!le)
-            return;*/
-        val formatArray  = liveProductsList.value!!.subList(pos1, pos2);
+        val formatArray  = tempArr.value!!.subList(pos1, pos2);
         if(formatArray== null){
             return;
         }
@@ -727,14 +713,66 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         tts!!.speak("", TextToSpeech.QUEUE_FLUSH, null,"")
 
     }
-
-    public override fun onDestroy() {
+    override fun onDestroy() {
         // Shutdown TTS
         if (tts != null) {
             tts!!.stop()
             tts!!.shutdown()
         }
         super.onDestroy()
+    }
+
+    fun detectSearch(){
+        tts!!.speak(getString(R.string.search_find), TextToSpeech.QUEUE_FLUSH, null,"")
+    }
+
+    fun setDataSearch(query:String){
+        search.setQuery(query,true);
+    }
+    fun addProductToCart(index:String,searchType:Boolean){
+        try {
+            var product:Product?= null;
+            if(searchType){
+                product = tempArr.value!![index.toInt()]
+            }
+            else {
+
+                val filtred = tempArr.value!!.filter { l -> index.lowercase().contains(l.name.lowercase()) }
+                product = filtred.get(0)
+            }
+            val quantity = (product.quantity + 1 )
+            val gson = Gson()
+            val cart = Cart(
+                id = product.id,
+                name = product.name,
+                image = product.image,
+                images = product.images,
+                price = product.price,
+                subcategory = gson.toJson(product.subcategory),
+                description = product.description,
+                favorite = product.favorite,
+                quantity = quantity,
+                total = (quantity * product.price),
+                entity = gson.toJson(product.entity)
+            )
+            Log.e("home total",cart.total.toString())
+            mAdapter!!.setQuantity(tempArr.value!!.indexOf(product),quantity)
+
+            cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
+            cartViewModel.insert(cart)
+            (activity as NavigationHost).customToaster(
+                title = getString(R.string.toast_success), message = resources.getString(
+                    R.string.product_added,
+                    cart.name,
+                    cart.quantity.toString()
+                ), type = "success"
+            )
+            itemCounter!!.text = (((itemCounter!!.text).toString()).toInt() + 1).toString()
+
+        }catch (e:Exception){
+            tts!!.speak(getString(R.string.not_found_product), TextToSpeech.QUEUE_FLUSH, null,"")
+
+        }
     }
 
 }

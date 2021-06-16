@@ -3,6 +3,7 @@
     <string name="image">Image</string>
     <string name="search">Search</string>
 
+
     <!--Logout-->
     <string name="logout">Logout</string>
     <string name="leave">Do you wish to leave your session?</string>
@@ -46,6 +47,9 @@
     <string name="product_added">Product "'%s'" added.\nQuantity:%s.</string>
     <string name="recommendations">Recommendations</string>
     <string name="price">%1$s €</string>
+    <string name="search_find">Diga o artigo que pretende encontrar</string>
+    <string name="not_found_product">Artigo não encontrado</string>
+
 
     <!--CartFragment-->
     <string name="checkout_btn">Checkout</string>
@@ -94,6 +98,9 @@
     <string name="edit_payment_method">Edit payment method</string>
 
     <!-- Speetch rules-->
+    <string-array name="search">
+        <item>Pesquisar</item>
+    </string-array>
     <string-array name="read_products">
         <item>Read</item>
         <item>Products</item>
@@ -142,14 +149,16 @@
         <item>Details</item>
         <item>Product</item>
     </string-array>
+    <string-array name="add_product_to_list">
+        <item>Adicionar</item>
+    </string-array>
     <string-array name="stop_read">
         <item>Stop</item>
         <item>Read</item>
     </string-array>
 
+    <!-- Speech Erros-->
     <string name="speach_item">Item %s, - %s, with value %s€</string>
-
-    <!-- Speetch Erros-->
     <string name="command_not_found">Unknown action, please try again !</string>
    <string name="fields_error">There are fields to complete !</string>
 
