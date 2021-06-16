@@ -36,7 +36,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
 class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,TextToSpeech.OnInitListener {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
@@ -310,10 +309,10 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
         mAdapter!!.setHasStableIds(true)
     }
 
-    override fun onEntitySelected(entity: Company?) {
+    override fun onEntitySelected(company: Company?) {
         val bundle = Bundle()
-        if (entity != null) {
-            bundle.putString("title", entity.name)
+        if (company != null) {
+            bundle.putString("title", company.name)
         }
         (activity as NavigationHost).navigateTo(ProductsByEntityFragment(),addToBackStack = true,animate = true,tag = "products", data = bundle)
     }

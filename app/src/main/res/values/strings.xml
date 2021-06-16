@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CM</string>
     <string name="image">Image</string>
+    <string name="search">Search</string>
 
     <!--Logout-->
     <string name="logout">Logout</string>

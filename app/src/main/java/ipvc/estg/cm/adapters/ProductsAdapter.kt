@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -22,12 +23,12 @@ import java.util.*
 
 
 public class ProductsAdapter(
-    productList: MutableList<Product>,
+    productList: MutableLiveData<MutableList<Product>>,
     listener: ProductsAdapterListener,
     private var context: Context
-) : RecyclerView.Adapter<ProductsAdapter.MyViewHolder>(), Filterable {
-    private var productList: MutableList<Product>
-    private var productsListFiltered: MutableList<Product>
+) : RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
+    private var productList: MutableLiveData<MutableList<Product>>
+    private var productsListFiltered: MutableLiveData<MutableList<Product>>
     private val listener: ProductsAdapterListener
     private val binderHelper = ViewBinderHelper()
 
@@ -53,13 +54,13 @@ public class ProductsAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val product = productsListFiltered[position]
+        val product = productsListFiltered.value!![position]
 
         // Use ViewBindHelper to restore and save the open/close state of the SwipeRevealView
         // put an unique string id as value, can be any string which uniquely define the data
         binderHelper.bind(holder.swipeRevealLayout, product.id.toString());
         holder.frontLayout.setOnClickListener { // send selected contact in callback
-            listener.onProductSelected(productsListFiltered[position])
+            listener.onProductSelected(productsListFiltered.value!![position])
         }
         holder.title.text = product.name
         holder.price.text = context.resources.getString(R.string.price, BigDecimal(product.price.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
@@ -73,7 +74,7 @@ public class ProductsAdapter(
                         R.drawable.ic_not_favorite
                     )
                 )
-                productsListFiltered[position].favorite = false
+                productsListFiltered.value!![position].favorite = false
             }else{
                 holder.favoriteIcon.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -81,14 +82,14 @@ public class ProductsAdapter(
                         R.drawable.ic_favorite
                     )
                 )
-                productsListFiltered[position].favorite = true
+                productsListFiltered.value!![position].favorite = true
             }
 
-            listener.onFavoriteClick(productsListFiltered[position])
+            listener.onFavoriteClick(productsListFiltered.value!![position])
         }
 
         holder.addCartCard.setOnClickListener {
-            listener.onAddCartClick(productsListFiltered[position],holder.image,position)
+            listener.onAddCartClick(productsListFiltered.value!![position],holder.image,position)
         }
 
         if(product.favorite){
@@ -122,7 +123,7 @@ public class ProductsAdapter(
     }
 
     //filtrar o adaptador(FF)
-    override fun getFilter(): Filter {
+   /* override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString()
@@ -153,31 +154,34 @@ public class ProductsAdapter(
                 notifyDataSetChanged()
             }
         }
-    }
+    }*/
 
     fun removeItem(position: Int) {
-        productsListFiltered.removeAt(position)
+       /* productsListFiltered.value!![position].removeAt(position)*/
         notifyItemRemoved(position)
     }
 
     override fun getItemCount(): Int {
-        return productsListFiltered.size
+        if(productsListFiltered.value == null){
+            return 0;
+        }
+        return productsListFiltered.value!!.size
     }
 
     override fun getItemId(position: Int): Long {
-        return productsListFiltered[position].id.toLong()
+        return productsListFiltered.value!![position].id.toLong()
     }
 
     //para nao utilizar o event list de forma a ir buscar os dados, usamos o proprio adaptador (FF)
     fun getItem(position: Int): Product {
-        return productsListFiltered[position]
+        return productsListFiltered.value!![position]
     }
 
     fun setQuantity(position: Int,quantity:Int){
-        productList[position].quantity = quantity
-        productsListFiltered[position].quantity = quantity
-        productList[position].total = quantity * productList[position].price
-        productsListFiltered[position].total = quantity * productList[position].price
+        productList.value!![position].quantity = quantity
+        productsListFiltered.value!![position].quantity = quantity
+        productList.value!![position].total = quantity * productList.value!![position].price
+        productsListFiltered.value!![position].total = quantity * productList.value!![position].price
     }
 
     interface ProductsAdapterListener {
@@ -193,9 +197,8 @@ public class ProductsAdapter(
         productsListFiltered = productList
     }
 
-    fun setNotes(productList: MutableList<Product>) {
-        this.productList = productList
-        productsListFiltered = productList as MutableList<Product> //search
+    fun setProducts(productList: MutableLiveData<MutableList<Product>>) {
+        productsListFiltered = productList//search
         notifyDataSetChanged()
     }
 }

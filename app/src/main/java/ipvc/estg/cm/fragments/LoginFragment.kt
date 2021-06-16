@@ -144,12 +144,17 @@ class LoginFragment: Fragment() {
             rememberMe.edit().putInt("idUser", 1).apply()
             rememberMe.edit().putString("_token", "Bearer " + "teste_token").apply()
             success()
+        }else{
+            failed()
         }
     }
 
     private fun failed(){
         btnLogin!!.isEnabled = true
         btnLogin!!.doneLoadingAnimation(Color.TRANSPARENT, BitmapFactory.decodeResource(resources, R.drawable.error))
+
+        requireView().findViewById<TextView>(R.id.username_text).error = getString(R.string.wrong_user_info)
+        requireView().findViewById<TextView>(R.id.password_text).error = getString(R.string.wrong_user_info)
 
         Handler(Looper.getMainLooper()).postDelayed({
             btnLogin!!.revertAnimation()
@@ -165,7 +170,7 @@ class LoginFragment: Fragment() {
             btnLogin!!.revertAnimation()
             btnLogin!!.setBackgroundResource(R.drawable.shape)
             (activity as NavigationHost).customToaster(title = getString(R.string.toast_success), message = getString(R.string.login_success), type = "success")
-            activity?.onBackPressed()
+            (activity as NavigationHost).navigateTo(HomeFragment(),addToBackStack = false,animate = true,tag="home")
         }, 10 * 100)
     }
 }

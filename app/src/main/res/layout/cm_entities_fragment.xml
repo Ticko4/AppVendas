@@ -34,14 +34,15 @@
                 android:orientation="vertical">
 
                 <SearchView
-                    app:queryHint="Search"
-                    app:defaultQueryHint="Search"
                     android:id="@+id/search"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/background_round"
-                    android:clickable="true"/>
+                    android:iconifiedByDefault="false"
+                    android:queryHint="Search"
+                    android:searchIcon="@drawable/ic_search"
+                    />
 
                 <TextView
                     android:id="@+id/entities_grid_title"
