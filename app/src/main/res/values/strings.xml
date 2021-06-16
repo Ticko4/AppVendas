@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CM</string>
     <string name="image">Image</string>
+    <string name="search">Search</string>
 
     <!--Logout-->
     <string name="logout">Logout</string>
@@ -98,6 +99,14 @@
         <item>Ler</item>
         <item>Produtos</item>
     </string-array>
+    <string-array name="read_entities">
+        <item>Ler</item>
+        <item>Entidades</item>
+    </string-array>
+    <string-array name="read_cart">
+        <item>Ler</item>
+        <item>Carrinho</item>
+    </string-array>
     <string-array name="go_to_cart">
         <item>Ir</item>
         <item>Para</item>
@@ -109,8 +118,8 @@
         <item>Produtos</item>
     </string-array>
     <string-array name="go_to_checkout">
-        <item>Finalizar</item>
-        <item>Encomenda</item>
+        <item>Ir</item>
+        <item>Pagamento</item>
     </string-array>
     <string-array name="logout">
         <item>Sair</item>
@@ -120,6 +129,20 @@
         <item>Ir</item>
         <item>Favoritos</item>
     </string-array>
+    <string-array name="go_to_home_page">
+        <item>Ir</item>
+        <item>página</item>
+        <item>inicial</item>
+    </string-array>
+    <string-array name="go_to_order_end">
+        <item>Finalizar</item>
+        <item>Encomenda</item>
+    </string-array>
+    <string-array name="go_to_product_detail">
+        <item>Ir</item>
+        <item>Detalhes</item>
+        <item>Produto</item>
+    </string-array>
     <string-array name="stop_read">
         <item>Parar</item>
         <item>Leitura</item>
@@ -127,5 +150,6 @@
 
     <!-- Speetch Erros-->
     <string name="command_not_found">Unknown action, please try again !</string>
+    <string name="fields_error">There are fields to complete !</string>
 
 </resources>
