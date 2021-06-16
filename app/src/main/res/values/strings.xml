@@ -70,6 +70,9 @@
 
     <string name="product_added_checkout">Produto adicionado ao carrinho</string>
     <string name="product_removed">Produto removido do carrinho</string>
+    <string name="registry_user_address">Address</string>
+    <string name="registry_user_email">Email</string>
+    <string name="registry_user_input">Full name</string>
     
     <!-- Product Details -->
     <string name="product_detail_quantity">Quantity</string>
@@ -92,57 +95,59 @@
 
     <!-- Speetch rules-->
     <string-array name="read_products">
-        <item>Ler</item>
-        <item>Produtos</item>
+        <item>Read</item>
+        <item>Products</item>
     </string-array>
     <string-array name="read_entities">
-        <item>Ler</item>
-        <item>Entidades</item>
+        <item>Read</item>
+        <item>Shops</item>
     </string-array>
     <string-array name="read_cart">
-        <item>Ler</item>
-        <item>Carrinho</item>
+        <item>Read</item>
+        <item>Cart</item>
     </string-array>
     <string-array name="go_to_cart">
-        <item>Ir</item>
-        <item>Para</item>
-        <item>Carrinho</item>
+        <item>Go</item>
+        <item>To</item>
+        <item>Cart</item>
     </string-array>
     <string-array name="go_to_see_all_products">
-        <item>Ver</item>
-        <item>Todos</item>
-        <item>Produtos</item>
+        <item>See</item>
+        <item>All</item>
+        <item>Products</item>
     </string-array>
     <string-array name="go_to_checkout">
-        <item>Ir</item>
-        <item>Pagamento</item>
+        <item>Go</item>
+        <item>Pay</item>
     </string-array>
     <string-array name="logout">
-        <item>Sair</item>
+        <item>Leave</item>
         <item>App</item>
     </string-array>
     <string-array name="fav">
-        <item>Ir</item>
-        <item>Favoritos</item>
+        <item>Go</item>
+        <item>Wishlist</item>
     </string-array>
     <string-array name="go_to_home_page">
-        <item>Ir</item>
-        <item>página</item>
-        <item>inicial</item>
+        <item>Go</item>
+        <item>Home</item>
+        <item>Page</item>
     </string-array>
     <string-array name="go_to_order_end">
-        <item>Finalizar</item>
-        <item>Encomenda</item>
+        <item>Finish</item>
+        <item>Order</item>
     </string-array>
     <string-array name="go_to_product_detail">
-        <item>Ir</item>
-        <item>Detalhes</item>
-        <item>Produto</item>
+        <item>Go</item>
+        <item>Details</item>
+        <item>Product</item>
     </string-array>
     <string-array name="stop_read">
-        <item>Parar</item>
-        <item>Leitura</item>
+        <item>Stop</item>
+        <item>Read</item>
     </string-array>
+
+    <string name="speach_item">Item %s, - %s, with value %s€</string>
 
     <!-- Speetch Erros-->
     <string name="command_not_found">Unknown action, please try again !</string>
