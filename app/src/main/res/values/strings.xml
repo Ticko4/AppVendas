@@ -78,8 +78,11 @@
     <string name="registry_user_email">Email</string>
     <string name="registry_user_input">Nome completo</string>
 
+    <!-- Product Details -->
     <string name="product_detail_quantity">Quantity</string>
     <string name="product_detail_total">Total</string>
+    <string name="product_detail_entity_subcategory">%s / %s</string>
+
     <!-- Entities -->
     <string name="entities">Entidades</string>
     <!-- ProductByEntity -->

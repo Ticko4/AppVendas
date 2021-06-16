@@ -35,7 +35,8 @@ public class ProductsAdapter(
     inner class MyViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
         var title: TextView = view.findViewById(R.id.title)
         var price: TextView = view.findViewById(R.id.price)
-        var content: TextView = view.findViewById(R.id.content)
+        var subcategory: TextView = view.findViewById(R.id.subcategory)
+        var entity: TextView = view.findViewById(R.id.entity)
         var swipeRevealLayout:SwipeRevealLayout = view.findViewById(R.id.swipe_layout)
         var image: ImageView = view.findViewById(R.id.image)
         var imagecopy: ImageView = view.findViewById(R.id.imageCopy)
@@ -64,7 +65,8 @@ public class ProductsAdapter(
         }
         holder.title.text = product.name
         holder.price.text = context.resources.getString(R.string.price, BigDecimal(product.price.toString()).setScale(2, RoundingMode.HALF_EVEN).toString().replace('.', ','))
-        holder.content.text = product.subcategory
+        holder.subcategory.text = product.subcategory.name
+        holder.entity.text = product.entity.name
 
         holder.favoriteCard.setOnClickListener { // send selected contact in callback
             if(product.favorite){

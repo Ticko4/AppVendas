@@ -185,7 +185,8 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener,TextToSpeech.OnIn
             description = product.description,
             favorite = product.favorite,
             quantity = quantity,
-            total = (quantity * product.price)
+            total = (quantity * product.price),
+            entity = product.entity
         )
         mAdapter!!.setQuantity(position,quantity,cart)
         cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
@@ -204,7 +205,8 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener,TextToSpeech.OnIn
             description = product.description,
             favorite = product.favorite,
             quantity = quantity,
-            total = (quantity * product.price)
+            total = (quantity * product.price),
+            entity = product.entity
         )
         mAdapter!!.setQuantity(position,quantity,cart)
         cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
