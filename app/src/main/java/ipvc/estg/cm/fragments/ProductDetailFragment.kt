@@ -40,9 +40,7 @@ import ipvc.estg.cm.entities.SliderItem
 import ipvc.estg.cm.listeners.CircleAnimationUtil
 import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.vmodel.CartViewModel
-import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.cm_product_detail_fragment.view.*
-import kotlinx.android.synthetic.main.cm_product_detail_fragment.view.cartRelativeLayout
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -151,7 +149,8 @@ class ProductDetailFragment: Fragment() {
         view.total_val.text = view.product_price.text
         view.product_name.text = product!!.name
         view.close_details.title = product!!.name
-        view.category.text = product!!.subcategory
+        /*view.subcategory.text = product!!.subcategory.name*/
+        view.entity.text = resources.getString(R.string.product_detail_entity_subcategory,product!!.entity.name,product!!.subcategory.name)
         if(product!!.description.isEmpty()){
             product!!.description = getString(R.string.product_no_description)
         }
@@ -246,17 +245,19 @@ class ProductDetailFragment: Fragment() {
                 override fun onAnimationStart(animation: Animator?) {
 
                     val quantity = (product.quantity + np!!.value)
+                    val gson = Gson()
                     val cart = Cart(
                         id = product.id,
                         name = product.name,
                         image = product.image,
                         images = product.images,
                         price = product.price,
-                        subcategory = product.subcategory,
+                        subcategory = gson.toJson(product.subcategory),
                         description = product.description,
                         favorite = product.favorite,
                         quantity = quantity,
-                        total = (quantity * product.price)
+                        total = (quantity * product.price),
+                        entity = gson.toJson(product.entity)
                     )
                     success(cart)
                     Log.e("home total", cart.quantity.toString())

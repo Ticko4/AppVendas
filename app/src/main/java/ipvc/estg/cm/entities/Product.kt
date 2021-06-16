@@ -7,9 +7,20 @@ class Product(
     var image: String,
     var images:String,
     var price: Float,
-    var subcategory: String,
+    var subcategory: Subcategory,
     var description: String,
     var favorite: Boolean,
     var quantity: Int,
-    var total: Float
+    var total: Float,
+    var entity: EntityProd
+)
+
+data class EntityProd(
+    val id: Int,
+    val name: String,
+)
+
+data class Subcategory(
+    val id: Int,
+    val name: String,
 )

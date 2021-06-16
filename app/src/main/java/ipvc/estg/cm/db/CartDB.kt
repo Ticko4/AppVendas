@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
-@Database(entities = arrayOf(Cart::class), version = 25, exportSchema = false)
+@Database(entities = arrayOf(Cart::class), version = 26, exportSchema = false)
 abstract class CartDB : RoomDatabase() {
 
     abstract fun cartDao(): CartDao
