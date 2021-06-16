@@ -236,6 +236,7 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener,TextToSpeech.OnIn
             ), TextToSpeech.QUEUE_ADD, null, "")
         }
 
+
         tts!!.speak("Total do carrinho " + total!!.text, TextToSpeech.QUEUE_ADD, null, "")
 
     }
