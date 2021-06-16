@@ -127,5 +127,7 @@
 
     <!-- Speetch Erros-->
     <string name="command_not_found">Unknown action, please try again !</string>
+    <!-- WishList -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
