@@ -41,12 +41,7 @@ class CartRepository(private val cartDao: CartDao) {
         return cartDao.clearQuantities()
     }
 
-
-    /*  suspend fun updateNote(id: Int,title:String,description:String,color: String,colorId:Int) {
-         notesDao.updateNote(id,title,description,color,colorId)
-     }
-
-     suspend fun setNotification(id: Int,status:Boolean) {
-         notesDao.setNotification(id,status)
-     }*/
+    fun getFavorites(): LiveData<List<Cart>>{
+        return cartDao.getFavorites()
+    }
 }

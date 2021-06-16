@@ -75,12 +75,10 @@
         </RelativeLayout>
 
         <androidx.core.widget.NestedScrollView
-
             android:layout_marginTop="360dp"
             android:id="@+id/cart_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             app:elevation="10dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -99,10 +97,12 @@
 
                 <TextView
                     android:padding="10dp"
-                    android:id="@+id/category"
+                    android:id="@+id/entity"
                     android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+
+
                 <TextView
                     android:layout_marginEnd="20dp"
                     android:layout_marginTop="20dp"
@@ -111,8 +111,7 @@
                     android:textSize="20sp"
                     android:padding="10dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignEnd="@+id/category"
-
+                    android:layout_alignEnd="@+id/entity"
                     android:textColor="@color/cpb_red_dark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -121,7 +120,7 @@
                     android:id="@+id/product_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/category"
+                    android:layout_below="@+id/entity"
                     android:layout_alignParentStart="true"
                     android:layout_marginTop="10dp"
                     android:padding="10dp"
@@ -213,17 +212,10 @@
                     android:layout_height="60dp"/>
 
                 <TextView
-                    android:layout_toLeftOf="@+id/total_val"
-                    android:id="@+id/total_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/qtd_text"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginEnd="0dp"
-                    android:layout_toStartOf="@+id/np"
-                    android:text="@string/product_detail_total" />
 
-                <TextView
+                    android:textSize="20sp"
+                    android:layout_alignParentEnd="true"
+                    android:padding="5dp"
                     android:id="@+id/total_val"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -232,9 +224,21 @@
                     android:layout_marginTop="18dp"
                     android:layout_marginEnd="0dp"
                     android:textColor="@color/cpb_red_dark"
-                    android:textStyle="bold"
-                    android:layout_toEndOf="@+id/total_text" />
+                    android:textStyle="bold" />
 
+
+                <TextView
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:padding="5dp"
+                    android:layout_toStartOf="@+id/total_val"
+                    android:id="@+id/total_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/qtd_text"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="0dp"
+                    android:text="@string/product_detail_total" />
 
                 <LinearLayout
                     android:layout_below="@+id/total_val"
@@ -273,7 +277,8 @@
         android:background="@color/cpb_white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_weight="0.5"

@@ -38,6 +38,9 @@ interface CartDao  {
     @Query("UPDATE cart SET quantity=0,total=0 WHERE quantity > 0 OR total > 0")
     suspend fun clearQuantities()
 
+    @Query("SELECT * from cart where favorite = 1")
+    fun getFavorites(): LiveData<List<Cart>>
+
 /*@Query("UPDATE notes SET colorId = :colorId,color = :color,description=:description,title=:title WHERE id == :id")
 suspend fun updateNote(id: Int,title:String,description:String,color: String,colorId:Int)
 

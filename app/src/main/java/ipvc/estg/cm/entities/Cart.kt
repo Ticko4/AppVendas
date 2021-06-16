@@ -18,5 +18,5 @@ class Cart(
     @ColumnInfo(name = "favorite") var favorite: Boolean,
     @ColumnInfo(name = "quantity") var quantity: Int,
     @ColumnInfo(name = "total") var total: Float,
-
+    @ColumnInfo(name = "entity") var entity: String,
     )

@@ -58,4 +58,8 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
     fun clearQuantities() = viewModelScope.launch(Dispatchers.IO){
         repository.clearQuantities()
     }
+
+    fun getFavorites(): LiveData<List<Cart>> {
+        return repository.getFavorites()
+    }
 }

@@ -3,28 +3,21 @@ package ipvc.estg.cm.fragments
 import android.Manifest
 import android.animation.Animator
 import android.app.Activity
-import android.app.Application
-import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,26 +29,19 @@ import com.google.gson.Gson
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.ProductsAdapter
 import ipvc.estg.cm.entities.Cart
+import ipvc.estg.cm.entities.EntityProd
 import ipvc.estg.cm.entities.Product
+import ipvc.estg.cm.entities.Subcategory
 import ipvc.estg.cm.listeners.CircleAnimationUtil
-import ipvc.estg.cm.listeners.NavigationIconClickListener
 import ipvc.estg.cm.navigation.NavigationHost
 import ipvc.estg.cm.retrofit.EndPoints
 import ipvc.estg.cm.retrofit.ServiceBuilder
 import ipvc.estg.cm.vmodel.CartViewModel
-import kotlinx.android.synthetic.main.cm_home_fragment.view.*
-import kotlinx.android.synthetic.main.cm_main_activity.view.*
-import kotlinx.android.synthetic.main.cm_product_detail_fragment.view.*
-import kotlinx.android.synthetic.main.cm_products_by_entity_fragment.*
 import kotlinx.android.synthetic.main.cm_products_by_entity_fragment.view.*
-import kotlinx.android.synthetic.main.navigation_backdrop.view.*
-import kotlinx.android.synthetic.main.navigation_backdrop.view.nav_logout
-import kotlinx.android.synthetic.main.product_row.view.*
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterListener,
@@ -166,18 +152,19 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
         if(product!!.favorite){
             message = "Adicionado aos favoritos"
         }
-
+        val gson = Gson()
         val cart = Cart(
             id = product.id,
             name = product.name,
             image = product.image,
             images= product.images,
             price = product.price,
-            subcategory = product.subcategory,
+            subcategory = gson.toJson(product.subcategory),
             description = product.description,
             favorite = product.favorite,
             quantity = product.quantity,
-            total = product.total
+            total = product.total,
+            entity = gson.toJson(product.entity)
         )
 
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
@@ -279,7 +266,8 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                                                     description = it.description,
                                                     favorite = cart?.favorite?: false ,
                                                     quantity = cart?.quantity ?: 0,
-                                                    total = (cart?.quantity ?: 0) * it.price
+                                                    total = (cart?.quantity ?: 0) * it.price,
+                                                    entity = it.entity
                                                 )
                                             )
                                         })
@@ -323,13 +311,14 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                             image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
                             images = myJson,
                             price = 100.0f,
-                            subcategory = "Wearables",
+                            subcategory = Subcategory(1,"Wearable"),
                             description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                                     "\n" +
                                     "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                             favorite = cart?.favorite ?: false,
                             quantity = cart?.quantity ?: 0,
-                            total = (cart?.quantity ?: 0) * 10.2f
+                            total = (cart?.quantity ?: 0) * 10.2f,
+                            entity = EntityProd(1,"Entidade 1")
                         )
                     )
                     liveProductsList.value = productsList
@@ -351,13 +340,14 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                             image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
                             images = myJson,
                             price = 14.99f,
-                            subcategory = "Dairy",
+                            subcategory = Subcategory(2,"Dairy"),
                             description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                                     "\n" +
                                     "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                             favorite = cart?.favorite ?: false,
                             quantity = cart?.quantity ?: 0,
-                            total = (cart?.quantity ?: 0) * 10.2f
+                            total = (cart?.quantity ?: 0) * 10.2f,
+                            entity = EntityProd(2,"Entity 2")
                         )
                     )
                     liveProductsList.value = productsList
@@ -379,13 +369,14 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                             image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
                             images = myJson,
                             price = 399.99f,
-                            subcategory = "Tecnology",
+                            subcategory = Subcategory(3,"Technology"),
                             description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                                     "\n" +
                                     "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                             favorite = cart?.favorite ?: false,
                             quantity = cart?.quantity ?: 0,
-                            total = (cart?.quantity ?: 0) * 10.2f
+                            total = (cart?.quantity ?: 0) * 10.2f,
+                            entity = EntityProd(3,"Entity 3")
                         )
                     )
                     liveProductsList.value = productsList
@@ -407,13 +398,14 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                             image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
                             images = myJson,
                             price = 1.20f,
-                            subcategory = "Drinks",
+                            subcategory = Subcategory(4,"Drinks"),
                             description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                                     "\n" +
                                     "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                             favorite = cart?.favorite ?: false,
                             quantity = cart?.quantity ?: 0,
-                            total = (cart?.quantity ?: 0) * 10.2f
+                            total = (cart?.quantity ?: 0) * 10.2f,
+                            entity = EntityProd(4,"Entity 4")
                         )
                     )
                     liveProductsList.value = productsList
@@ -432,17 +424,19 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
             .setDestView(destView).setAnimationListener(object : Animator.AnimatorListener {
                 override fun onAnimationStart(animation: Animator?) {
                     val quantity = (product.quantity + 1 )
+                    val gson = Gson()
                     val cart = Cart(
                         id = product.id,
                         name = product.name,
                         image = product.image,
                         images = product.images,
                         price = product.price,
-                        subcategory = product.subcategory,
+                        subcategory = gson.toJson(product.subcategory),
                         description = product.description,
                         favorite = product.favorite,
                         quantity = quantity,
-                        total = (quantity * product.price)
+                        total = (quantity * product.price),
+                        entity = gson.toJson(product.entity)
                     )
                     Log.e("home total",cart.total.toString())
                     mAdapter!!.setQuantity(position,quantity)
