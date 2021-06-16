@@ -18,8 +18,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.chauthai.swipereveallayout.SwipeRevealLayout
 import com.chauthai.swipereveallayout.ViewBinderHelper
+import com.google.gson.Gson
 import ipvc.estg.cm.R
 import ipvc.estg.cm.entities.Cart
+import ipvc.estg.cm.entities.EntityProd
+import ipvc.estg.cm.entities.Product
+import ipvc.estg.cm.entities.Subcategory
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -32,7 +36,8 @@ class CartAdapter(productList: MutableList<Cart>, listener: CartAdapterListener,
     inner class MyViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
         var title: TextView = view.findViewById(R.id.title)
         var price: TextView = view.findViewById(R.id.price)
-        var content: TextView = view.findViewById(R.id.content)
+        var subcategory: TextView = view.findViewById(R.id.subcategory)
+        var entity: TextView = view.findViewById(R.id.entity)
         var swipeRevealLayout:SwipeRevealLayout = view.findViewById(R.id.swipe_layout)
         var image: ImageView = view.findViewById(R.id.image)
         var imagecopy: ImageView = view.findViewById(R.id.imageCopy)
@@ -70,7 +75,12 @@ class CartAdapter(productList: MutableList<Cart>, listener: CartAdapterListener,
                 RoundingMode.HALF_EVEN
             ).toString().replace('.', ',')
         )
-        holder.content.text = product.subcategory
+
+        val gson = Gson()
+        val subcategory = gson.fromJson(product.subcategory, Subcategory::class.java)
+        val entity = gson.fromJson(product.entity, EntityProd::class.java)
+        holder.subcategory.text = subcategory.name
+        holder.entity.text = entity.name
 
         holder.quantity.text = product.quantity.toString()
         holder.quantityAddMode.text = product.quantity.toString()

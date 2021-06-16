@@ -57,80 +57,104 @@ class LoginFragment: Fragment() {
 
     private fun setClickListeners(view: View) {
         btnLogin!!.setOnClickListener {
-            btnLogin!!.isEnabled = false
-            btnLogin!!.startAnimation()
+            login()
+        }
+    }
 
-            val usernameInput = view.findViewById<TextView>(R.id.username_text)
-            val passwordInput = view.findViewById<TextView>(R.id.password_text)
-            val username = usernameInput.text.toString().lowercase(Locale.getDefault())
-            val password = passwordInput.text.toString()
-            usernameInput.error = null
-            passwordInput.error = null
+    fun login(){
 
-            if(username.isEmpty() && password.isEmpty()){
-                usernameInput.error = getString(R.string.invalid_username)
-                passwordInput.error = getString(R.string.invalid_password)
-                failed()
-            }else if (username.isEmpty()) {
-                usernameInput.error = getString(R.string.invalid_username)
-                failed()
-            } else if (password.isEmpty() || password == " ") {
-                passwordInput.error = getString(R.string.invalid_password)
-                failed()
-            }else{
-                val obj = JSONObject()
-                obj.put("username", username)
-                obj.put("password", password)
-                var payload = obj.toString()
-                payload = Base64.encodeToString(payload.toByteArray(charset("UTF-8")), Base64.DEFAULT)
+        btnLogin!!.isEnabled = false
+        btnLogin!!.startAnimation()
 
-                val request = ServiceBuilder.buildService(EndPoints::class.java)
-                val call = request.loginUser(payload = payload)
-                call.enqueue(object : Callback<User> {
-                    override fun onResponse(call: Call<User>?, response: Response<User>?) {
+        val usernameInput = requireView().findViewById<TextView>(R.id.username_text)
+        val passwordInput = requireView().findViewById<TextView>(R.id.password_text)
+        val username = usernameInput.text.toString().lowercase(Locale.getDefault())
+        val password = passwordInput.text.toString()
+        usernameInput.error = null
+        passwordInput.error = null
 
-                        if (response!!.isSuccessful) {
-                            if (rememberMe!!.isChecked) {
-                                val rememberMe: SharedPreferences = context!!.getSharedPreferences("REMEMBER", Context.MODE_PRIVATE)
-                                rememberMe.edit().putString("username", "response").apply()
-                            } else {
-                                val rememberMe: SharedPreferences = context!!.getSharedPreferences("REMEMBER", Context.MODE_PRIVATE)
-                                rememberMe.edit().clear().apply()
-                            }
-                            val rememberMe: SharedPreferences = context!!.getSharedPreferences("AUTHENTICATION", Context.MODE_PRIVATE)
-                            rememberMe.edit().putInt("idUser", response.body().id).apply()
-                            rememberMe.edit().putString("_token", "Bearer " + response.body()._token).apply()
-                            success()
+        if(username.isEmpty() && password.isEmpty()){
+            usernameInput.error = getString(R.string.invalid_username)
+            passwordInput.error = getString(R.string.invalid_password)
+            failed()
+        }else if (username.isEmpty()) {
+            usernameInput.error = getString(R.string.invalid_username)
+            failed()
+        } else if (password.isEmpty() || password == " ") {
+            passwordInput.error = getString(R.string.invalid_password)
+            failed()
+        }else{
+            val obj = JSONObject()
+            obj.put("username", username)
+            obj.put("password", password)
+            var payload = obj.toString()
+            payload = Base64.encodeToString(payload.toByteArray(charset("UTF-8")), Base64.DEFAULT)
+
+           /* val request = ServiceBuilder.buildService(EndPoints::class.java)
+            val call = request.loginUser(payload = payload)
+            call.enqueue(object : Callback<User> {
+                override fun onResponse(call: Call<User>?, response: Response<User>?) {
+
+                    if (response!!.isSuccessful) {
+                        if (rememberMe!!.isChecked) {
+                            val rememberMe: SharedPreferences = context!!.getSharedPreferences("REMEMBER", Context.MODE_PRIVATE)
+                            rememberMe.edit().putString("username", "response").apply()
                         } else {
-                            failed()
-                            if (response.code() == 403 && response.message() == "login_fail") {
-                                usernameInput.error = getString(R.string.wrong_user_info)
-                                passwordInput.error = getString(R.string.wrong_user_info)
-                            } else {
-                                (activity as NavigationHost).customToaster(title = getString(R.string.toast_error), message = getString(R.string.general_error), type = "connection")
-                            }
+                            val rememberMe: SharedPreferences = context!!.getSharedPreferences("REMEMBER", Context.MODE_PRIVATE)
+                            rememberMe.edit().clear().apply()
                         }
-                        btnLogin!!.isEnabled = true
-                    }
-
-                    override fun onFailure(call: Call<User>?, t: Throwable?) {
-                        btnLogin!!.isEnabled = true
-
                         val rememberMe: SharedPreferences = context!!.getSharedPreferences("AUTHENTICATION", Context.MODE_PRIVATE)
-                        rememberMe.edit().putInt("idUser", 0).apply()
-                        rememberMe.edit().putString("_token", "").apply()
-
-                        (activity as NavigationHost).customToaster(title = getString(R.string.toast_error), message = getString(R.string.general_error), type = "connection")
+                        rememberMe.edit().putInt("idUser", response.body().id).apply()
+                        rememberMe.edit().putString("_token", "Bearer " + response.body()._token).apply()
+                        success()
+                    } else {
                         failed()
+                        if (response.code() == 403 && response.message() == "login_fail") {
+                            usernameInput.error = getString(R.string.wrong_user_info)
+                            passwordInput.error = getString(R.string.wrong_user_info)
+                        } else {
+                            (activity as NavigationHost).customToaster(title = getString(R.string.toast_error), message = getString(R.string.general_error), type = "connection")
+                        }
                     }
-                })
+                    btnLogin!!.isEnabled = true
+                }
+
+                override fun onFailure(call: Call<User>?, t: Throwable?) {
+                    btnLogin!!.isEnabled = true
+
+                    val rememberMe: SharedPreferences = context!!.getSharedPreferences("AUTHENTICATION", Context.MODE_PRIVATE)
+                    rememberMe.edit().putInt("idUser", 0).apply()
+                    rememberMe.edit().putString("_token", "").apply()
+
+                    (activity as NavigationHost).customToaster(title = getString(R.string.toast_error), message = getString(R.string.general_error), type = "connection")
+                    failed()
+                }
+            })*/
+        }
+
+        if(username == "admin@admin.com" && password == "admin"){
+            if (rememberMe!!.isChecked) {
+                val rememberMe: SharedPreferences = requireContext().getSharedPreferences("REMEMBER", Context.MODE_PRIVATE)
+                rememberMe.edit().putString("username", "response").apply()
+            } else {
+                val rememberMe: SharedPreferences = requireContext().getSharedPreferences("REMEMBER", Context.MODE_PRIVATE)
+                rememberMe.edit().clear().apply()
             }
+            val rememberMe: SharedPreferences = requireContext().getSharedPreferences("AUTHENTICATION", Context.MODE_PRIVATE)
+            rememberMe.edit().putInt("idUser", 1).apply()
+            rememberMe.edit().putString("_token", "Bearer " + "teste_token").apply()
+            success()
+        }else{
+            failed()
         }
     }
 
     private fun failed(){
         btnLogin!!.isEnabled = true
         btnLogin!!.doneLoadingAnimation(Color.TRANSPARENT, BitmapFactory.decodeResource(resources, R.drawable.error))
+
+        requireView().findViewById<TextView>(R.id.username_text).error = getString(R.string.wrong_user_info)
+        requireView().findViewById<TextView>(R.id.password_text).error = getString(R.string.wrong_user_info)
 
         Handler(Looper.getMainLooper()).postDelayed({
             btnLogin!!.revertAnimation()
@@ -146,7 +170,7 @@ class LoginFragment: Fragment() {
             btnLogin!!.revertAnimation()
             btnLogin!!.setBackgroundResource(R.drawable.shape)
             (activity as NavigationHost).customToaster(title = getString(R.string.toast_success), message = getString(R.string.login_success), type = "success")
-            activity?.onBackPressed()
+            (activity as NavigationHost).navigateTo(HomeFragment(),addToBackStack = false,animate = true,tag="home")
         }, 10 * 100)
     }
 }

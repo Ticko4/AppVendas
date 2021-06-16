@@ -1,6 +1,7 @@
 package ipvc.estg.cm.fragments
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,11 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.*
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.CompaniesAdapter
@@ -39,9 +36,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
-class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener {
+class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,TextToSpeech.OnInitListener {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
@@ -49,10 +45,13 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener {
     private var entitiesList: MutableList<Company> = ArrayList<Company>()
     private var itemCounter:TextView? = null
     private lateinit var cartViewModel: CartViewModel
+    private var tts: TextToSpeech? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        tts = TextToSpeech(context, this)
+
     }
 
     override fun onCreateView(
@@ -310,12 +309,55 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener {
         mAdapter!!.setHasStableIds(true)
     }
 
-    override fun onEntitySelected(entity: Entity?) {
+    override fun onEntitySelected(company: Company?) {
         val bundle = Bundle()
-        if (entity != null) {
-            bundle.putString("title", entity.name)
+        if (company != null) {
+            bundle.putString("title", company.name)
         }
         (activity as NavigationHost).navigateTo(ProductsByEntityFragment(),addToBackStack = true,animate = true,tag = "products", data = bundle)
+    }
+    fun readProducts(){
+        speakOut(0,entitiesList.size)
+    }
+    private fun speakOut(pos1:Int, pos2:Int) {
+        val formatArray  = entitiesList.subList(pos1, pos2);
+        if(formatArray== null){
+            return;
+        }
+
+        for(item in formatArray){
+            tts!!.speak("Item "+(formatArray.indexOf(item)+1)+item.name, TextToSpeech.QUEUE_ADD, null, "")
+        }
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            val result = tts!!.setLanguage(Locale.getDefault())
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "The Language specified is not supported!")
+            } else {
+//                buttonSpeak!!.isEnabled = true
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!")
+        }
+    }
+    fun stopRead(){
+        Log.e("canRead","canRead")
+        tts!!.speak("", TextToSpeech.QUEUE_FLUSH, null,"")
+
+    }
+
+    public override fun onDestroy() {
+        // Shutdown TTS
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+        super.onDestroy()
     }
 
 }

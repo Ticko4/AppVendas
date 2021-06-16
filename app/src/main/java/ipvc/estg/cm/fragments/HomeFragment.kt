@@ -1,14 +1,9 @@
 package ipvc.estg.cm.fragments
 
-import android.Manifest
 import android.animation.Animator
 import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
 import android.util.Base64
 import android.util.Log
@@ -17,15 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,11 +27,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.ProductsAdapter
-import ipvc.estg.cm.entities.Cart
-import ipvc.estg.cm.entities.Product
+import ipvc.estg.cm.entities.*
 import ipvc.estg.cm.listeners.CircleAnimationUtil
 import ipvc.estg.cm.listeners.NavigationIconClickListener
 import ipvc.estg.cm.navigation.NavigationHost
@@ -50,12 +40,12 @@ import kotlinx.android.synthetic.main.cm_home_fragment.*
 import kotlinx.android.synthetic.main.cm_home_fragment.view.*
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
-import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,ActivityCompat.OnRequestPermissionsResultCallback,TextToSpeech.OnInitListener {
@@ -63,12 +53,13 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
     private var mAdapter: ProductsAdapter? = null
-    private var productsList: MutableList<Product> = ArrayList<Product>()
+
+    private var liveProductsList: MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
     private var itemCounter:TextView? = null
     private lateinit var cartViewModel: CartViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
-
+    private var query:String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,30 +79,24 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         return view
 
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if(savedInstanceState != null){
+            Log.e("savedInstanceState",savedInstanceState.toString())
+        }
+
         super.onViewCreated(view, savedInstanceState)
-        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
-            }
 
-            override fun onQueryTextChange(query: String?): Boolean {
+    }*/
 
-                val tempArr = ArrayList<Product>()
 
-                for (arr in productsList) {
-                    if (arr.name.lowercase(Locale.getDefault()).contains(query.toString().lowercase())) {
-                        tempArr.add(arr)
-                    }
-                }
-                mAdapter?.setNotes(tempArr)
-                mAdapter?.notifyDataSetChanged()
-                return true
-            }
-        })
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.e("onSaveInstanceState", "onSaveInstanceState")
+        val gson = Gson()
+        val myJson: String = gson.toJson(liveProductsList.value)
+        outState.putString("productList",myJson)
     }
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,6 +113,40 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 itemCounter!!.text = it.toString()
             }
         })
+
+        liveProductsList!!.observe(viewLifecycleOwner, {
+            if(query != null && query != ""){
+                filterProducts()
+            }
+        })
+
+        view.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(query: String?): Boolean {
+               this@HomeFragment.query = query
+                filterProducts()
+                return true
+            }
+        })
+    }
+
+    fun filterProducts(){
+        var tempArr:MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
+        val filteredProducts: MutableList<Product> = ArrayList()
+
+        if(liveProductsList.value != null){
+            liveProductsList.value!!.forEach {
+                if (it.name.lowercase(Locale.getDefault()).contains(query.toString().lowercase())) {
+                    filteredProducts.add(it)
+                }
+            }
+            tempArr.value = filteredProducts
+            mAdapter?.setProducts(tempArr)
+        }
+
     }
 
     private fun setClickListeners(view: View){
@@ -187,7 +206,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     private fun setAdapter() {
-        mAdapter = context?.let { ProductsAdapter(productsList, this, it) }
+        mAdapter = context?.let { ProductsAdapter(liveProductsList, this, it) }
         mAdapter!!.setHasStableIds(true)
     }
 
@@ -222,9 +241,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     private fun refresh() {
-        productsList.clear()
-        mAdapter?.notifyDataSetChanged()
-        Log.e("refresh", true.toString())
         getData()
     }
 
@@ -242,18 +258,19 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         if(product!!.favorite){
             message = "Adicionado aos favoritos"
         }
-
+        val gson = Gson()
         val cart = Cart(
             id = product.id,
             name = product.name,
             image = product.image,
             images= product.images,
             price = product.price,
-            subcategory = product.subcategory,
+            subcategory = gson.toJson(product.subcategory),
             description = product.description,
             favorite = product.favorite,
             quantity = product.quantity,
-            total = product.total
+            total = product.total,
+            entity = gson.toJson(product.entity)
         )
 
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
@@ -281,7 +298,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     private fun getData() {
-        productsList.clear()
+        val productsList: MutableList<Product> = ArrayList()
+        liveProductsList.value = null
         recyclerView!!.adapter = mAdapter
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
 
@@ -304,7 +322,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             }
         }
 
-        if (ActivityCompat.checkSelfPermission(
+/*        if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -312,11 +330,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            /*PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
-                Manifest.permission.ACCESS_FINE_LOCATION, true);*/
+            *//*PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                Manifest.permission.ACCESS_FINE_LOCATION, true);*//*
 
             return
-        }
+        }*/
 
 
 
@@ -356,9 +374,12 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                                                     description = it.description,
                                                     favorite = cart?.favorite?: false ,
                                                     quantity = cart?.quantity ?: 0,
-                                                    total = (cart?.quantity ?: 0) * it.price
+                                                    total = (cart?.quantity ?: 0) * it.price,
+                                                    entity = it.entity
                                                 )
                                             )
+                                            liveProductsList.value = productsList
+                                            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
                                         })
 
                                 }
@@ -399,27 +420,26 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             )
             val gson = Gson()
             val myJson: String = gson.toJson(images)
-
+            liveProductsList.value = productsList
             productsList.add(
-
                 Product(
                     id = 1,
                     name = "Watch",
                     image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
                     images = myJson,
                     price = 100.0f,
-                    subcategory = "Wearables",
+                    subcategory = Subcategory(1,"Wearable"),
                     description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                             "\n" +
                             "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                     favorite = cart?.favorite ?: false,
                     quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                    total = (cart?.quantity ?: 0) * 10.2f,
+                    entity = EntityProd(1,"Entidade 1")
                 )
             )
-            Log.e("p1.livro.qtd", 1.toString())
-            Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
+            liveProductsList.value = productsList
+            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         cartViewModel.getProductById(2).observeOnce(this, { cart ->
 
@@ -437,18 +457,18 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
                     images = myJson,
                     price = 14.99f,
-                    subcategory = "Dairy",
+                    subcategory = Subcategory(2,"Dairy"),
                     description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                             "\n" +
                             "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                     favorite = cart?.favorite ?: false,
                     quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                    total = (cart?.quantity ?: 0) * 10.2f,
+                    entity = EntityProd(2,"Entity 2")
                 )
             )
-            Log.e("p2.queijo.qtd", 2.toString())
-            Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
+            liveProductsList.value = productsList
+            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         cartViewModel.getProductById(3).observeOnce(this, { cart ->
 
@@ -466,18 +486,18 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
                     images = myJson,
                     price = 399.99f,
-                    subcategory = "Tecnology",
+                    subcategory = Subcategory(3,"Technology"),
                     description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                             "\n" +
                             "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                     favorite = cart?.favorite ?: false,
                     quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                    total = (cart?.quantity ?: 0) * 10.2f,
+                    entity = EntityProd(3,"Entity 3")
                 )
             )
-            Log.e("p3.telemovel.qtd", 3.toString())
-            Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
+            liveProductsList.value = productsList
+            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         cartViewModel.getProductById(4).observeOnce(this, { cart ->
 
@@ -495,18 +515,18 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
                     images = myJson,
                     price = 1.20f,
-                    subcategory = "Drinks",
+                    subcategory = Subcategory(4,"Drinks"),
                     description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                             "\n" +
                             "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                     favorite = cart?.favorite ?: false,
                     quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                    total = (cart?.quantity ?: 0) * 10.2f,
+                    entity = EntityProd(4,"Entity 4")
                 )
             )
-            Log.e("p4.coca-cola.qtd", 4.toString())
-            Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
+            liveProductsList.value = productsList
+            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         cartViewModel.getProductById(5).observeOnce(this, { cart ->
 
@@ -515,27 +535,26 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             )
             val gson = Gson()
             val myJson: String = gson.toJson(images)
-
+            liveProductsList.value = productsList
             productsList.add(
-
                 Product(
                     id = 5,
                     name = "Watch",
                     image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
                     images = myJson,
                     price = 100.0f,
-                    subcategory = "Wearables",
+                    subcategory = Subcategory(1,"Werable"),
                     description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                             "\n" +
                             "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                     favorite = cart?.favorite ?: false,
                     quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                    total = (cart?.quantity ?: 0) * 10.2f,
+                    entity = EntityProd(1,"Entidade 1")
                 )
             )
-            Log.e("p1.livro.qtd", 1.toString())
-            Log.e("p1.livro", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
+            liveProductsList.value = productsList
+            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         cartViewModel.getProductById(6).observeOnce(this, { cart ->
 
@@ -553,18 +572,18 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
                     images = myJson,
                     price = 14.99f,
-                    subcategory = "Dairy",
+                    subcategory = Subcategory(2,"Dairy"),
                     description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                             "\n" +
                             "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                     favorite = cart?.favorite ?: false,
                     quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                    total = (cart?.quantity ?: 0) * 10.2f,
+                    entity = EntityProd(2,"Entity 2")
                 )
             )
-            Log.e("p2.queijo.qtd", 2.toString())
-            Log.e("p2.queijo", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
+            liveProductsList.value = productsList
+            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         cartViewModel.getProductById(7).observeOnce(this, { cart ->
 
@@ -582,18 +601,18 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
                     images = myJson,
                     price = 399.99f,
-                    subcategory = "Tecnology",
+                    subcategory = Subcategory(3,"Tecnology"),
                     description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                             "\n" +
                             "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                     favorite = cart?.favorite ?: false,
                     quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                    total = (cart?.quantity ?: 0) * 10.2f,
+                    entity= EntityProd(3,"Entity 3")
                 )
             )
-            Log.e("p3.telemovel.qtd", 3.toString())
-            Log.e("p3.telemovel", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
+            liveProductsList.value = productsList
+            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         cartViewModel.getProductById(8).observeOnce(this, { cart ->
 
@@ -611,18 +630,18 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
                     images = myJson,
                     price = 1.20f,
-                    subcategory = "Drinks",
+                    subcategory = Subcategory(4,"Drinks"),
                     description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
                             "\n" +
                             "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
                     favorite = cart?.favorite ?: false,
                     quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f
+                    total = (cart?.quantity ?: 0) * 10.2f,
+                    entity = EntityProd(4,"Entity 4")
                 )
             )
-            Log.e("p4.coca-cola.qtd", 4.toString())
-            Log.e("p4.coca-cola", productsList[productsList.size - 1].id.toString())
-            mAdapter!!.notifyItemInserted((productsList.size - 1))
+            liveProductsList.value = productsList
+            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
         })
         mSwipeRefreshLayout!!.isRefreshing = false
     }
@@ -633,17 +652,19 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             .setDestView(destView).setAnimationListener(object : Animator.AnimatorListener {
                 override fun onAnimationStart(animation: Animator?) {
                     val quantity = (product.quantity + 1 )
+                    val gson = Gson()
                     val cart = Cart(
                         id = product.id,
                         name = product.name,
                         image = product.image,
                         images = product.images,
                         price = product.price,
-                        subcategory = product.subcategory,
+                        subcategory = gson.toJson(product.subcategory),
                         description = product.description,
                         favorite = product.favorite,
                         quantity = quantity,
-                        total = (quantity * product.price)
+                        total = (quantity * product.price),
+                        entity = gson.toJson(product.entity)
                     )
                     Log.e("home total",cart.total.toString())
                     mAdapter!!.setQuantity(position,quantity)
@@ -670,14 +691,14 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     fun readProducts(){
-        speakOut(0,productsList.size)
+        speakOut(0,liveProductsList.value!!.size)
     }
     private fun speakOut(pos1:Int, pos2:Int) {
         /*val sharedPref = getSharedPreferences(ler, Context.MODE_PRIVATE) ?: return
         val le = sharedPref.getBoolean("le",false)
         if(!le)
             return;*/
-        val formatArray  = productsList.subList(pos1, pos2);
+        val formatArray  = liveProductsList.value!!.subList(pos1, pos2);
         if(formatArray== null){
             return;
         }

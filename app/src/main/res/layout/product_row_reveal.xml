@@ -45,7 +45,7 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:tint="@color/cpb_white"
+                    app:tint="@color/cpb_white"
                     android:id="@+id/add_cart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -121,10 +121,23 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/content"
+                android:textStyle="bold"
+                android:id="@+id/subcategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/title"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_toEndOf="@+id/card_image"
+                android:textColor="@color/cpb_grey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_below="@+id/subcategory"
+                android:id="@+id/entity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="5dp"
