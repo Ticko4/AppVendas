@@ -162,10 +162,9 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 "cart"
             )
         }
-        /*view.activate_microphone.setOnClickListener {
-            Log.e("Btn","Entrou")
-            getSpeechInput()
-        }*/
+        view.nav_favorites.setOnClickListener {
+            (activity as NavigationHost).navigateTo(WishListFragment(),addToBackStack = true,animate = true,"favorites")
+        }
 
         view.findViewById<FloatingActionButton>(R.id.activate_microphone).setOnClickListener {
             Log.e("Btn","Entrou")
@@ -253,10 +252,10 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     override fun onFavoriteClick(product: Product?) {
-        var message = "Removido dos favoritos"
+        var message = getString(R.string.fav_removed)
 
         if(product!!.favorite){
-            message = "Adicionado aos favoritos"
+            message = getString(R.string.fav_added)
         }
         val gson = Gson()
         val cart = Cart(

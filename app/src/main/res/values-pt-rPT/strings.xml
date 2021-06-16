@@ -1,37 +1,37 @@
 <resources>
     <string name="app_name">CM</string>
-    <string name="image">Image</string>
-    <string name="search">Search</string>
+    <string name="image">Imagem</string>
+    <string name="search">Procura</string>
 
     <!--Logout-->
-    <string name="logout">Logout</string>
-    <string name="leave">Do you wish to leave your session?</string>
-    <string name="yes">Leave</string>
-    <string name="no">Cancel</string>
+    <string name="logout">Sair</string>
+    <string name="leave">Deseja terminar a sua sessão?</string>
+    <string name="yes">Sair</string>
+    <string name="no">Cancelar</string>
 
     <!--Login Fragment-->
-    <string name="invalid_username">Insert a valid username</string>
-    <string name="invalid_password">Insert a valid password</string>
-    <string name="login_success">Welcome</string>
-    <string name="wrong_user_info">Incorrect username or password</string>
-    <string name="login_fail">Oops, there was a error trying your login.</string>
-    <string name="field_required">Field required.</string>
+    <string name="invalid_username">Insira um utilizador válida</string>
+    <string name="invalid_password">Insira uma password válida</string>
+    <string name="login_success">Bem-vindo</string>
+    <string name="wrong_user_info">Utilizador ou password incorreta</string>
+    <string name="login_fail">Oops, aconteceu um erro ao efetuar o seu login.</string>
+    <string name="field_required">Campo obrigatório.</string>
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
-    <string name="login_remember">Remember me</string>
+    <string name="login_remember">Lembrar-me</string>
     <string name="login_btn">Login</string>
-    <string name="login_divider">Or</string>
-    <string name="login_create">Create account</string>
-    <string name="login_recover">Recover password</string>
+    <string name="login_divider">Ou</string>
+    <string name="login_create">Criar conta</string>
+    <string name="login_recover">Recuperar password</string>
     <string name="logo">Logo</string>
 
     <!--Toast-->
-    <string name="toast_success">Success</string>
-    <string name="toast_info">Information</string>
-    <string name="toast_error">Error</string>
-    <string name="toast_warning">Warning</string>
-    <string name="general_error">Oops, it looks like an error occurred. Check your internet connection and try again</string>
-    <string name="Speech_Input_Error">Oops, it looks like you don\'t have support for speech input</string>
+    <string name="toast_success">Sucesso</string>
+    <string name="toast_info">Informação</string>
+    <string name="toast_error">Erro</string>
+    <string name="toast_warning">Aviso</string>
+    <string name="general_error">Oops, parece que ocorreu um erro. Verifique a sua conexão à internet e tente novamente</string>
+    <string name="Speech_Input_Error">Oops, it looks like you don\'t have support speech input</string>
 
     <!--Navigation-->
     <string name="navigation_home">Home</string>
@@ -70,7 +70,7 @@
 
     <string name="product_added_checkout">Produto adicionado ao carrinho</string>
     <string name="product_removed">Produto removido do carrinho</string>
-    
+
     <!-- Product Details -->
     <string name="product_detail_quantity">Quantity</string>
     <string name="product_detail_total">Total</string>
@@ -146,7 +146,7 @@
 
     <!-- Speetch Erros-->
     <string name="command_not_found">Unknown action, please try again !</string>
-   <string name="fields_error">There are fields to complete !</string>
+    <string name="fields_error">There are fields to complete !</string>
 
     <!-- WishList -->
     <string name="fav_removed">Removed from wishlist</string>
