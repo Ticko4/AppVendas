@@ -19,6 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ipvc.estg.cm.R
 import ipvc.estg.cm.fragments.*
 import ipvc.estg.cm.navigation.NavigationHost
+import kotlinx.android.synthetic.main.cm_cart_fragment.*
 import kotlinx.android.synthetic.main.cm_home_fragment.*
 import www.sanju.motiontoast.MotionToast
 import java.util.*
@@ -121,16 +122,16 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                                 fragment.readProducts()
                             }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.stop_read).get(0).lowercase())){
                                 fragment.stopRead()
-                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(2).lowercase())){
+                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(2).lowercase())){
                                 navigateTo(CartFragment(),animate = true,addToBackStack = true,tag = "cart")
-                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(2).lowercase())){
-                                navigateTo(CartFragment(),animate = true,addToBackStack = true,tag = "entities")
-                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
-                                navigateTo(CartFragment(),animate = true,addToBackStack = true,tag = "checkout")
-                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.logout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
+                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(2).lowercase())){
+                                navigateTo(EntitiesFragment(),animate = true,addToBackStack = true,tag = "entities")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(1).lowercase())){
+                                navigateTo(CheckoutFragment(),animate = true,addToBackStack = true,tag = "checkout")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.logout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.logout).get(1).lowercase())){
                                 logout(LoginFragment(),"login")
-                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
-                                logout(LoginFragment(),"login")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(1).lowercase())){
+                               // Falta o fragemento dos favoritos
                             }
                             else{
                                 commandNotFound()
@@ -138,30 +139,143 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                         }
                         "login" -> {
                             val fragment: LoginFragment = supportFragmentManager.findFragmentByTag("login") as LoginFragment
+                            if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
+                                fragment.login();
+                            }else{
 
+                            }
                         }
                         "cart" -> {
                             val fragment: CartFragment = supportFragmentManager.findFragmentByTag("cart") as CartFragment
-
+                            if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(1).lowercase())){
+                                navigateTo(CheckoutFragment(),animate = true,addToBackStack = true,tag = "checkout")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_home_page).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_home_page).get(1).lowercase())){
+                                navigateTo(HomeFragment(),animate = true,addToBackStack = true,tag = "home")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_cart).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_cart).get(1).lowercase())){
+                                setReading()
+                                fragment.readCart()
+                                }else{
+                                commandNotFound()
+                            }
                         }
                         "checkout" -> {
-                            val fragment: CheckoutFragment = supportFragmentManager.findFragmentByTag("checkout") as CheckoutFragment
-
+                            val fragment: CheckoutFragment =
+                                supportFragmentManager.findFragmentByTag("checkout") as CheckoutFragment
+                            if (result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_cart).get(0).lowercase()
+                                ) && result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_cart).get(1).lowercase()
+                                ) && result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_cart).get(2).lowercase()
+                                )
+                            ) {
+                                navigateTo(
+                                    CartFragment(),
+                                    animate = true,
+                                    addToBackStack = true,
+                                    tag = "cart"
+                                )
+                            } else if (result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_home_page).get(0)
+                                        .lowercase()
+                                ) && result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_home_page).get(1)
+                                        .lowercase()
+                                )
+                            ) {
+                                navigateTo(
+                                    HomeFragment(),
+                                    animate = true,
+                                    addToBackStack = true,
+                                    tag = "home"
+                                )
+                            } else if (result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_order_end).get(0)
+                                        .lowercase()
+                                ) && result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_order_end).get(1)
+                                        .lowercase()
+                                )
+                            ) {
+                                fragment.payCheckout();
+                            }else  if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_home_page).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_home_page).get(1).lowercase())){
+                                navigateTo(HomeFragment(),animate = true,addToBackStack = true,tag = "home")
+                            } else {
+                                commandNotFound()
+                            }
                         }
                         "order_end" -> {
-                            val fragment: OrderEndFragment = supportFragmentManager.findFragmentByTag("order_end") as OrderEndFragment
-
+                            val fragment: OrderEndFragment =
+                                supportFragmentManager.findFragmentByTag("order_end") as OrderEndFragment
+                            if (result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_home_page).get(0)
+                                        .lowercase()
+                                ) && result?.get(0)!!.lowercase().contains(
+                                    resources.getStringArray(R.array.go_to_home_page).get(1)
+                                        .lowercase()
+                                )
+                            ) {
+                                fragment.takeMeToHome();
+                            }else{
+                                commandNotFound()
+                            }
                         }
+
                         "entities" -> {
                             val fragment: EntitiesFragment = supportFragmentManager.findFragmentByTag("entities") as EntitiesFragment
-
+                            if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_entities).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_entities).get(1).lowercase())){
+                                setReading()
+                                fragment.readProducts()
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.stop_read).get(0).lowercase())){
+                                fragment.stopRead()
+                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(2).lowercase())){
+                                navigateTo(CartFragment(),animate = true,addToBackStack = true,tag = "cart")
+                            } else  if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_home_page).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_home_page).get(1).lowercase())){
+                                navigateTo(HomeFragment(),animate = true,addToBackStack = true,tag = "home")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(1).lowercase())){
+                                navigateTo(CheckoutFragment(),animate = true,addToBackStack = true,tag = "checkout")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.logout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.logout).get(1).lowercase())){
+                                logout(LoginFragment(),"login")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(1).lowercase())){
+                                // Falta o fragemento dos favoritos
+                            }
+                            else{
+                                commandNotFound()
+                            }
                         }
                         "products" -> {
                             val fragment: ProductsByEntityFragment = supportFragmentManager.findFragmentByTag("products") as ProductsByEntityFragment
-
+                            if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(2).lowercase())){
+                                navigateTo(EntitiesFragment(),animate = true,addToBackStack = true,tag = "entities")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(1).lowercase())){
+                                navigateTo(CheckoutFragment(),animate = true,addToBackStack = true,tag = "checkout")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_product_detail).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_product_detail).get(1).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_product_detail).get(2).lowercase())){
+                                navigateTo(ProductDetailFragment(),animate = true,addToBackStack = true,tag = "details")
+                            }else{
+                                commandNotFound()
+                            }
                         }
                         else ->{
                             val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
+                            if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
+                                setReading()
+                                fragment.readProducts()
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.stop_read).get(0).lowercase())){
+                                fragment.stopRead()
+                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_cart).get(2).lowercase())){
+                                navigateTo(CartFragment(),animate = true,addToBackStack = true,tag = "cart")
+                            } else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(1).lowercase())&& result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_see_all_products).get(2).lowercase())){
+                                navigateTo(EntitiesFragment(),animate = true,addToBackStack = true,tag = "entities")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.go_to_checkout).get(1).lowercase())){
+                                navigateTo(CheckoutFragment(),animate = true,addToBackStack = true,tag = "checkout")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.logout).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.logout).get(1).lowercase())){
+                                logout(LoginFragment(),"login")
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(1).lowercase())){
+                                // Falta o fragemento dos favoritos
+                            }
+                            else{
+                                commandNotFound()
+                            }
                         }
                     }
                 }else{
@@ -336,6 +450,7 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                 }
                 "entities" -> {
                     val fragment: EntitiesFragment = supportFragmentManager.findFragmentByTag("entities") as EntitiesFragment
+                    fragment.stopRead()
 
                 }
                 "products" -> {

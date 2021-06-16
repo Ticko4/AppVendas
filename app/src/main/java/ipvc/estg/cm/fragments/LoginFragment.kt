@@ -57,17 +57,17 @@ class LoginFragment: Fragment() {
 
     private fun setClickListeners(view: View) {
         btnLogin!!.setOnClickListener {
-            login(view)
+            login()
         }
     }
 
-    fun login(view: View){
+    fun login(){
 
         btnLogin!!.isEnabled = false
         btnLogin!!.startAnimation()
 
-        val usernameInput = view.findViewById<TextView>(R.id.username_text)
-        val passwordInput = view.findViewById<TextView>(R.id.password_text)
+        val usernameInput = requireView().findViewById<TextView>(R.id.username_text)
+        val passwordInput = requireView().findViewById<TextView>(R.id.password_text)
         val username = usernameInput.text.toString().lowercase(Locale.getDefault())
         val password = passwordInput.text.toString()
         usernameInput.error = null

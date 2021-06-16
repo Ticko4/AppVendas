@@ -1,6 +1,7 @@
 package ipvc.estg.cm.fragments
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -29,14 +30,17 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 
-class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
+class CartFragment:Fragment(), CartAdapter.CartAdapterListener,TextToSpeech.OnInitListener {
     private var productsList: MutableList<Cart> = ArrayList<Cart>()
+    private var cart: MutableList<Cart> = ArrayList<Cart>()
     private var mAdapter: CartAdapter? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
     private lateinit var cartViewModel: CartViewModel
     private var subtotal: TextView? = null
     private var total: TextView? = null
+    private var tts: TextToSpeech? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,6 +54,8 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
         setAdapter()
         setRecyclerView(view)
         fillRecyclerView()
+        tts = TextToSpeech(context, this)
+
         return view
     }
 
@@ -212,5 +218,57 @@ class CartFragment:Fragment(), CartAdapter.CartAdapterListener {
         }
 
     }
+    fun readCart(){
+        speakOut(0,productsList.size)
+    }
+    private fun speakOut(pos1:Int, pos2:Int) {
+        val formatArray  = productsList.subList(pos1, pos2);
+        if(formatArray== null){
+            return;
+        }
+
+        for(item in formatArray){
+            tts!!.speak("Item "+(formatArray.indexOf(item)+1)+item.name + ", Quantidade " +item.quantity + ",   Com valor de " + requireContext().resources.getString(
+                R.string.price, BigDecimal(item.price.toString()).setScale(
+                    2,
+                    RoundingMode.HALF_EVEN
+                ).toString().replace('.', ',')
+            ), TextToSpeech.QUEUE_ADD, null, "")
+        }
+
+        tts!!.speak("Total do carrinho " + total!!.text, TextToSpeech.QUEUE_ADD, null, "")
+
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            val result = tts!!.setLanguage(Locale.getDefault())
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "The Language specified is not supported!")
+            } else {
+//                buttonSpeak!!.isEnabled = true
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!")
+        }
+    }
+    fun stopRead(){
+        Log.e("canRead","canRead")
+        tts!!.speak("", TextToSpeech.QUEUE_FLUSH, null,"")
+
+    }
+
+    public override fun onDestroy() {
+        // Shutdown TTS
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+        super.onDestroy()
+    }
+
 
 }
