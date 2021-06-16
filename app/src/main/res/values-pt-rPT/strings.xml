@@ -1,0 +1,163 @@
+<resources>
+    <string name="app_name">CM</string>
+    <string name="image">Imagem</string>
+    <string name="search">Procura</string>
+
+    <!--Logout-->
+    <string name="logout">Sair</string>
+    <string name="leave">Deseja terminar a sua sessão?</string>
+    <string name="yes">Sair</string>
+    <string name="no">Cancelar</string>
+
+    <!--Login Fragment-->
+    <string name="invalid_username">Insira um utilizador válida</string>
+    <string name="invalid_password">Insira uma password válida</string>
+    <string name="login_success">Bem-vindo</string>
+    <string name="wrong_user_info">Utilizador ou password incorreta</string>
+    <string name="login_fail">Oops, aconteceu um erro ao efetuar o seu login.</string>
+    <string name="field_required">Campo obrigatório.</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_remember">Lembrar-me</string>
+    <string name="login_btn">Login</string>
+    <string name="login_divider">Ou</string>
+    <string name="login_create">Criar conta</string>
+    <string name="login_recover">Recuperar password</string>
+    <string name="logo">Logo</string>
+
+    <!--Toast-->
+    <string name="toast_success">Sucesso</string>
+    <string name="toast_info">Informação</string>
+    <string name="toast_error">Erro</string>
+    <string name="toast_warning">Aviso</string>
+    <string name="general_error">Oops, parece que ocorreu um erro. Verifique a sua conexão à internet e tente novamente</string>
+    <string name="Speech_Input_Error">Oops, parece que não tem suport para utilizar esta funcionalidade</string>
+
+    <!--Navigation-->
+    <string name="navigation_home">Página Principal</string>
+    <string name="navigation_settings">Definições</string>
+    <string name="navigation_logout">Sair</string>
+    <string name="navigation_cart">O meu cesto</string>
+    <string name="navigation_products">Todos os produtos</string>
+    <string name="navigation_favorites">Os meus favoritos</string>
+    <string name="navigation_entities">Lojas</string>
+
+    <!--HomeFragment-->
+    <string name="product_added">Producto "'%s'" adicionado.\nQuantidade:%s.</string>
+    <string name="recommendations">Recomendados</string>
+    <string name="price">%1$s €</string>
+
+    <!--CartFragment-->
+    <string name="checkout_btn">Pagamento</string>
+    <string name="cart_subtotal">Subtotal</string>
+    <string name="cart_total">Total</string>
+    <string name="product_image">Imagem do producto</string>
+    <string name="price_default">0,00 €</string>
+    <string name="no_products">Não tem produtos no seu cesto</string>
+    <string name="add_btn">Adicionado ao seu cesto</string>
+    <string name="product_no_description">Sem descrição disponível</string>
+
+    <!-- Checkout -->
+    <string name="checkout_item_count">%s x %s</string>
+    <string name="checkout_label">Pagamento</string>
+    <string name="checkout_payment_label">Método de pagamento</string>
+    <string name="checkout_product_incart_label">Productos no meu cesto</string>
+    <string name="checkout_data_label">Informação</string>
+    <string name="payment_button">Pagar %1$s€ e continuar</string>
+    <string name="payment_title">Transação concluida</string>
+    <string name="payment_body">A sua compra foi concluída com sucesso</string>
+    <string name="payment_confirm">Continuar</string>
+
+    <string name="product_added_checkout">Produto adicionado ao seu carrinho</string>
+    <string name="product_removed">Produto removido do seu carrinho</string>
+    <string name="registry_user_address">Endereço</string>
+    <string name="registry_user_email">Email</string>
+    <string name="registry_user_input">Nome completo</string>
+
+    <!-- Product Details -->
+    <string name="product_detail_quantity">Quantidade</string>
+    <string name="product_detail_total">Total</string>
+    <string name="product_detail_entity_subcategory">%s / %s</string>
+
+
+    <!-- Entities -->
+    <string name="entities">Lojas</string>
+
+    <!-- ProductByEntity -->
+    <string name="home_grid_title_entity">Nome da loja</string>
+
+    <!--Order End-->
+    <string name="order_end_title">A sua encomenda está a caminho</string>
+    <string name="order_end_body">Obrigado pela sua encomenda. Pode seguir a sua encomenda na secção das \'Encomendas\'.</string>
+    <string name="order_end_delivery_time">Est. Tempo entrega: 30min</string>
+    <string name="order_end_track_btn">Seguir a minha encomenda</string>
+    <string name="order_end_to_home">Leve-me para a página principal</string>
+    <string name="add_payment_method">Adicionar método de pagamento</string>
+    <string name="edit_payment_method">Editar método de pagamento</string>
+
+    <!-- Speetch rules-->
+    <string-array name="read_products">
+        <item>Ler</item>
+        <item>Produtos</item>
+    </string-array>
+    <string-array name="read_entities">
+        <item>Ler</item>
+        <item>Lojas</item>
+    </string-array>
+    <string-array name="read_cart">
+        <item>Ler</item>
+        <item>Carrinho</item>
+    </string-array>
+    <string-array name="go_to_cart">
+        <item>Ir</item>
+        <item>Para</item>
+        <item>Carrinho</item>
+    </string-array>
+    <string-array name="go_to_see_all_products">
+        <item>Ver</item>
+        <item>Todos</item>
+        <item>Produtos</item>
+    </string-array>
+    <string-array name="go_to_checkout">
+        <item>Ir</item>
+        <item>Pagamento</item>
+    </string-array>
+    <string-array name="logout">
+        <item>Sair</item>
+        <item>App</item>
+    </string-array>
+    <string-array name="fav">
+        <item>Ir</item>
+        <item>Favoritos</item>
+    </string-array>
+    <string-array name="go_to_home_page">
+        <item>Ir</item>
+        <item>página</item>
+        <item>inicial</item>
+    </string-array>
+    <string-array name="go_to_order_end">
+        <item>Finalizar</item>
+        <item>Encomenda</item>
+    </string-array>
+    <string-array name="go_to_product_detail">
+        <item>Ir</item>
+        <item>Detalhes</item>
+        <item>Produto</item>
+    </string-array>
+    <string-array name="stop_read">
+        <item>Parar</item>
+        <item>Leitura</item>
+    </string-array>
+
+    <string name="speach_item">Artigo %s, - %s, com o valor de %s€</string>
+
+    <!-- Speetch Erros-->
+    <string name="command_not_found">Acção desconhecida, por favor tente novamente!</string>
+    <string name="fields_error">Existem campos por preencher!</string>
+
+    <!-- WishList -->
+    <string name="fav_removed">Removido dos favoritos</string>
+    <string name="fav_added">Adicionado aos favoritos</string>
+    <string name="product_details_size">Tamanho</string>
+
+</resources>

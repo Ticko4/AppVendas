@@ -162,10 +162,9 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 "cart"
             )
         }
-        /*view.activate_microphone.setOnClickListener {
-            Log.e("Btn","Entrou")
-            getSpeechInput()
-        }*/
+        view.nav_favorites.setOnClickListener {
+            (activity as NavigationHost).navigateTo(WishListFragment(),addToBackStack = true,animate = true,"favorites")
+        }
 
         view.findViewById<FloatingActionButton>(R.id.activate_microphone).setOnClickListener {
             Log.e("Btn","Entrou")
@@ -253,10 +252,10 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     override fun onFavoriteClick(product: Product?) {
-        var message = "Removido dos favoritos"
+        var message = getString(R.string.fav_removed)
 
         if(product!!.favorite){
-            message = "Adicionado aos favoritos"
+            message = getString(R.string.fav_added)
         }
         val gson = Gson()
         val cart = Cart(
@@ -424,7 +423,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             productsList.add(
                 Product(
                     id = 1,
-                    name = "Watch",
+                    name = "Relógio inteligente",
                     image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
                     images = myJson,
                     price = 100.0f,
@@ -482,7 +481,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             productsList.add(
                 Product(
                     id = 3,
-                    name = "Phone",
+                    name = "Telemóvel",
                     image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
                     images = myJson,
                     price = 399.99f,
@@ -539,7 +538,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             productsList.add(
                 Product(
                     id = 5,
-                    name = "Watch",
+                    name = "Relógio",
                     image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
                     images = myJson,
                     price = 100.0f,
@@ -597,7 +596,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             productsList.add(
                 Product(
                     id = 7,
-                    name = "Phone",
+                    name = "Telenovela",
                     image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
                     images = myJson,
                     price = 399.99f,
@@ -704,7 +703,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         }
 
         for(item in formatArray){
-            tts!!.speak("Item "+(formatArray.indexOf(item)+1)+item.name, TextToSpeech.QUEUE_ADD, null, "")
+            tts!!.speak(resources.getString(R.string.speach_item, (formatArray.indexOf(item)+1).toString(), item.name, item.price.toString()), TextToSpeech.QUEUE_ADD, null, "")
             }
         }
 

@@ -31,7 +31,7 @@
     <string name="toast_error">Error</string>
     <string name="toast_warning">Warning</string>
     <string name="general_error">Oops, it looks like an error occurred. Check your internet connection and try again</string>
-    <string name="Speech_Input_Error">Oops, it looks like you dont have support speech input </string>
+    <string name="Speech_Input_Error">Oops, it looks like you don\'t have support for speech input</string>
 
     <!--Navigation-->
     <string name="navigation_home">Home</string>
@@ -70,21 +70,17 @@
 
     <string name="product_added_checkout">Produto adicionado ao carrinho</string>
     <string name="product_removed">Produto removido do carrinho</string>
-    <string name="checkout_payment_balcony">Pagamento no balcão</string>
-    <string name="checkout_payment_MBWAY">MBWAY</string>
-    <string name="checkout_payment_ATM">Multibanco</string>
-    <string name="checkout_add_myData">Utilizar os meus Dados</string>
-    <string name="registry_user_address">Endereço</string>
+    <string name="registry_user_address">Address</string>
     <string name="registry_user_email">Email</string>
-    <string name="registry_user_input">Nome completo</string>
-
+    <string name="registry_user_input">Full name</string>
+    
     <!-- Product Details -->
     <string name="product_detail_quantity">Quantity</string>
     <string name="product_detail_total">Total</string>
     <string name="product_detail_entity_subcategory">%s / %s</string>
 
     <!-- Entities -->
-    <string name="entities">Entidades</string>
+    <string name="entities">Entities</string>
     <!-- ProductByEntity -->
     <string name="home_grid_title_entity">Entity Name</string>
 
@@ -99,63 +95,67 @@
 
     <!-- Speetch rules-->
     <string-array name="read_products">
-        <item>Ler</item>
-        <item>Produtos</item>
+        <item>Read</item>
+        <item>Products</item>
     </string-array>
     <string-array name="read_entities">
-        <item>Ler</item>
-        <item>Entidades</item>
+        <item>Read</item>
+        <item>Shops</item>
     </string-array>
     <string-array name="read_cart">
-        <item>Ler</item>
-        <item>Carrinho</item>
+        <item>Read</item>
+        <item>Cart</item>
     </string-array>
     <string-array name="go_to_cart">
-        <item>Ir</item>
-        <item>Para</item>
-        <item>Carrinho</item>
+        <item>Go</item>
+        <item>To</item>
+        <item>Cart</item>
     </string-array>
     <string-array name="go_to_see_all_products">
-        <item>Ver</item>
-        <item>Todos</item>
-        <item>Produtos</item>
+        <item>See</item>
+        <item>All</item>
+        <item>Products</item>
     </string-array>
     <string-array name="go_to_checkout">
-        <item>Ir</item>
-        <item>Pagamento</item>
+        <item>Go</item>
+        <item>Pay</item>
     </string-array>
     <string-array name="logout">
-        <item>Sair</item>
+        <item>Leave</item>
         <item>App</item>
     </string-array>
     <string-array name="fav">
-        <item>Ir</item>
-        <item>Favoritos</item>
+        <item>Go</item>
+        <item>Wishlist</item>
     </string-array>
     <string-array name="go_to_home_page">
-        <item>Ir</item>
-        <item>página</item>
-        <item>inicial</item>
+        <item>Go</item>
+        <item>Home</item>
+        <item>Page</item>
     </string-array>
     <string-array name="go_to_order_end">
-        <item>Finalizar</item>
-        <item>Encomenda</item>
+        <item>Finish</item>
+        <item>Order</item>
     </string-array>
     <string-array name="go_to_product_detail">
-        <item>Ir</item>
-        <item>Detalhes</item>
-        <item>Produto</item>
+        <item>Go</item>
+        <item>Details</item>
+        <item>Product</item>
     </string-array>
     <string-array name="stop_read">
-        <item>Parar</item>
-        <item>Leitura</item>
+        <item>Stop</item>
+        <item>Read</item>
     </string-array>
+
+    <string name="speach_item">Item %s, - %s, with value %s€</string>
 
     <!-- Speetch Erros-->
     <string name="command_not_found">Unknown action, please try again !</string>
    <string name="fields_error">There are fields to complete !</string>
 
     <!-- WishList -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-   
+    <string name="fav_removed">Removed from wishlist</string>
+    <string name="fav_added">Added to wishlist</string>
+    <string name="product_details_size">Size</string>
+
 </resources>

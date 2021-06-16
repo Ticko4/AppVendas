@@ -45,12 +45,12 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
         if (getRememberMe() != null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.container, HomeFragment())
+                .add(R.id.container, HomeFragment(),"home")
                 .commit()
         }else{
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.container, LoginFragment())
+                .add(R.id.container, LoginFragment(),"login")
                 .commit()
         }
 
