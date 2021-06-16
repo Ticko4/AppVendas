@@ -153,6 +153,9 @@
 
     <!-- Speetch Erros-->
     <string name="command_not_found">Unknown action, please try again !</string>
-    <string name="fields_error">There are fields to complete !</string>
+   <string name="fields_error">There are fields to complete !</string>
 
+    <!-- WishList -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+   
 </resources>
