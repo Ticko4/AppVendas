@@ -79,9 +79,9 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
             }
             if(isReading){
                 cancelReading()
-            }else if(isSearching){
+            }/*else if(isSearching){
                 cancelSearch()
-            }else{
+            }*/else{
                 getSpeechInput()
             }
         }
@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                                // Falta o fragemento dos favoritos
                             }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.search).get(0).lowercase()) || result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.search).get(1).lowercase())){
                                 isSearching = true
-                                findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_search_off)
+                                findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_search)
                                 fragment.detectSearch()
                             }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.add_product_to_list).get(0).lowercase())) {
                                 if (result?.get(0)!!.matches(".*\\d.*".toRegex())) {

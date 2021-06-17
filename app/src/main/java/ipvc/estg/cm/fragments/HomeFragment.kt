@@ -2,12 +2,13 @@ package ipvc.estg.cm.fragments
 
 import android.animation.Animator
 import android.app.Activity
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +18,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.ProductsAdapter
@@ -45,6 +44,9 @@ import kotlinx.android.synthetic.main.cm_home_fragment.view.main_frame
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.cm_settings_fragment.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -80,6 +82,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         setAdapter()
         setRecycleView(view)
         setRefreshLayout(view)
+        view.home_grid_title.text = getString(R.string.recommendations)
         getData()
         return view
 
@@ -91,6 +94,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
     }
+
+    var timer: Timer? = null
 
     private fun declareItems(view: View){
         (activity as NavigationHost).isBtnVisible()
@@ -105,7 +110,9 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
         liveProductsList!!.observe(viewLifecycleOwner, {
             if(query != null && query != ""){
-                filterProducts()
+                home_grid_title.text = resources.getString(R.string.products_result,query)
+            }else{
+                 home_grid_title.text = resources.getString(R.string.recommendations)
             }
         })
 
@@ -115,15 +122,32 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             }
 
             override fun onQueryTextChange(query: String?): Boolean {
-               this@HomeFragment.query = query
-                filterProducts()
+                this@HomeFragment.query = query
+                if (timer != null) {
+                    timer!!.cancel()
+                }
+
+                timer = Timer()
+                timer!!.schedule(object : TimerTask() {
+                    override fun run() {
+                        GlobalScope.launch(Dispatchers.Main) {
+                            Log.e("filterProducts","filterProducts")
+                            filterProducts()
+                        }
+                    }
+                }, 600)
+                return true
+
+
                 return true
             }
         })
     }
 
+
     fun filterProducts(){
-        val filteredProducts: MutableList<Product> = ArrayList()
+        getData()
+        /*val filteredProducts: MutableList<Product> = ArrayList()
         if(liveProductsList.value != null){
             liveProductsList.value!!.forEach {
                 if (it.name.lowercase(Locale.getDefault()).contains(query.toString().lowercase())) {
@@ -132,7 +156,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             }
             tempArr.value = filteredProducts
             mAdapter?.setProducts(tempArr)
-        }
+        }*/
 
     }
 
@@ -283,6 +307,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     private fun getData() {
+        mSwipeRefreshLayout!!.isRefreshing = true
         val productsList: MutableList<Product> = ArrayList()
         liveProductsList.value = null
         recyclerView!!.adapter = mAdapter
@@ -307,7 +332,15 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
             if (location != null) {
                 val request = ServiceBuilder.buildService(EndPoints::class.java)
-                val call = request.getRecommendedProducts()
+
+                val call = if(query != null && query != ""){
+                    //request.getProductsByNameAndSubcategory(query!!)
+                    request.getRecommendedProducts()
+                }else{
+                    request.getRecommendedProducts()
+                }
+
+
                 call.enqueue(object : Callback<List<Product>> {
                     override fun onResponse(
                         call: Call<List<Product>>?,
@@ -349,6 +382,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                                 type = "error"
                             )
                         }
+                        mSwipeRefreshLayout!!.isRefreshing = false
                     }
 
                     override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
@@ -357,10 +391,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                             message = getString(R.string.general_error),
                             type = "connection"
                         )
+                        mSwipeRefreshLayout!!.isRefreshing = false
                     }
                 })
             }
-            mSwipeRefreshLayout!!.isRefreshing = false
+
         }
     }
 
