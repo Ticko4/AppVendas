@@ -50,6 +50,7 @@
     <string name="price">%1$s €</string>
     <string name="search_find">Say the article you want to find</string>
     <string name="not_found_product">Article not found</string>
+    <string name="products_result">Results for "'%s'"</string>
 
 
     <!--CartFragment-->

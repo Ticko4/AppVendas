@@ -49,6 +49,7 @@
     <string name="price">%1$s €</string>
     <string name="search_find">Diga o artigo que pretende encontrar</string>
     <string name="not_found_product">Artigo não encontrado</string>
+    <string name="products_result">Resultados para "'%s'"</string>
 
     <!--CartFragment-->
     <string name="checkout_btn">Pagamento</string>
