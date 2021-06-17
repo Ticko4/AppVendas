@@ -536,4 +536,9 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
         tts!!.speak(getString(R.string.command_not_found), TextToSpeech.QUEUE_FLUSH, null, "")
     }
 
+    override fun resetSpeechIcon(){
+        isReading = false
+        findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_mic)
+    }
+
 }

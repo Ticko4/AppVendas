@@ -44,7 +44,7 @@
 
     <!--HomeFragment-->
     <string name="product_added">Producto "'%s'" adicionado.\nQuantidade:%s.</string>
-    <string name="recommendations">Recomendados</string>
+    <string name="recommendations">Em destaque</string>
     <string name="price">%1$s €</string>
 
     <!--CartFragment-->
@@ -149,8 +149,8 @@
         <item>Leitura</item>
     </string-array>
 
-    <string name="speach_item">Artigo %s, - %s, com o valor de %s€</string>
-
+    <string name="speech_item">Artigo %s, - %s, com o valor de %s€</string>
+    <string name="speech_store">Loja %s, - %s de %s</string>
     <!-- Speetch Erros-->
     <string name="command_not_found">Acção desconhecida, por favor tente novamente!</string>
     <string name="fields_error">Existem campos por preencher!</string>

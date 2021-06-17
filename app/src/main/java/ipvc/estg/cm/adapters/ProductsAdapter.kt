@@ -90,6 +90,8 @@ public class ProductsAdapter(
             listener.onFavoriteClick(productsListFiltered.value!![position])
         }
 
+        product.holderImage = holder.image;
+
         holder.addCartCard.setOnClickListener {
             listener.onAddCartClick(productsListFiltered.value!![position],holder.image,position)
         }

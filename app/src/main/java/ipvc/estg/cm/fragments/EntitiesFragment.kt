@@ -12,10 +12,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.*
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ipvc.estg.cm.R
@@ -42,7 +40,8 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
     private var mAdapter: CompaniesAdapter? = null
-    private var entitiesList: MutableList<Company> = ArrayList<Company>()
+   /* private var entitiesList: MutableList<Company> = ArrayList<Company>()*/
+    private var liveEntitiesList: MutableLiveData<MutableList<Company>> = MutableLiveData<MutableList<Company>>()
     private var itemCounter:TextView? = null
     private lateinit var cartViewModel: CartViewModel
     private var tts: TextToSpeech? = null
@@ -84,24 +83,14 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
 
 
     private fun getData(){
-
-        entitiesList.clear()
+        val entitiesList: MutableList<Company> = ArrayList()
+        liveEntitiesList.value = null
         recyclerView!!.adapter = mAdapter
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
-        val obj = JSONObject()
-
-                val payload = Base64.encodeToString(
-                    obj.toString().toByteArray(charset("UTF-8")),
-                    Base64.DEFAULT
-                )
-
                 val request = ServiceBuilder.buildService(EndPoints::class.java)
-                val call = request.getRecommendedProducts(payload)
-                call.enqueue(object : Callback<List<Product>> {
-                    override fun onResponse(
-                        call: Call<List<Product>>?,
-                        response: Response<List<Product>>
-                    ) {
+                val call = request.getEntities()
+                call.enqueue(object : Callback<List<Company>> {
+                    override fun onResponse(call: Call<List<Company>>?, response: Response<List<Company>>) {
                         if (response.isSuccessful) {
                             try {
                                 response.body().forEach {
@@ -110,9 +99,13 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
                                             id = it.id,
                                             name = it.name,
                                             image = it.image,
+                                            location = it.location
                                         )
                                     )
+                                    liveEntitiesList.value = entitiesList
+                                    mAdapter!!.notifyItemInserted((liveEntitiesList.value!!.size - 1))
                                 }
+
                             } catch (e: Exception) {
                                 Log.e("catch", e.toString())
                             }
@@ -125,87 +118,15 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
                         }
                     }
 
-                    override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
-                  /*      (activity as NavigationHost).customToaster(
+                    override fun onFailure(call: Call<List<Company>>?, t: Throwable?) {
+                        (activity as NavigationHost).customToaster(
                             title = getString(R.string.toast_error),
                             message = getString(R.string.general_error),
                             type = "connection"
-                        )*/
+                        )
                     }
 
                 })
-
-
-
-            entitiesList.add(
-                Company(
-                    id = 1,
-                    name = "ProLar",
-                    image = "https://specials-images.forbesimg.com/imageserve/5f85be4ed0acaafe77436710/960x0.jpg?fit=scale",
-                )
-            )
-            Log.e("p1.livro.qtd", 1.toString())
-            Log.e("p1.livro", entitiesList[entitiesList.size - 1].id.toString())
-            //mAdapter!!.notifyItemInserted((productsList.size - 1))
-
-            entitiesList.add(
-                Company(
-                    id = 2,
-                    name = "O Pote com nome do tamanho do caralho que te foda",
-                    image = "https://static1.casapraticaqualita.com.br/articles/6/95/6/@/1101-o-que-nao-faltam-sao-queijos-que-fazem-e-article_content_img-2.jpg",
-                )
-            )
-            Log.e("p2.queijo.qtd", 2.toString())
-            Log.e("p2.queijo", entitiesList[entitiesList.size - 1].id.toString())
-
-            entitiesList.add(
-                Company(
-                    id = 3,
-                    name = "Nosso café",
-                    image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
-                )
-            )
-            Log.e("p3.telemovel.qtd", 3.toString())
-            Log.e("p3.telemovel", entitiesList[entitiesList.size - 1].id.toString())
-
-            entitiesList.add(
-                Company(
-                    id = 4,
-                    name = "Sonho do capitão",
-                    image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                )
-            )
-        entitiesList.add(
-            Company(
-                id = 5,
-                name = "Maceira",
-                image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-            )
-        )
-
-        entitiesList.add(
-            Company(
-                id = 6,
-                name = "Marcado do mira",
-                image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-            )
-        )
-        entitiesList.add(
-            Company(
-                id = 7,
-                name = "Oceano",
-                image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-            )
-        )
-        entitiesList.add(
-            Company(
-                id = 8,
-                name = "Pastelaria estrelinha de mel",
-                image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-            )
-        )
-            Log.e("p4.coca-cola.qtd", 4.toString())
-            Log.e("p4.coca-cola", entitiesList[entitiesList.size - 1].id.toString())
 
         mSwipeRefreshLayout!!.isRefreshing = false
     }
@@ -226,9 +147,9 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
     }
 
     private fun refresh() {
-        entitiesList.clear()
+      /*  entitiesList.clear()
         mAdapter?.notifyDataSetChanged()
-        Log.e("refresh", true.toString())
+        Log.e("refresh", true.toString())*/
         getData()
     }
 
@@ -305,7 +226,7 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
     }
 
     private fun setAdapter() {
-        mAdapter = context?.let { CompaniesAdapter(entitiesList, this, it) }
+        mAdapter = context?.let { CompaniesAdapter(liveEntitiesList, this, it) }
         mAdapter!!.setHasStableIds(true)
     }
 
@@ -313,20 +234,18 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
         val bundle = Bundle()
         if (company != null) {
             bundle.putString("title", company.name)
+            bundle.putInt("id", company.id)
         }
         (activity as NavigationHost).navigateTo(ProductsByEntityFragment(),addToBackStack = true,animate = true,tag = "products", data = bundle)
     }
     fun readProducts(){
-        speakOut(0,entitiesList.size)
+        speakOut(0,liveEntitiesList.value!!.size)
     }
     private fun speakOut(pos1:Int, pos2:Int) {
-        val formatArray  = entitiesList.subList(pos1, pos2);
-        if(formatArray== null){
-            return;
-        }
+        val formatArray  = liveEntitiesList.value!!.subList(pos1, pos2) ?: return
 
         for(item in formatArray){
-            tts!!.speak("Item "+(formatArray.indexOf(item)+1)+item.name, TextToSpeech.QUEUE_ADD, null, "")
+            tts!!.speak(resources.getString(R.string.speech_store,(formatArray.indexOf(item)+1).toString(),item.name,item.location), TextToSpeech.QUEUE_ADD, null, "")
         }
     }
 
@@ -346,12 +265,10 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
         }
     }
     fun stopRead(){
-        Log.e("canRead","canRead")
         tts!!.speak("", TextToSpeech.QUEUE_FLUSH, null,"")
-
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         // Shutdown TTS
         if (tts != null) {
             tts!!.stop()

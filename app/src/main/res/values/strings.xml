@@ -45,7 +45,7 @@
 
     <!--HomeFragment-->
     <string name="product_added">Product "'%s'" added.\nQuantity:%s.</string>
-    <string name="recommendations">Recommendations</string>
+    <string name="recommendations">Featured</string>
     <string name="price">%1$s €</string>
     <string name="search_find">Diga o artigo que pretende encontrar</string>
     <string name="not_found_product">Artigo não encontrado</string>
@@ -158,7 +158,8 @@
     </string-array>
 
     <!-- Speech Erros-->
-    <string name="speach_item">Item %s, - %s, with value %s€</string>
+    <string name="speech_item">Item %s, - %s, with value %s€</string>
+    <string name="speech_store">Store %s, - %s from %s</string>
     <string name="command_not_found">Unknown action, please try again !</string>
    <string name="fields_error">There are fields to complete !</string>
 

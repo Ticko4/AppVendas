@@ -1,5 +1,7 @@
 package ipvc.estg.cm.entities
 
+import android.widget.ImageView
+
 
 class Product(
     var id: Int,
@@ -12,7 +14,8 @@ class Product(
     var favorite: Boolean,
     var quantity: Int,
     var total: Float,
-    var entity: EntityProd
+    var entity: EntityProd,
+    var holderImage: ImageView? = null,
 )
 
 data class EntityProd(
