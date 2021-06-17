@@ -2,6 +2,8 @@ package ipvc.estg.cm.fragments
 
 import android.animation.Animator
 import android.app.Activity
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -15,6 +17,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
@@ -38,7 +41,9 @@ import ipvc.estg.cm.retrofit.ServiceBuilder
 import ipvc.estg.cm.vmodel.CartViewModel
 import kotlinx.android.synthetic.main.cm_home_fragment.*
 import kotlinx.android.synthetic.main.cm_home_fragment.view.*
+import kotlinx.android.synthetic.main.cm_home_fragment.view.main_frame
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
+import kotlinx.android.synthetic.main.cm_settings_fragment.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
 import org.json.JSONObject
 import retrofit2.Call
@@ -79,16 +84,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         return view
 
     }
-    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if(savedInstanceState != null){
-            Log.e("savedInstanceState",savedInstanceState.toString())
-        }
-
-        super.onViewCreated(view, savedInstanceState)
-
-    }*/
-
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -105,6 +100,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     private fun declareItems(view: View){
+        (activity as NavigationHost).isBtnVisible()
         itemCounter = view.findViewById<View>(R.id.cartTotal) as TextView
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
         tts = TextToSpeech(context, this)
@@ -172,7 +168,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         }
 
         view.nav_settings.setOnClickListener {
-
+            (activity as NavigationHost).navigateTo(SettingsFragment(),addToBackStack = true,animate = true,"settings")
         }
 
         view.nav_prod.setOnClickListener {
@@ -693,6 +689,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     fun readProducts(){
         speakOut(0,liveProductsList.value!!.size)
     }
+
     private fun speakOut(pos1:Int, pos2:Int) {
         /*val sharedPref = getSharedPreferences(ler, Context.MODE_PRIVATE) ?: return
         val le = sharedPref.getBoolean("le",false)
