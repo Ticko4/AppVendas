@@ -7,7 +7,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.util.Base64
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -45,7 +45,6 @@ import kotlinx.android.synthetic.main.cm_home_fragment.view.main_frame
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.cm_settings_fragment.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,7 +52,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,ActivityCompat.OnRequestPermissionsResultCallback,TextToSpeech.OnInitListener {
+class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,ActivityCompat.OnRequestPermissionsResultCallback,TextToSpeech.OnInitListener{
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
@@ -65,6 +64,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
     private var query:String? = null
+    var tempArr:MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -130,9 +131,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     fun filterProducts(){
-        var tempArr:MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
         val filteredProducts: MutableList<Product> = ArrayList()
-
         if(liveProductsList.value != null){
             liveProductsList.value!!.forEach {
                 if (it.name.lowercase(Locale.getDefault()).contains(query.toString().lowercase())) {
@@ -158,10 +157,9 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 "cart"
             )
         }
-        /*view.activate_microphone.setOnClickListener {
-            Log.e("Btn","Entrou")
-            getSpeechInput()
-        }*/
+        view.nav_favorites.setOnClickListener {
+            (activity as NavigationHost).navigateTo(WishListFragment(),addToBackStack = true,animate = true,"favorites")
+        }
 
         view.findViewById<FloatingActionButton>(R.id.activate_microphone).setOnClickListener {
             Log.e("Btn","Entrou")
@@ -241,6 +239,9 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     override fun onProductSelected(product: Product?) {
+
+        product!!.holderImage = null
+
         val gson = Gson()
         val myJson: String = gson.toJson(product)
         val bundle = Bundle()
@@ -249,10 +250,10 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     override fun onFavoriteClick(product: Product?) {
-        var message = "Removido dos favoritos"
+        var message = getString(R.string.fav_removed)
 
         if(product!!.favorite){
-            message = "Adicionado aos favoritos"
+            message = getString(R.string.fav_added)
         }
         val gson = Gson()
         val cart = Cart(
@@ -337,17 +338,18 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
 
             if (location != null) {
-                val obj = JSONObject()
+                Toast.makeText(context, "location "+location.toString(), Toast.LENGTH_SHORT).show()
+                /*val obj = JSONObject()
                 obj.put("latitude", location.latitude)
                 obj.put("longitude", location.longitude)
 
                 val payload = Base64.encodeToString(
                     obj.toString().toByteArray(charset("UTF-8")),
                     Base64.DEFAULT
-                )
+                )*/
 
                 val request = ServiceBuilder.buildService(EndPoints::class.java)
-                val call = request.getRecommendedProducts(payload)
+                val call = request.getRecommendedProducts()
                 call.enqueue(object : Callback<List<Product>> {
                     override fun onResponse(
                         call: Call<List<Product>>?,
@@ -358,7 +360,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                                 response.body().forEach {
                                     cartViewModel.getProductById(it.id)
                                         .observeOnce(viewLifecycleOwner, { cart ->
-
                                             productsList.add(
                                                 Product(
                                                     id = it.id,
@@ -375,6 +376,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                                                 )
                                             )
                                             liveProductsList.value = productsList
+                                            tempArr.value = productsList
                                             mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
                                         })
 
@@ -392,11 +394,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     }
 
                     override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
-                        /*(activity as NavigationHost).customToaster(
+                        (activity as NavigationHost).customToaster(
                             title = getString(R.string.toast_error),
                             message = getString(R.string.general_error),
                             type = "connection"
-                        )*/
+                        )
                     }
 
                 })
@@ -409,7 +411,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
             mSwipeRefreshLayout!!.isRefreshing = false
         }
-        cartViewModel.getProductById(1).observeOnce(this, { cart ->
+        /*cartViewModel.getProductById(1).observeOnce(this, { cart ->
 
             val images = arrayListOf(
                 "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
@@ -420,7 +422,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             productsList.add(
                 Product(
                     id = 1,
-                    name = "Watch",
+                    name = "Relógio inteligente",
                     image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
                     images = myJson,
                     price = 100.0f,
@@ -478,7 +480,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             productsList.add(
                 Product(
                     id = 3,
-                    name = "Phone",
+                    name = "Telemóvel",
                     image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
                     images = myJson,
                     price = 399.99f,
@@ -535,7 +537,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             productsList.add(
                 Product(
                     id = 5,
-                    name = "Watch",
+                    name = "Relógio",
                     image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
                     images = myJson,
                     price = 100.0f,
@@ -593,7 +595,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             productsList.add(
                 Product(
                     id = 7,
-                    name = "Phone",
+                    name = "Telenovela",
                     image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
                     images = myJson,
                     price = 399.99f,
@@ -637,9 +639,10 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 )
             )
             liveProductsList.value = productsList
+            tempArr.value = productsList;
             mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        mSwipeRefreshLayout!!.isRefreshing = false
+        })*/
+       /* mSwipeRefreshLayout!!.isRefreshing = false*/
     }
 
     private fun makeFlyAnimation(targetView: ImageView, product: Product, position: Int) {
@@ -687,21 +690,36 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     fun readProducts(){
-        speakOut(0,liveProductsList.value!!.size)
+        speakOut(0,tempArr.value!!.size)
     }
 
     private fun speakOut(pos1:Int, pos2:Int) {
-        /*val sharedPref = getSharedPreferences(ler, Context.MODE_PRIVATE) ?: return
-        val le = sharedPref.getBoolean("le",false)
-        if(!le)
-            return;*/
-        val formatArray  = liveProductsList.value!!.subList(pos1, pos2);
+        val formatArray  = tempArr.value!!.subList(pos1, pos2);
         if(formatArray== null){
             return;
         }
+        tts!!.setOnUtteranceProgressListener(mProgressListener);
+        for((index, item) in formatArray.withIndex()){
+            tts!!.speak(resources.getString(R.string.speech_item, (formatArray.indexOf(item)+1).toString(), item.name, item.price.toString()), TextToSpeech.QUEUE_ADD, null,
+                index.toString()
+            )
+        }
 
-        for(item in formatArray){
-            tts!!.speak("Item "+(formatArray.indexOf(item)+1)+item.name, TextToSpeech.QUEUE_ADD, null, "")
+    }
+
+    private val mProgressListener: UtteranceProgressListener =
+        object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String) {
+                Log.e("onStart","onStart")
+            } // Do nothing
+            override fun onError(utteranceId: String) {
+                Log.e("onError","onError")
+            } // Do nothing.
+            override fun onDone(utteranceId: String) {
+                Log.e("onDone","onDone")
+                if(tempArr.value!!.lastIndex.toString() == utteranceId){
+                    (activity as NavigationHost).resetSpeechIcon()
+                }
             }
         }
 
@@ -715,7 +733,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             } else {
 //                buttonSpeak!!.isEnabled = true
             }
-
+            //tts!!.UtteranceProgressListener(this);
         } else {
             Log.e("TTS", "Initilization Failed!")
         }
@@ -726,13 +744,39 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
     }
 
-    public override fun onDestroy() {
+    /*fun onUtteranceCompleted(utteranceId:String) {
+        (activity as NavigationHost).resetSpeechIcon()
+    }*/
+    override fun onDestroy() {
         // Shutdown TTS
         if (tts != null) {
             tts!!.stop()
             tts!!.shutdown()
         }
         super.onDestroy()
+    }
+
+    fun detectSearch(){
+        tts!!.speak(getString(R.string.search_find), TextToSpeech.QUEUE_FLUSH, null,"")
+    }
+
+    fun setDataSearch(query:String){
+        search.setQuery(query,true);
+    }
+    fun addProductToCart(index:String,searchType:Boolean){
+        try {
+            var product:Product?= null;
+            if(searchType){
+                product = tempArr.value!![index.toInt()]
+            }
+            else {
+                product = tempArr.value!!.filter { l -> index.lowercase().contains(l.name.lowercase()) }[0]
+            }
+            makeFlyAnimation(product.holderImage!!, product, tempArr.value!!.indexOf(product))
+        }catch (e:Exception){
+            tts!!.speak(getString(R.string.not_found_product), TextToSpeech.QUEUE_FLUSH, null,"")
+
+        }
     }
 
 }

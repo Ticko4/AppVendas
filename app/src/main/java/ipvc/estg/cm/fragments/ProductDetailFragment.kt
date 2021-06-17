@@ -45,7 +45,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 
-
 class ProductDetailFragment: Fragment() {
     var product: Product? = null
     var adapter: SliderAdapter? = null
@@ -84,8 +83,14 @@ class ProductDetailFragment: Fragment() {
         setClickListeners(view)
 
         val gson = Gson()
+        var images:ArrayList<String> = ArrayList<String>()
 
-        val images = gson.fromJson(gson.fromJson(product!!.images, JsonElement::class.java), object : TypeToken<ArrayList<String?>?>() {}.type) as ArrayList<String>
+        try{
+            images = gson.fromJson(gson.fromJson(product!!.images, JsonElement::class.java), object : TypeToken<ArrayList<String?>?>() {}.type) as ArrayList<String>
+        }catch (e:Exception){
+            Log.e("Exception",e.toString())
+        }
+
         sliderItems.clear()
         images.forEach{
             sliderItems.add(SliderItem(it))
@@ -149,7 +154,6 @@ class ProductDetailFragment: Fragment() {
         view.total_val.text = view.product_price.text
         view.product_name.text = product!!.name
         view.close_details.title = product!!.name
-        /*view.subcategory.text = product!!.subcategory.name*/
         view.entity.text = resources.getString(R.string.product_detail_entity_subcategory,product!!.entity.name,product!!.subcategory.name)
         if(product!!.description.isEmpty()){
             product!!.description = getString(R.string.product_no_description)
@@ -157,8 +161,7 @@ class ProductDetailFragment: Fragment() {
         expTv?.text = product!!.description
         expTv!!.setOnExpandStateChangeListener { _, isExpanded ->
             val sv = view.cart_scroll
-            val anim: ObjectAnimator
-            anim = if(isExpanded){
+            val anim: ObjectAnimator = if(isExpanded){
                 ObjectAnimator.ofInt(sv, "scrollY", 0, sv.bottom)
             }else{
                 ObjectAnimator.ofInt(sv, "scrollY", sv.top, 0)
@@ -167,7 +170,7 @@ class ProductDetailFragment: Fragment() {
             anim.start()
         }
 
-        var buttonNames: MutableList<Attribute> = ArrayList<Attribute>()
+        val buttonNames: MutableList<Attribute> = ArrayList<Attribute>()
 
         buttonNames.add(Attribute(id = 1, name = "S", price = 1f))
         buttonNames.add(Attribute(id = 2, name = "L", price = 1f))
@@ -260,9 +263,7 @@ class ProductDetailFragment: Fragment() {
                         entity = gson.toJson(product.entity)
                     )
                     success(cart)
-                    Log.e("home total", cart.quantity.toString())
-                    cartViewModel =
-                        ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
+                    cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
                     cartViewModel.insert(cart)
 
                 }
@@ -305,13 +306,6 @@ class ProductDetailFragment: Fragment() {
         Handler(Looper.getMainLooper()).postDelayed({
             requireView().btn_add!!.revertAnimation()
             requireView().btn_add!!.setBackgroundResource(R.drawable.shape)
-            /* (activity as NavigationHost).customToaster(
-                title = getString(R.string.toast_success), message = resources.getString(
-                    R.string.product_added,
-                    cart.name,
-                    cart.quantity.toString()
-                ), type = "success"
-            )*/
         }, 10 * 100)
 
 

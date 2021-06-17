@@ -32,6 +32,8 @@ import java.util.*
 class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitListener {
 
     private  var isReading: Boolean = false;
+    private  var isSearching: Boolean = false;
+
     private var tts: TextToSpeech? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,12 +48,12 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
         if (getRememberMe() != null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.container, HomeFragment())
+                .add(R.id.container, HomeFragment(),"home")
                 .commit()
         }else{
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.container, LoginFragment())
+                .add(R.id.container, LoginFragment(),"login")
                 .commit()
         }
 
@@ -151,6 +153,11 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                         }
                         "home" -> {
                             val fragment: HomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
+                            if(isSearching){
+                                isSearching = false;
+                                fragment.setDataSearch(result?.get(0).toString())
+                                return;
+                            }
 
                             if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.read_products).get(1).lowercase())){
                                 setReading()
@@ -167,8 +174,19 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                                 logout(LoginFragment(),"login")
                             }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(1).lowercase())){
                                // Falta o fragemento dos favoritos
-                            }
-                            else{
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.search).get(0).lowercase())){
+                                isSearching = true
+                                fragment.detectSearch()
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.add_product_to_list).get(0).lowercase())) {
+                                if (result?.get(0)!!.matches(".*\\d.*".toRegex())) {
+                                    fragment.addProductToCart(
+                                        (result?.get(0)!!.replace("[^0-9]".toRegex(), "").toInt() - 1).toString()
+                                    ,true)
+                                }else{
+                                    fragment.addProductToCart(result?.get(0)!!.lowercase(),false)
+                                 }
+                            }else{
+                                isSearching = false;
                                 commandNotFound()
                             }
                         }
@@ -530,6 +548,11 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
 
     fun commandNotFound(){
         tts!!.speak(getString(R.string.command_not_found), TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
+    override fun resetSpeechIcon(){
+        isReading = false
+        findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_mic)
     }
 
 }

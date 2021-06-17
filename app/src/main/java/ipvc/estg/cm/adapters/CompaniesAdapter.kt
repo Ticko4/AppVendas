@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -12,15 +13,13 @@ import com.bumptech.glide.request.RequestOptions
 import com.chauthai.swipereveallayout.ViewBinderHelper
 import ipvc.estg.cm.R
 import ipvc.estg.cm.entities.Company
+import ipvc.estg.cm.entities.Product
 import java.util.*
 
-class CompaniesAdapter(
-    entityList: MutableList<Company>,
-    listener: EntitiesAdapterListener,
-    private var context: Context
-) : RecyclerView.Adapter<CompaniesAdapter.MyViewHolder>(), Filterable {
-    private val entityList: MutableList<Company>
-    private var entitiesListFiltered: MutableList<Company>
+class CompaniesAdapter(entityList: MutableLiveData<MutableList<Company>>, listener: EntitiesAdapterListener, private var context: Context
+) : RecyclerView.Adapter<CompaniesAdapter.MyViewHolder>() {
+    private val entityList: MutableLiveData<MutableList<Company>>
+    private var entitiesListFiltered: MutableLiveData<MutableList<Company>>
     private val listener: EntitiesAdapterListener
     private val binderHelper = ViewBinderHelper()
 
@@ -37,7 +36,7 @@ class CompaniesAdapter(
     }
 
     override fun onBindViewHolder(holder: CompaniesAdapter.MyViewHolder, position: Int) {
-        val entity = entitiesListFiltered[position]
+        val entity = entitiesListFiltered.value!![position]
 
         // Use ViewBindHelper to restore and save the open/close state of the SwipeRevealView
         // put an unique string id as value, can be any string which uniquely define the data
@@ -45,7 +44,7 @@ class CompaniesAdapter(
         /*binderHelper.bind(holder.swipeRevealLayout, entity.id.toString());*/
 
         holder.frontLayout.setOnClickListener { // send selected contact in callback
-            listener.onEntitySelected(entitiesListFiltered[position])
+            listener.onEntitySelected(entitiesListFiltered.value!![position])
         }
 
         holder.title.text = entity.name
@@ -64,7 +63,7 @@ class CompaniesAdapter(
     }
 
 
-    override fun getFilter(): Filter {
+    /*override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString()
@@ -88,18 +87,21 @@ class CompaniesAdapter(
                 notifyDataSetChanged()
             }
         }
-    }
+    }*/
 
     override fun getItemCount(): Int {
-        return entitiesListFiltered.size
+        if(entitiesListFiltered.value == null){
+            return 0
+        }
+        return entitiesListFiltered.value!!.size
     }
 
     override fun getItemId(position: Int): Long {
-        return entitiesListFiltered[position].id.toLong()
+        return entitiesListFiltered.value!![position].id.toLong()
     }
 
     fun getItem(position: Int): Company {
-        return entitiesListFiltered[position]
+        return entitiesListFiltered.value!![position]
     }
 
     interface EntitiesAdapterListener {
