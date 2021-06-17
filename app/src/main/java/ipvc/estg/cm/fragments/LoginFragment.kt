@@ -84,14 +84,8 @@ class LoginFragment: Fragment() {
             passwordInput.error = getString(R.string.invalid_password)
             failed()
         }else{
-            val obj = JSONObject()
-            obj.put("username", username)
-            obj.put("password", password)
-            var payload = obj.toString()
-            payload = Base64.encodeToString(payload.toByteArray(charset("UTF-8")), Base64.DEFAULT)
-
-           /* val request = ServiceBuilder.buildService(EndPoints::class.java)
-            val call = request.loginUser(payload = payload)
+            val request = ServiceBuilder.buildService(EndPoints::class.java)
+            val call = request.loginUser(email = username,password = password)
             call.enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>?, response: Response<User>?) {
 
@@ -109,7 +103,7 @@ class LoginFragment: Fragment() {
                         success()
                     } else {
                         failed()
-                        if (response.code() == 403 && response.message() == "login_fail") {
+                        if (response.code() == 403) {
                             usernameInput.error = getString(R.string.wrong_user_info)
                             passwordInput.error = getString(R.string.wrong_user_info)
                         } else {
@@ -129,10 +123,10 @@ class LoginFragment: Fragment() {
                     (activity as NavigationHost).customToaster(title = getString(R.string.toast_error), message = getString(R.string.general_error), type = "connection")
                     failed()
                 }
-            })*/
+            })
         }
 
-        if(username == "admin@admin.com" && password == "admin"){
+        /*if(username == "admin@admin.com" && password == "admin"){
             if (rememberMe!!.isChecked) {
                 val rememberMe: SharedPreferences = requireContext().getSharedPreferences("REMEMBER", Context.MODE_PRIVATE)
                 rememberMe.edit().putString("username", "response").apply()
@@ -146,7 +140,7 @@ class LoginFragment: Fragment() {
             success()
         }else{
             failed()
-        }
+        }*/
     }
 
     private fun failed(){

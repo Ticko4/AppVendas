@@ -103,7 +103,7 @@ class EntitiesFragment : Fragment(), CompaniesAdapter.EntitiesAdapterListener,Te
                                         )
                                     )
                                     liveEntitiesList.value = entitiesList
-                                    mAdapter!!.notifyItemInserted((liveEntitiesList.value!!.size - 1))
+                                    mAdapter!!.notifyDataSetChanged()
                                 }
 
                             } catch (e: Exception) {

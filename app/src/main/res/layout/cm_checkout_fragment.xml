@@ -26,7 +26,7 @@
             android:paddingRight="12dp"
             app:contentInsetStart="0dp"
             app:navigationIcon="@drawable/ic_back"
-            app:title="@string/navigation_cart" />
+            app:title="@string/navigation_checkout" />
 
 
     </com.google.android.material.appbar.AppBarLayout>

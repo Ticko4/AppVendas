@@ -11,8 +11,8 @@ import retrofit2.http.*
 interface EndPoints {
 
     @FormUrlEncoded
-    @POST("/api/user/login")
-    fun loginUser(@Field("payload") payload: String): Call<User>
+    @POST("/api/login")
+    fun loginUser(@Field("email") email: String,@Field("password") password: String): Call<User>
 
    /* @FormUrlEncoded
     @POST("/api/products/recommended")

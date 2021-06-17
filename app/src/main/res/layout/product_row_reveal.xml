@@ -115,7 +115,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_toEndOf="@+id/card_image"
                 android:ellipsize="end"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/cpb_soft_black"
                 android:textSize="20sp" />

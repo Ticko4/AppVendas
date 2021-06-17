@@ -42,13 +42,14 @@
     <string name="navigation_products">All Products</string>
     <string name="navigation_favorites">My Favorites</string>
     <string name="navigation_entities">Entities</string>
+    <string name="navigation_checkout">Checkout</string>
 
     <!--HomeFragment-->
     <string name="product_added">Product "'%s'" added.\nQuantity:%s.</string>
     <string name="recommendations">Featured</string>
     <string name="price">%1$s €</string>
-    <string name="search_find">Diga o artigo que pretende encontrar</string>
-    <string name="not_found_product">Artigo não encontrado</string>
+    <string name="search_find">Say the article you want to find</string>
+    <string name="not_found_product">Article not found</string>
 
 
     <!--CartFragment-->
@@ -99,7 +100,8 @@
 
     <!-- Speetch rules-->
     <string-array name="search">
-        <item>Pesquisar</item>
+        <item>Search</item>
+        <item>Find</item>
     </string-array>
     <string-array name="read_products">
         <item>Read</item>
@@ -150,7 +152,7 @@
         <item>Product</item>
     </string-array>
     <string-array name="add_product_to_list">
-        <item>Adicionar</item>
+        <item>Add</item>
     </string-array>
     <string-array name="stop_read">
         <item>Stop</item>
@@ -164,10 +166,9 @@
     <string name="fields_error">There are fields to complete !</string>
 
     <!-- WishList -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="toast_settings_btnmic_remove">Button removed with success</string>
-    <string name="toast_settings_btnmic_add">Button adicionated with success</string>
-    <string name="mic_button_switch_text">Mic Button</string>
+    <string name="toast_settings_btnmic_remove">Voice option removed with success</string>
+    <string name="toast_settings_btnmic_add">Voice option added with success</string>
+    <string name="mic_button_switch_text">Voice commands</string>
     <string name="fav_removed">Removed from wishlist</string>
     <string name="fav_added">Added to wishlist</string>
     <string name="product_details_size">Size</string>
