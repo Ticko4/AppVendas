@@ -32,5 +32,7 @@ interface NavigationHost {
 
     fun popBackStack()
 
+    fun isBtnVisible()
+    
     fun resetSpeechIcon()
 }
