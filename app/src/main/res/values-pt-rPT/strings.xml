@@ -41,11 +41,15 @@
     <string name="navigation_products">Todos os produtos</string>
     <string name="navigation_favorites">Os meus favoritos</string>
     <string name="navigation_entities">Lojas</string>
+    <string name="navigation_checkout">Pagamento</string>
 
     <!--HomeFragment-->
     <string name="product_added">Producto "'%s'" adicionado.\nQuantidade:%s.</string>
     <string name="recommendations">Em destaque</string>
     <string name="price">%1$s €</string>
+    <string name="search_find">Diga o artigo que pretende encontrar</string>
+    <string name="not_found_product">Artigo não encontrado</string>
+    <string name="products_result">Resultados para "'%s'"</string>
 
     <!--CartFragment-->
     <string name="checkout_btn">Pagamento</string>
@@ -96,6 +100,10 @@
     <string name="edit_payment_method">Editar método de pagamento</string>
 
     <!-- Speetch rules-->
+    <string-array name="search">
+        <item>Pesquisar</item>
+        <item>Procurar</item>
+    </string-array>
     <string-array name="read_products">
         <item>Ler</item>
         <item>Produtos</item>
@@ -144,6 +152,9 @@
         <item>Detalhes</item>
         <item>Produto</item>
     </string-array>
+    <string-array name="add_product_to_list">
+        <item>Adicionar</item>
+    </string-array>
     <string-array name="stop_read">
         <item>Parar</item>
         <item>Leitura</item>
@@ -156,6 +167,9 @@
     <string name="fields_error">Existem campos por preencher!</string>
 
     <!-- WishList -->
+    <string name="toast_settings_btnmic_remove">Opção de voz removida</string>
+    <string name="toast_settings_btnmic_add">Opção de voz adicionada</string>
+    <string name="mic_button_switch_text">Comandos de voz</string>
     <string name="fav_removed">Removido dos favoritos</string>
     <string name="fav_added">Adicionado aos favoritos</string>
     <string name="product_details_size">Tamanho</string>

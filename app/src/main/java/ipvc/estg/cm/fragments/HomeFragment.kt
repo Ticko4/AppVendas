@@ -2,12 +2,13 @@ package ipvc.estg.cm.fragments
 
 import android.animation.Animator
 import android.app.Activity
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +18,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import ipvc.estg.cm.R
 import ipvc.estg.cm.adapters.ProductsAdapter
@@ -45,6 +44,9 @@ import kotlinx.android.synthetic.main.cm_home_fragment.view.main_frame
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
 import kotlinx.android.synthetic.main.cm_settings_fragment.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -80,25 +82,20 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         setAdapter()
         setRecycleView(view)
         setRefreshLayout(view)
-        Log.e("create", true.toString())
+        view.home_grid_title.text = getString(R.string.recommendations)
         getData()
         return view
 
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        Log.e("onSaveInstanceState", "onSaveInstanceState")
-        val gson = Gson()
-        val myJson: String = gson.toJson(liveProductsList.value)
-        outState.putString("productList",myJson)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
     }
+
+    var timer: Timer? = null
 
     private fun declareItems(view: View){
         (activity as NavigationHost).isBtnVisible()
@@ -113,7 +110,9 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
         liveProductsList!!.observe(viewLifecycleOwner, {
             if(query != null && query != ""){
-                filterProducts()
+                home_grid_title.text = resources.getString(R.string.products_result,query)
+            }else{
+                 home_grid_title.text = resources.getString(R.string.recommendations)
             }
         })
 
@@ -123,15 +122,32 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             }
 
             override fun onQueryTextChange(query: String?): Boolean {
-               this@HomeFragment.query = query
-                filterProducts()
+                this@HomeFragment.query = query
+                if (timer != null) {
+                    timer!!.cancel()
+                }
+
+                timer = Timer()
+                timer!!.schedule(object : TimerTask() {
+                    override fun run() {
+                        GlobalScope.launch(Dispatchers.Main) {
+                            Log.e("filterProducts","filterProducts")
+                            filterProducts()
+                        }
+                    }
+                }, 600)
+                return true
+
+
                 return true
             }
         })
     }
 
+
     fun filterProducts(){
-        val filteredProducts: MutableList<Product> = ArrayList()
+        getData()
+        /*val filteredProducts: MutableList<Product> = ArrayList()
         if(liveProductsList.value != null){
             liveProductsList.value!!.forEach {
                 if (it.name.lowercase(Locale.getDefault()).contains(query.toString().lowercase())) {
@@ -140,7 +156,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             }
             tempArr.value = filteredProducts
             mAdapter?.setProducts(tempArr)
-        }
+        }*/
 
     }
 
@@ -159,10 +175,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         }
         view.nav_favorites.setOnClickListener {
             (activity as NavigationHost).navigateTo(WishListFragment(),addToBackStack = true,animate = true,"favorites")
-        }
-
-        view.findViewById<FloatingActionButton>(R.id.activate_microphone).setOnClickListener {
-            Log.e("Btn","Entrou")
         }
 
         view.nav_settings.setOnClickListener {
@@ -295,6 +307,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     private fun getData() {
+        mSwipeRefreshLayout!!.isRefreshing = true
         val productsList: MutableList<Product> = ArrayList()
         liveProductsList.value = null
         recyclerView!!.adapter = mAdapter
@@ -312,44 +325,22 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(requireContext() as Activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
-
-                // REQUEST_CODE is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
         }
-
-/*        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            *//*PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
-                Manifest.permission.ACCESS_FINE_LOCATION, true);*//*
-
-            return
-        }*/
-
-
 
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
 
             if (location != null) {
-                Toast.makeText(context, "location "+location.toString(), Toast.LENGTH_SHORT).show()
-                /*val obj = JSONObject()
-                obj.put("latitude", location.latitude)
-                obj.put("longitude", location.longitude)
-
-                val payload = Base64.encodeToString(
-                    obj.toString().toByteArray(charset("UTF-8")),
-                    Base64.DEFAULT
-                )*/
-
                 val request = ServiceBuilder.buildService(EndPoints::class.java)
-                val call = request.getRecommendedProducts()
+
+                val call = if(query != null && query != ""){
+                    //request.getProductsByNameAndSubcategory(query!!)
+                    request.getRecommendedProducts()
+                }else{
+                    request.getRecommendedProducts()
+                }
+
+
                 call.enqueue(object : Callback<List<Product>> {
                     override fun onResponse(
                         call: Call<List<Product>>?,
@@ -391,6 +382,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                                 type = "error"
                             )
                         }
+                        mSwipeRefreshLayout!!.isRefreshing = false
                     }
 
                     override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
@@ -399,250 +391,12 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                             message = getString(R.string.general_error),
                             type = "connection"
                         )
+                        mSwipeRefreshLayout!!.isRefreshing = false
                     }
-
                 })
-
-
-
             }
 
-
-
-            mSwipeRefreshLayout!!.isRefreshing = false
         }
-        /*cartViewModel.getProductById(1).observeOnce(this, { cart ->
-
-            val images = arrayListOf(
-                "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
-            )
-            val gson = Gson()
-            val myJson: String = gson.toJson(images)
-            liveProductsList.value = productsList
-            productsList.add(
-                Product(
-                    id = 1,
-                    name = "Relógio inteligente",
-                    image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
-                    images = myJson,
-                    price = 100.0f,
-                    subcategory = Subcategory(1,"Wearable"),
-                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                            "\n" +
-                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                    favorite = cart?.favorite ?: false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f,
-                    entity = EntityProd(1,"Entidade 1")
-                )
-            )
-            liveProductsList.value = productsList
-            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        cartViewModel.getProductById(2).observeOnce(this, { cart ->
-
-            val images = arrayListOf(
-                "https://www.oficinadeinverno.com.br/blog/wp-content/uploads/2015/03/gluten-free-new-york-cheesecake-1450985-hero-01-dc54f9daf38044238b495c7cefc191fa.jpg",
-                "https://www.teleculinaria.pt/wp-content/uploads/2019/09/Cheesecake-de-gelatina-CHLM-19.jpg"
-            )
-            val gson = Gson()
-            val myJson: String = gson.toJson(images)
-
-            productsList.add(
-                Product(
-                    id = 2,
-                    name = "Cheesecake",
-                    image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
-                    images = myJson,
-                    price = 14.99f,
-                    subcategory = Subcategory(2,"Dairy"),
-                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                            "\n" +
-                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                    favorite = cart?.favorite ?: false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f,
-                    entity = EntityProd(2,"Entity 2")
-                )
-            )
-            liveProductsList.value = productsList
-            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        cartViewModel.getProductById(3).observeOnce(this, { cart ->
-
-            val images = arrayListOf(
-                "https://www.techadvisor.com/cmsdata/slideshow/3677861/best_smartphone_jan_2021_hero_thumb1200_4-3.jpg",
-                "https://cdn.vox-cdn.com/thumbor/v97OD-MBgNjw8p5crApucVs9RB8=/0x0:2050x1367/1800x1800/filters:focal(1025x684:1026x685)/cdn.vox-cdn.com/uploads/chorus_asset/file/22022572/bfarsace_201106_4269_012.0.jpg"
-            )
-            val gson = Gson()
-            val myJson: String = gson.toJson(images)
-
-            productsList.add(
-                Product(
-                    id = 3,
-                    name = "Telemóvel",
-                    image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
-                    images = myJson,
-                    price = 399.99f,
-                    subcategory = Subcategory(3,"Technology"),
-                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                            "\n" +
-                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                    favorite = cart?.favorite ?: false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f,
-                    entity = EntityProd(3,"Entity 3")
-                )
-            )
-            liveProductsList.value = productsList
-            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        cartViewModel.getProductById(4).observeOnce(this, { cart ->
-
-            val images = arrayListOf(
-                "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg"
-            )
-            val gson = Gson()
-            val myJson: String = gson.toJson(images)
-
-            productsList.add(
-                Product(
-                    id = 4,
-                    name = "Coca-Cola",
-                    image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                    images = myJson,
-                    price = 1.20f,
-                    subcategory = Subcategory(4,"Drinks"),
-                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                            "\n" +
-                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                    favorite = cart?.favorite ?: false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f,
-                    entity = EntityProd(4,"Entity 4")
-                )
-            )
-            liveProductsList.value = productsList
-            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        cartViewModel.getProductById(5).observeOnce(this, { cart ->
-
-            val images = arrayListOf(
-                "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
-            )
-            val gson = Gson()
-            val myJson: String = gson.toJson(images)
-            liveProductsList.value = productsList
-            productsList.add(
-                Product(
-                    id = 5,
-                    name = "Relógio",
-                    image = "https://s2.glbimg.com/LlVk8Dzlv2aKZrt23xTDT46glog=/0x0:1900x1422/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/c/A/mPg3XCTKWAzhqSBxLKAQ/galaxy-watch3-product-image-1.jpg",
-                    images = myJson,
-                    price = 100.0f,
-                    subcategory = Subcategory(1,"Werable"),
-                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                            "\n" +
-                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                    favorite = cart?.favorite ?: false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f,
-                    entity = EntityProd(1,"Entidade 1")
-                )
-            )
-            liveProductsList.value = productsList
-            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        cartViewModel.getProductById(6).observeOnce(this, { cart ->
-
-            val images = arrayListOf(
-                "https://www.oficinadeinverno.com.br/blog/wp-content/uploads/2015/03/gluten-free-new-york-cheesecake-1450985-hero-01-dc54f9daf38044238b495c7cefc191fa.jpg",
-                "https://www.teleculinaria.pt/wp-content/uploads/2019/09/Cheesecake-de-gelatina-CHLM-19.jpg"
-            )
-            val gson = Gson()
-            val myJson: String = gson.toJson(images)
-
-            productsList.add(
-                Product(
-                    id = 6,
-                    name = "Cheesecake",
-                    image = "https://conteudo.imguol.com.br/c/entretenimento/04/2020/08/10/cheesecake-com-calda-de-frutas-vermelhas-1597080856359_v2_1000x667.jpg",
-                    images = myJson,
-                    price = 14.99f,
-                    subcategory = Subcategory(2,"Dairy"),
-                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                            "\n" +
-                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                    favorite = cart?.favorite ?: false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f,
-                    entity = EntityProd(2,"Entity 2")
-                )
-            )
-            liveProductsList.value = productsList
-            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        cartViewModel.getProductById(7).observeOnce(this, { cart ->
-
-            val images = arrayListOf(
-                "https://www.techadvisor.com/cmsdata/slideshow/3677861/best_smartphone_jan_2021_hero_thumb1200_4-3.jpg",
-                "https://cdn.vox-cdn.com/thumbor/v97OD-MBgNjw8p5crApucVs9RB8=/0x0:2050x1367/1800x1800/filters:focal(1025x684:1026x685)/cdn.vox-cdn.com/uploads/chorus_asset/file/22022572/bfarsace_201106_4269_012.0.jpg"
-            )
-            val gson = Gson()
-            val myJson: String = gson.toJson(images)
-
-            productsList.add(
-                Product(
-                    id = 7,
-                    name = "Telenovela",
-                    image = "https://images.trustinnews.pt/uploads/sites/5/2019/10/muda-muito-de-telemovel-esta-a-prejudicar-o-ambiente-2-1024x683.jpg",
-                    images = myJson,
-                    price = 399.99f,
-                    subcategory = Subcategory(3,"Tecnology"),
-                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                            "\n" +
-                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                    favorite = cart?.favorite ?: false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f,
-                    entity= EntityProd(3,"Entity 3")
-                )
-            )
-            liveProductsList.value = productsList
-            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        cartViewModel.getProductById(8).observeOnce(this, { cart ->
-
-            val images = arrayListOf(
-                "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg"
-            )
-            val gson = Gson()
-            val myJson: String = gson.toJson(images)
-
-            productsList.add(
-                Product(
-                    id = 8,
-                    name = "Coca-Cola",
-                    image = "https://newinoeiras.nit.pt/wp-content/uploads/2021/02/d840d9637b626e0b764c69098840986c.jpg",
-                    images = myJson,
-                    price = 1.20f,
-                    subcategory = Subcategory(4,"Drinks"),
-                    description = "Varius id interdum diam dolor tincidunt nunc arcu accumsan scelerisque condimentum aliquam interdum congue quisque pellentesque nec sollicitudin vel mi leo amet arcu nunc quam.\n" +
-                            "\n" +
-                            "Portaest quam pellentesque amet lacus amet aliquam nisl suspendisse scelerisque dolor facilisis nunc euismod tortor commodo tortor interdum sem mi lacus maximus erat urna facilisis.",
-                    favorite = cart?.favorite ?: false,
-                    quantity = cart?.quantity ?: 0,
-                    total = (cart?.quantity ?: 0) * 10.2f,
-                    entity = EntityProd(4,"Entity 4")
-                )
-            )
-            liveProductsList.value = productsList
-            tempArr.value = productsList;
-            mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })*/
-       /* mSwipeRefreshLayout!!.isRefreshing = false*/
     }
 
     private fun makeFlyAnimation(targetView: ImageView, product: Product, position: Int) {
@@ -694,11 +448,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     private fun speakOut(pos1:Int, pos2:Int) {
-        val formatArray  = tempArr.value!!.subList(pos1, pos2);
-        if(formatArray== null){
-            return;
-        }
-        tts!!.setOnUtteranceProgressListener(mProgressListener);
+        val formatArray  = tempArr.value!!.subList(pos1, pos2) ?: return
+        tts!!.setOnUtteranceProgressListener(mProgressListener)
         for((index, item) in formatArray.withIndex()){
             tts!!.speak(resources.getString(R.string.speech_item, (formatArray.indexOf(item)+1).toString(), item.name, item.price.toString()), TextToSpeech.QUEUE_ADD, null,
                 index.toString()
@@ -730,10 +481,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "The Language specified is not supported!")
-            } else {
-//                buttonSpeak!!.isEnabled = true
             }
-            //tts!!.UtteranceProgressListener(this);
+
         } else {
             Log.e("TTS", "Initilization Failed!")
         }
@@ -744,9 +493,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
     }
 
-    /*fun onUtteranceCompleted(utteranceId:String) {
-        (activity as NavigationHost).resetSpeechIcon()
-    }*/
     override fun onDestroy() {
         // Shutdown TTS
         if (tts != null) {
@@ -765,12 +511,10 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
     fun addProductToCart(index:String,searchType:Boolean){
         try {
-            var product:Product?= null;
-            if(searchType){
-                product = tempArr.value!![index.toInt()]
-            }
-            else {
-                product = tempArr.value!!.filter { l -> index.lowercase().contains(l.name.lowercase()) }[0]
+            val product: Product = if(searchType){
+                tempArr.value!![index.toInt()]
+            } else {
+                tempArr.value!!.filter { l -> index.lowercase().contains(l.name.lowercase()) }[0]
             }
             makeFlyAnimation(product.holderImage!!, product, tempArr.value!!.indexOf(product))
         }catch (e:Exception){

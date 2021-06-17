@@ -38,7 +38,7 @@ class OrderEndFragment: Fragment() {
             HomeFragment(),
             addToBackStack = false,
             animate = true,
-            "order_end"
+            "home"
         )
     }
 
@@ -49,7 +49,7 @@ class OrderEndFragment: Fragment() {
                 HomeFragment(),
                 addToBackStack = false,
                 animate = true,
-                "order_end"
+                "home"
             )
         }
     }

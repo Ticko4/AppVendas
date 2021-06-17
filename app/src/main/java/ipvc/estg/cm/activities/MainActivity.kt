@@ -79,7 +79,9 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
             }
             if(isReading){
                 cancelReading()
-            }else{
+            }/*else if(isSearching){
+                cancelSearch()
+            }*/else{
                 getSpeechInput()
             }
         }
@@ -174,8 +176,9 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                                 logout(LoginFragment(),"login")
                             }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(0).lowercase()) && result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.fav).get(1).lowercase())){
                                // Falta o fragemento dos favoritos
-                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.search).get(0).lowercase())){
+                            }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.search).get(0).lowercase()) || result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.search).get(1).lowercase())){
                                 isSearching = true
+                                findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_search)
                                 fragment.detectSearch()
                             }else if(result?.get(0)!!.lowercase().contains(resources.getStringArray(R.array.add_product_to_list).get(0).lowercase())) {
                                 if (result?.get(0)!!.matches(".*\\d.*".toRegex())) {
@@ -187,6 +190,7 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                                  }
                             }else{
                                 isSearching = false;
+                                findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_mic)
                                 commandNotFound()
                             }
                         }
@@ -268,7 +272,13 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                                         .lowercase()
                                 )
                             ) {
-                                fragment.takeMeToHome();
+                                popBackStack();
+                                navigateTo(
+                                    HomeFragment(),
+                                    addToBackStack = false,
+                                    animate = true,
+                                    "home"
+                                )
                             }else{
                                 commandNotFound()
                             }
@@ -546,7 +556,7 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
         }
     }
 
-    fun commandNotFound(){
+    private fun commandNotFound(){
         tts!!.speak(getString(R.string.command_not_found), TextToSpeech.QUEUE_FLUSH, null, "")
     }
 
@@ -554,5 +564,11 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
         isReading = false
         findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_mic)
     }
+
+    private fun cancelSearch(){
+        isSearching = false
+        findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_mic)
+    }
+
 
 }

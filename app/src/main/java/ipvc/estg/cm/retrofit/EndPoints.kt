@@ -11,8 +11,8 @@ import retrofit2.http.*
 interface EndPoints {
 
     @FormUrlEncoded
-    @POST("/api/user/login")
-    fun loginUser(@Field("payload") payload: String): Call<User>
+    @POST("/api/login")
+    fun loginUser(@Field("email") email: String,@Field("password") password: String): Call<User>
 
    /* @FormUrlEncoded
     @POST("/api/products/recommended")
@@ -24,8 +24,12 @@ interface EndPoints {
     @GET("/api/getRecommendedProducts")
     fun getRecommendedProducts(): Call<List<Product>>
 
+    @GET("/api/getProductsByNameAndSubcategory/{searchString}")
+    fun getProductsByNameAndSubcategory(@Path("searchString") searchString: String): Call<List<Product>>
+
+
     @GET("/api/getProductsByEntity/{entity}")
-    fun getProductsByEntity(@Path("entity") entity: Int,): Call<List<Product>>
+    fun getProductsByEntity(@Path("entity") entity: Int): Call<List<Product>>
 
     @GET("/api/getEntities")
     fun getEntities(): Call<List<Company>>
