@@ -51,11 +51,12 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
     private var recyclerView: RecyclerView? = null
     private var mAdapter: ProductsAdapter? = null
    /* private var productsList: MutableList<Product> = ArrayList<Product>()*/
-   private var liveProductsList: MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
+    private var liveProductsList: MutableLiveData<MutableList<Product>> = MutableLiveData<MutableList<Product>>()
     private var itemCounter: TextView? = null
     private lateinit var cartViewModel: CartViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var titleEntity: String? = null
+    private var idEntity: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +72,7 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
         val bundle = this.arguments
         if (bundle != null) {
             titleEntity = bundle.getString("title", null)
+            idEntity = bundle.getInt("id", 0)
         }
         setClickListeners(view)
         declareItems(view)
@@ -216,34 +218,11 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
             }
         }
 
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            /*PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
-                Manifest.permission.ACCESS_FINE_LOCATION, true);*/
-
-            return
-        }
-
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
 
             if (location != null) {
-                val obj = JSONObject()
-                obj.put("latitude", location.latitude)
-                obj.put("longitude", location.longitude)
-
-                val payload = Base64.encodeToString(
-                    obj.toString().toByteArray(charset("UTF-8")),
-                    Base64.DEFAULT
-                )
-
                 val request = ServiceBuilder.buildService(EndPoints::class.java)
-                val call = request.getRecommendedProducts(payload)
+                val call = request.getProductsByEntity(idEntity!!)
                 call.enqueue(object : Callback<List<Product>> {
                     override fun onResponse(
                         call: Call<List<Product>>?,
@@ -264,7 +243,7 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                                                     price = it.price,
                                                     subcategory = it.subcategory,
                                                     description = it.description,
-                                                    favorite = cart?.favorite?: false ,
+                                                    favorite = cart?.favorite ?: false ,
                                                     quantity = cart?.quantity ?: 0,
                                                     total = (cart?.quantity ?: 0) * it.price,
                                                     entity = it.entity
@@ -272,6 +251,7 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                                             )
                                         })
                                     liveProductsList.value = productsList
+                                    mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
                                 }
                             } catch (e: Exception) {
                                 Log.e("catch", e.toString())
@@ -286,16 +266,16 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                     }
 
                     override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
-                        /*(activity as NavigationHost).customToaster(
+                        (activity as NavigationHost).customToaster(
                             title = getString(R.string.toast_error),
                             message = getString(R.string.general_error),
                             type = "connection"
-                        )*/
+                        )
                     }
 
                 })
 
-                cartViewModel.getProductById(1).observeOnce(this, { cart ->
+                /*cartViewModel.getProductById(1).observeOnce(this, { cart ->
 
                     val images = arrayListOf(
                         "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
@@ -410,7 +390,7 @@ class ProductsByEntityFragment : Fragment(), ProductsAdapter.ProductsAdapterList
                     )
                     liveProductsList.value = productsList
                     mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-                })
+                })*/
 
             }
 

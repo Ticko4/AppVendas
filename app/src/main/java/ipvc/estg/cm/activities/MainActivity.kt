@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -82,7 +83,19 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
                 getSpeechInput()
             }
         }
+    }
 
+    override fun isBtnVisible() {
+        val sharedPref: SharedPreferences? =
+            this.getSharedPreferences("MIC", Context.MODE_PRIVATE)
+        val show = sharedPref?.getBoolean("show", true)
+        Log.e("show", show.toString())
+
+        if(show == true){
+            findViewById<FloatingActionButton>(R.id.activate_microphone).visibility = View.VISIBLE
+        }else{
+            findViewById<FloatingActionButton>(R.id.activate_microphone).visibility = View.GONE
+        }
     }
 
     private fun getSpeechInput()
@@ -126,6 +139,7 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
     {
         super.onActivityResult(requestCode,
             resultCode, data)
+
         when (requestCode) {
             10 -> if (resultCode == RESULT_OK && data != null) {
 
@@ -534,6 +548,11 @@ class MainActivity : AppCompatActivity(), NavigationHost,TextToSpeech.OnInitList
 
     fun commandNotFound(){
         tts!!.speak(getString(R.string.command_not_found), TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
+    override fun resetSpeechIcon(){
+        isReading = false
+        findViewById<FloatingActionButton>(R.id.activate_microphone).setImageResource(R.drawable.ic_mic)
     }
 
 }

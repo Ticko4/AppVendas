@@ -2,10 +2,12 @@ package ipvc.estg.cm.fragments
 
 import android.animation.Animator
 import android.app.Activity
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.util.Base64
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +17,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
@@ -38,9 +41,10 @@ import ipvc.estg.cm.retrofit.ServiceBuilder
 import ipvc.estg.cm.vmodel.CartViewModel
 import kotlinx.android.synthetic.main.cm_home_fragment.*
 import kotlinx.android.synthetic.main.cm_home_fragment.view.*
+import kotlinx.android.synthetic.main.cm_home_fragment.view.main_frame
 import kotlinx.android.synthetic.main.cm_main_activity.view.*
+import kotlinx.android.synthetic.main.cm_settings_fragment.view.*
 import kotlinx.android.synthetic.main.navigation_backdrop.view.*
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,7 +52,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,ActivityCompat.OnRequestPermissionsResultCallback,TextToSpeech.OnInitListener {
+class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,ActivityCompat.OnRequestPermissionsResultCallback,TextToSpeech.OnInitListener{
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mLayoutManager: RecyclerView.LayoutManager? = null
     private var recyclerView: RecyclerView? = null
@@ -81,6 +85,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         return view
 
     }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.e("onSaveInstanceState", "onSaveInstanceState")
@@ -96,6 +101,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     private fun declareItems(view: View){
+        (activity as NavigationHost).isBtnVisible()
         itemCounter = view.findViewById<View>(R.id.cartTotal) as TextView
         cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
         tts = TextToSpeech(context, this)
@@ -160,7 +166,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         }
 
         view.nav_settings.setOnClickListener {
-
+            (activity as NavigationHost).navigateTo(SettingsFragment(),addToBackStack = true,animate = true,"settings")
         }
 
         view.nav_prod.setOnClickListener {
@@ -233,6 +239,9 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     }
 
     override fun onProductSelected(product: Product?) {
+
+        product!!.holderImage = null
+
         val gson = Gson()
         val myJson: String = gson.toJson(product)
         val bundle = Bundle()
@@ -329,17 +338,18 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
 
             if (location != null) {
-                val obj = JSONObject()
+                Toast.makeText(context, "location "+location.toString(), Toast.LENGTH_SHORT).show()
+                /*val obj = JSONObject()
                 obj.put("latitude", location.latitude)
                 obj.put("longitude", location.longitude)
 
                 val payload = Base64.encodeToString(
                     obj.toString().toByteArray(charset("UTF-8")),
                     Base64.DEFAULT
-                )
+                )*/
 
                 val request = ServiceBuilder.buildService(EndPoints::class.java)
-                val call = request.getRecommendedProducts(payload)
+                val call = request.getRecommendedProducts()
                 call.enqueue(object : Callback<List<Product>> {
                     override fun onResponse(
                         call: Call<List<Product>>?,
@@ -350,7 +360,6 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                                 response.body().forEach {
                                     cartViewModel.getProductById(it.id)
                                         .observeOnce(viewLifecycleOwner, { cart ->
-
                                             productsList.add(
                                                 Product(
                                                     id = it.id,
@@ -367,6 +376,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                                                 )
                                             )
                                             liveProductsList.value = productsList
+                                            tempArr.value = productsList
                                             mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
                                         })
 
@@ -384,11 +394,11 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                     }
 
                     override fun onFailure(call: Call<List<Product>>?, t: Throwable?) {
-                        /*(activity as NavigationHost).customToaster(
+                        (activity as NavigationHost).customToaster(
                             title = getString(R.string.toast_error),
                             message = getString(R.string.general_error),
                             type = "connection"
-                        )*/
+                        )
                     }
 
                 })
@@ -401,7 +411,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
 
             mSwipeRefreshLayout!!.isRefreshing = false
         }
-        cartViewModel.getProductById(1).observeOnce(this, { cart ->
+        /*cartViewModel.getProductById(1).observeOnce(this, { cart ->
 
             val images = arrayListOf(
                 "https://images.samsung.com/is/image/samsung/assets/br/p6_gro2/p6_initial_pf/watches/pf_galaxy_watch3_45mm_black_mo_png.jpg"
@@ -631,8 +641,8 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             liveProductsList.value = productsList
             tempArr.value = productsList;
             mAdapter!!.notifyItemInserted((liveProductsList.value!!.size - 1))
-        })
-        mSwipeRefreshLayout!!.isRefreshing = false
+        })*/
+       /* mSwipeRefreshLayout!!.isRefreshing = false*/
     }
 
     private fun makeFlyAnimation(targetView: ImageView, product: Product, position: Int) {
@@ -682,14 +692,34 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
     fun readProducts(){
         speakOut(0,tempArr.value!!.size)
     }
+
     private fun speakOut(pos1:Int, pos2:Int) {
         val formatArray  = tempArr.value!!.subList(pos1, pos2);
         if(formatArray== null){
             return;
         }
+        tts!!.setOnUtteranceProgressListener(mProgressListener);
+        for((index, item) in formatArray.withIndex()){
+            tts!!.speak(resources.getString(R.string.speech_item, (formatArray.indexOf(item)+1).toString(), item.name, item.price.toString()), TextToSpeech.QUEUE_ADD, null,
+                index.toString()
+            )
+        }
 
-        for(item in formatArray){
-            tts!!.speak(resources.getString(R.string.speach_item, (formatArray.indexOf(item)+1).toString(), item.name, item.price.toString()), TextToSpeech.QUEUE_ADD, null, "")
+    }
+
+    private val mProgressListener: UtteranceProgressListener =
+        object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String) {
+                Log.e("onStart","onStart")
+            } // Do nothing
+            override fun onError(utteranceId: String) {
+                Log.e("onError","onError")
+            } // Do nothing.
+            override fun onDone(utteranceId: String) {
+                Log.e("onDone","onDone")
+                if(tempArr.value!!.lastIndex.toString() == utteranceId){
+                    (activity as NavigationHost).resetSpeechIcon()
+                }
             }
         }
 
@@ -703,7 +733,7 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
             } else {
 //                buttonSpeak!!.isEnabled = true
             }
-
+            //tts!!.UtteranceProgressListener(this);
         } else {
             Log.e("TTS", "Initilization Failed!")
         }
@@ -713,6 +743,10 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
         tts!!.speak("", TextToSpeech.QUEUE_FLUSH, null,"")
 
     }
+
+    /*fun onUtteranceCompleted(utteranceId:String) {
+        (activity as NavigationHost).resetSpeechIcon()
+    }*/
     override fun onDestroy() {
         // Shutdown TTS
         if (tts != null) {
@@ -736,39 +770,9 @@ class HomeFragment: Fragment(), ProductsAdapter.ProductsAdapterListener,Activity
                 product = tempArr.value!![index.toInt()]
             }
             else {
-
-                val filtred = tempArr.value!!.filter { l -> index.lowercase().contains(l.name.lowercase()) }
-                product = filtred.get(0)
+                product = tempArr.value!!.filter { l -> index.lowercase().contains(l.name.lowercase()) }[0]
             }
-            val quantity = (product.quantity + 1 )
-            val gson = Gson()
-            val cart = Cart(
-                id = product.id,
-                name = product.name,
-                image = product.image,
-                images = product.images,
-                price = product.price,
-                subcategory = gson.toJson(product.subcategory),
-                description = product.description,
-                favorite = product.favorite,
-                quantity = quantity,
-                total = (quantity * product.price),
-                entity = gson.toJson(product.entity)
-            )
-            Log.e("home total",cart.total.toString())
-            mAdapter!!.setQuantity(tempArr.value!!.indexOf(product),quantity)
-
-            cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
-            cartViewModel.insert(cart)
-            (activity as NavigationHost).customToaster(
-                title = getString(R.string.toast_success), message = resources.getString(
-                    R.string.product_added,
-                    cart.name,
-                    cart.quantity.toString()
-                ), type = "success"
-            )
-            itemCounter!!.text = (((itemCounter!!.text).toString()).toInt() + 1).toString()
-
+            makeFlyAnimation(product.holderImage!!, product, tempArr.value!!.indexOf(product))
         }catch (e:Exception){
             tts!!.speak(getString(R.string.not_found_product), TextToSpeech.QUEUE_FLUSH, null,"")
 
